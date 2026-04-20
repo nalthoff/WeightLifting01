@@ -67,26 +67,26 @@ flow from `Settings -> Lifts` to workout lift selection.
 
 > **NOTE: Write required tests before implementation. Business-layer unit tests are mandatory and should fail before the corresponding implementation is completed.**
 
-- [ ] T013 [P] [US1] Add backend unit tests for trimmed required-name validation in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/CreateLift/CreateLiftCommandHandlerTests.cs`
-- [ ] T014 [P] [US1] Add backend integration tests for create-and-list behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/CreateLiftIntegrationTests.cs`
-- [ ] T015 [P] [US1] Add contract tests for `POST /api/lifts` and `GET /api/lifts` in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
-- [ ] T016 [P] [US1] Add Angular unit tests for the `Settings -> Lifts` page behavior in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
-- [ ] T017 [P] [US1] Add a mobile e2e test for create-and-select flow in `frontend/tests/e2e/settings-lifts/create-lift.spec.ts`
+- [X] T013 [P] [US1] Add backend unit tests for trimmed required-name validation in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/CreateLift/CreateLiftCommandHandlerTests.cs`
+- [X] T014 [P] [US1] Add backend integration tests for create-and-list behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/CreateLiftIntegrationTests.cs`
+- [X] T015 [P] [US1] Add contract tests for `POST /api/lifts` and `GET /api/lifts` in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
+- [X] T016 [P] [US1] Add Angular unit tests for the `Settings -> Lifts` page behavior in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
+- [X] T017 [P] [US1] Add a mobile e2e test for create-and-select flow in `frontend/tests/e2e/settings-lifts/create-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Create the lift domain model in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
-- [ ] T019 [P] [US1] Create the create-lift request contract in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/CreateLiftRequest.cs`
-- [ ] T020 [P] [US1] Create the lift response contracts in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/CreateLiftResponse.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Lifts/LiftListResponse.cs`
-- [ ] T021 [US1] Implement create-lift business logic in `backend/src/WeightLifting.Api/Application/Lifts/Commands/CreateLift/CreateLiftCommandHandler.cs`
-- [ ] T022 [US1] Implement the lift query service for selectable lifts in `backend/src/WeightLifting.Api/Application/Lifts/Queries/GetLifts/GetLiftsQueryHandler.cs`
-- [ ] T023 [US1] Implement the lifts API controller in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
-- [ ] T024 [P] [US1] Generate the `Settings -> Lifts` page component with Angular CLI and implement it in `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
-- [ ] T025 [P] [US1] Implement the `Settings -> Lifts` page template and mobile-first styling in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
-- [ ] T026 [US1] Implement the settings-lifts page facade and submit flow in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
-- [ ] T027 [US1] Integrate successful create responses into the shared lift store and workout selector reads in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/workouts/shared/workout-lift-selector.service.ts`
-- [ ] T028 [US1] Add failure messaging, retry-safe save-state handling, and no-false-success behavior in `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
-- [ ] T029 [US1] Create a manual testing guide for User Story 1 in `specs/001-create-lift/manual-tests/us1-create-lift.md`
+- [X] T018 [P] [US1] Create the lift domain model in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
+- [X] T019 [P] [US1] Create the create-lift request contract in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/CreateLiftRequest.cs`
+- [X] T020 [P] [US1] Create the lift response contracts in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/CreateLiftResponse.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Lifts/LiftListResponse.cs`
+- [X] T021 [US1] Implement create-lift business logic in `backend/src/WeightLifting.Api/Application/Lifts/Commands/CreateLift/CreateLiftCommandHandler.cs`
+- [X] T022 [US1] Implement the lift query service for selectable lifts in `backend/src/WeightLifting.Api/Application/Lifts/Queries/GetLifts/GetLiftsQueryHandler.cs`
+- [X] T023 [US1] Implement the lifts API controller in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
+- [X] T024 [P] [US1] Generate the `Settings -> Lifts` page component with Angular CLI and implement it in `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
+- [X] T025 [P] [US1] Implement the `Settings -> Lifts` page template and mobile-first styling in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T026 [US1] Implement the settings-lifts page facade and submit flow in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T027 [US1] Integrate successful create responses into the shared lift store and workout selector reads in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/workouts/shared/workout-lift-selector.service.ts`
+- [X] T028 [US1] Add failure messaging, retry-safe save-state handling, and no-false-success behavior in `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
+- [X] T029 [US1] Create a manual testing guide for User Story 1 in `specs/001-create-lift/manual-tests/us1-create-lift.md`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
 

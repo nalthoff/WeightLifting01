@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 
-import { LiftsShell } from './lifts-shell/lifts-shell';
+import { LiftsPageComponent } from './lifts-page.component';
 
 export const LIFTS_ROUTES: Routes = [
   {
     path: '',
-    component: LiftsShell,
+    component: LiftsPageComponent,
   },
 ];

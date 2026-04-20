@@ -13,6 +13,20 @@ export interface LiftListResponse {
   lastSyncedAtUtc?: string;
 }
 
+export interface CreateLiftRequest {
+  name: string;
+  clientRequestId?: string;
+}
+
+export interface CreateLiftResponse {
+  lift: {
+    id: string;
+    name: string;
+    isActive: boolean;
+    createdAtUtc: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,5 +39,9 @@ export class LiftsApiService {
         activeOnly: String(activeOnly),
       },
     });
+  }
+
+  createLift(request: CreateLiftRequest): Observable<CreateLiftResponse> {
+    return this.httpClient.post<CreateLiftResponse>('/api/lifts', request);
   }
 }

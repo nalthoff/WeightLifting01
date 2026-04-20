@@ -8,10 +8,12 @@ import type { LiftListItem, LiftListResponse } from '../api/lifts-api.service';
 export class LiftsStoreService {
   readonly items = signal<LiftListItem[]>([]);
   readonly lastSyncedAtUtc = signal<string | null>(null);
+  readonly isLoaded = signal(false);
 
   setResponse(response: LiftListResponse): void {
     this.items.set(response.items);
     this.lastSyncedAtUtc.set(response.lastSyncedAtUtc ?? null);
+    this.isLoaded.set(true);
   }
 
   upsert(item: LiftListItem): void {
@@ -26,5 +28,6 @@ export class LiftsStoreService {
 
     nextItems.sort((left, right) => left.name.localeCompare(right.name));
     this.items.set(nextItems);
+    this.isLoaded.set(true);
   }
 }

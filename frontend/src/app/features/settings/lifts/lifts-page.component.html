@@ -1,0 +1,47 @@
+<section class="page">
+  <header class="page__header">
+    <h1>Lifts</h1>
+    <p>Manage the lifts that should be available when building workouts.</p>
+  </header>
+
+  <form
+    class="page__form"
+    (ngSubmit)="facade.submit()"
+  >
+    <label class="page__label" for="liftName">Lift name</label>
+    <input
+      id="liftName"
+      name="liftName"
+      class="page__input"
+      [ngModel]="facade.liftName()"
+      (ngModelChange)="facade.updateLiftName($event)"
+      placeholder="e.g. Front Squat"
+    />
+
+    <button
+      type="submit"
+      class="page__button"
+      [disabled]="facade.isSaving()"
+    >
+      {{ facade.isSaving() ? 'Saving...' : 'Add lift' }}
+    </button>
+  </form>
+
+  <p *ngIf="facade.errorMessage()" class="page__message page__message--error">
+    {{ facade.errorMessage() }}
+  </p>
+  <p *ngIf="facade.successMessage()" class="page__message page__message--success">
+    {{ facade.successMessage() }}
+  </p>
+
+  <section class="page__list">
+    <h2>Current lifts</h2>
+
+    <p *ngIf="facade.isLoading()">Loading lifts...</p>
+    <p *ngIf="!facade.isLoading() && facade.lifts().length === 0">No lifts added yet.</p>
+
+    <ul *ngIf="facade.lifts().length > 0">
+      <li *ngFor="let lift of facade.lifts()">{{ lift.name }}</li>
+    </ul>
+  </section>
+</section>
