@@ -10,6 +10,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-20
 ## Active Technologies
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core (001-create-lift)
 - SQL Server / Azure SQL-compatible relational storage already used by the app; no storage changes planned (001-create-lift)
+- Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (003-rename-lift)
+- Azure SQL / SQL Server-compatible relational storage using the existing `Lifts` table (003-rename-lift)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -30,6 +32,7 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 003-rename-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core, SQL Server provider
 - 001-create-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core
 
 - 001-create-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider

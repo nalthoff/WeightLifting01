@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Lift Management API
+  version: 1.0.0
+  description: Contract for listing lifts, creating lifts, and renaming an existing lift from Settings.
+paths:
+  /api/lifts:
+    get:
+      summary: List selectable lifts
+      operationId: getLifts
+      parameters:
+        - in: query
+          name: activeOnly
+          schema:
+            type: boolean
+            default: true
+      responses:
+        "200":
+          description: Lift list returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiftListResponse"
+    post:
+      summary: Create a new lift
+      operationId: createLift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLiftRequest"
+      responses:
+        "201":
+          description: Lift created successfully
+          headers:
+            Location:
+              description: Resource URL for the created lift
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateLiftResponse"
+        "422":
+          description: Validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /api/lifts/{liftId}:
+    put:
+      summary: Rename an existing lift
+      operationId: renameLift
+      parameters:
+        - in: path
+          name: liftId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameLiftRequest"
+      responses:
+        "200":
+          description: Lift renamed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenameLiftResponse"
+        "404":
+          description: The requested lift does not exist
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Another lift already uses the requested normalized name
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+components:
+  schemas:
+    CreateLiftRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: User-entered lift name
+        clientRequestId:
+          type: string
+          description: Optional client-generated id for retry or reconciliation support
+    CreateLiftResponse:
+      type: object
+      required:
+        - lift
+      properties:
+        lift:
+          $ref: "#/components/schemas/Lift"
+    RenameLiftRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Proposed replacement name for the existing lift
+    RenameLiftResponse:
+      type: object
+      required:
+        - lift
+      properties:
+        lift:
+          $ref: "#/components/schemas/Lift"
+    LiftListResponse:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/LiftListItem"
+        lastSyncedAtUtc:
+          type: string
+          format: date-time
+    Lift:
+      type: object
+      required:
+        - id
+        - name
+        - isActive
+        - createdAtUtc
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        isActive:
+          type: boolean
+        createdAtUtc:
+          type: string
+          format: date-time
+    LiftListItem:
+      type: object
+      required:
+        - id
+        - name
+        - isActive
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        isActive:
+          type: boolean
+    ProblemDetails:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
