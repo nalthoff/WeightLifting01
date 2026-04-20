@@ -30,6 +30,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/playwright-e2e*.db
 .sass-cache/
 /connect.lock
 /coverage

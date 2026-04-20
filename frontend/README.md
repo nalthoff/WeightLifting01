@@ -49,10 +49,11 @@ ng test
 For end-to-end (e2e) testing, run:
 
 ```bash
-ng e2e
+npx playwright test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The Playwright configuration starts isolated frontend and backend servers for the test run and uses
+its own SQLite database, so browser tests do not write data into the local development database.
 
 ## Additional Resources
 

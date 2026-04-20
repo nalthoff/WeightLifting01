@@ -154,7 +154,9 @@ cd frontend
 npx playwright test
 ```
 
-For end-to-end runs, make sure the frontend and backend are already running locally.
+Playwright starts its own frontend and backend servers on isolated test ports and uses a separate
+SQLite database for browser tests. Running `npx playwright test` should not write lifts into your
+local development database.
 
 ## Notes
 
