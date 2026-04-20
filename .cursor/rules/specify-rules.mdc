@@ -1,0 +1,35 @@
+---
+description: Project Development Guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+# WeightLifting01 Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-04-20
+
+## Active Technologies
+
+- Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
+
+## Project Structure
+
+```text
+backend/
+frontend/
+tests/
+```
+
+## Commands
+
+# Add commands for Angular 20 frontend, C# with .NET 10 backend
+
+## Code Style
+
+Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
+
+## Recent Changes
+
+- 001-create-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

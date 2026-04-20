@@ -17,7 +17,7 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Angular 20 frontend, .NET 9 backend or NEEDS CLARIFICATION]  
+**Language/Version**: [e.g., Angular 20 frontend, .NET 10 backend or NEEDS CLARIFICATION]  
 **Primary Dependencies**: [e.g., Angular, ASP.NET Core, Entity Framework Core or NEEDS CLARIFICATION]  
 **Storage**: [e.g., Azure SQL, SQL Server, PostgreSQL-compatible relational DB or NEEDS CLARIFICATION]  
 **Testing**: [e.g., Jasmine/Karma, Playwright, xUnit/NUnit, contract tests or NEEDS CLARIFICATION]  
