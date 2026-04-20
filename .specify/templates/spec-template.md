@@ -18,6 +18,10 @@
   - Tested independently
   - Deployed independently
   - Demonstrated to users independently
+
+  For this project, prioritize the in-gym mobile logging journey first. Capture only the
+  minimum workout history needed to help the user choose the next working weight unless the
+  feature explicitly justifies broader analytics.
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)
@@ -90,6 +94,15 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 
+Include requirements, when relevant, for:
+- mobile-first behavior in the primary logging flow
+- workout history that supports next-weight decisions
+- business-rule ownership outside Angular presentation code
+- SOLID-aligned service and domain boundaries for new or changed backend logic
+- discoverable production code organization with one class per file
+- SQL persistence and migration expectations for data changes
+- Azure-compatible infrastructure and deployment assumptions
+
 *Example of marking unclear requirements:*
 
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
@@ -114,6 +127,10 @@
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
 
+At least one success criterion SHOULD measure the speed or ease of the mobile logging flow,
+and at least one SHOULD measure whether the user can choose the next weight from the
+available workout history.
+
 ## Assumptions
 
 <!--
@@ -126,3 +143,7 @@
 - [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+- [Business logic testing assumption, e.g., "Any new or changed business-layer logic will
+  ship with automated unit tests"]
+- [Platform assumption, e.g., "The feature will be delivered through Angular frontend, C#
+  backend, SQL persistence, and Azure-compatible deployment targets"]

@@ -1,50 +1,115 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: 1.0.0 -> 1.1.0
+- Modified principles:
+  - III. Angular and C# Separation of Concerns -> III. Angular, C#, and SOLID Boundaries
+- Added sections:
+  - None
+- Removed sections:
+  - None
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md
+  - ✅ .specify/templates/spec-template.md
+  - ✅ .specify/templates/tasks-template.md
+- Follow-up TODOs:
+  - None
+-->
+# WeightLifting01 Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Mobile-First Logging Speed
+The primary user journey MUST optimize for fast workout logging on a phone in a gym
+environment. Core actions such as selecting an exercise, entering sets, and recording
+working weight MUST minimize taps, avoid dense desktop-first layouts, and remain usable on
+common mobile viewport widths before any larger-screen enhancement work is considered. The
+rationale is simple: if logging interrupts a set, the product fails its main job.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Decision-Ready Workout History
+The system MUST store and present just enough recent workout history to help the lifter
+choose the next weight with confidence. New features MUST preserve structured history that
+supports recency, prior working sets, and quick comparison, while avoiding analytics,
+reporting, or data collection that does not improve the next in-gym decision. The rationale
+is to keep the product focused on immediate training usefulness rather than general fitness
+tracking sprawl.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Angular, C#, and SOLID Boundaries
+The frontend MUST be implemented in Angular and the backend MUST be implemented in C# on a
+supported .NET runtime. Presentation concerns belong in Angular; business rules for workout
+logging, progression, validation, and history interpretation MUST live in backend services
+or a dedicated business layer that can be tested independently of the UI. Persistent data
+MUST be modeled in SQL. New or revised code MUST follow SOLID principles so responsibilities
+remain narrow, dependencies stay explicit, and behavior can be extended without fragile
+cross-cutting changes. Each production class MUST live in its own file unless a language or
+framework construct makes that impossible or clearly less readable. The rationale is to keep
+behavior consistent across clients, preserve maintainability, and make code easy to locate.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Unit-Tested Business Logic
+Any business layer logic MUST be covered by automated unit tests in the same change that
+introduces or modifies that logic. This includes progression rules, logging validation,
+history selection rules, and any calculation used to recommend or prefill the next weight.
+Integration or contract tests SHOULD be added when API contracts, SQL mappings, or cross-
+boundary flows change materially. The rationale is that workout correctness depends on rules
+that are easy to regress unless they are isolated and tested.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Azure-Compatible Delivery
+All functionality MUST be deployable using Azure-compatible technologies, configuration, and
+runtime assumptions. Features MUST avoid local-only dependencies, machine-specific file
+coupling, or infrastructure choices that block deployment to services such as Azure Static
+Web Apps, Azure App Service, Azure Container Apps, or Azure SQL. The rationale is to keep
+the project operationally portable within the intended cloud platform from the start.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Platform Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- The product is a mobile-first web application for quickly logging strength workouts in the
+  gym.
+- The frontend stack MUST remain Angular-based and responsive across supported mobile
+  browsers.
+- The backend stack MUST remain C# and expose clear application or API boundaries that can
+  evolve independently from the UI.
+- Data persistence MUST use a SQL datastore with explicit schema ownership and migration
+  discipline.
+- Source organization MUST keep one production class per file so code is easy to find, review,
+  and refactor.
+- Features MUST tolerate ordinary gym connectivity issues by preventing silent data loss and
+  by making save states or retry outcomes clear to the user.
+- Scope expansion into broad social, nutrition, or non-strength-training domains requires an
+  explicit constitution amendment or a feature specification that justifies the change
+  against Principle II.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Delivery Workflow and Quality Gates
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Every specification MUST identify the primary in-gym mobile journey, define the minimum
+  history required to choose the next weight, and capture acceptance scenarios for both fast
+  logging and history lookup.
+- Every implementation plan MUST pass a Constitution Check that confirms Angular frontend
+  ownership, C# backend ownership, SQL persistence approach, Azure deployment compatibility,
+  SOLID-aligned design boundaries, one-class-per-file organization, and a unit-test strategy
+  for all affected business logic.
+- Every task list MUST include concrete work for business-layer unit tests whenever business
+  rules change, plus schema or migration tasks whenever persisted workout data changes.
+- Pull requests and reviews MUST reject implementations that place business rules in Angular
+  components, skip required unit tests, or add infrastructure that is not Azure-compatible
+  without an approved exception. Reviews MUST also reject avoidable multi-class files or
+  designs that violate SOLID without an approved exception.
+- Manual verification for user-facing changes MUST include mobile viewport validation of the
+  primary logging flow in addition to automated test execution.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution overrides conflicting local practices for planning, implementation, and
+review. Amendments MUST be documented in this file, include an updated Sync Impact Report,
+and be propagated to the affected Spec Kit templates before the amendment is considered
+complete.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Versioning follows semantic versioning for governance changes: MAJOR for removing or
+redefining a principle in a backward-incompatible way, MINOR for adding a principle or
+materially expanding required guidance, and PATCH for clarifications that do not change team
+obligations.
+
+Compliance MUST be reviewed at three checkpoints: when drafting a specification, when
+writing the implementation plan, and during pull request review. Any exception MUST be
+explicitly justified in the plan's Complexity Tracking section with the simpler alternative
+that was rejected.
+
+**Version**: 1.1.0 | **Ratified**: 2026-04-20 | **Last Amended**: 2026-04-20
