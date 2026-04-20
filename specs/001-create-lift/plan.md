@@ -9,7 +9,9 @@ Add a dedicated mobile-first `Settings -> Lifts` management page where users can
 lift with a required manually entered name. The implementation will use an Angular settings
 page and shared lift store on the frontend, plus an ASP.NET Core create/query API backed by
 SQL persistence so newly created lifts become selectable in workout flows immediately after a
-confirmed save.
+confirmed save. Project scaffolding, Angular code generation, and Entity Framework migration
+artifacts should be created through the appropriate command-line tooling rather than being
+hand-authored when a standard generator exists.
 
 ## Technical Context
 
@@ -20,7 +22,7 @@ confirmed save.
 **Target Platform**: Mobile web browsers with Azure-hosted API and Azure SQL  
 **Project Type**: Mobile-first web app with Angular frontend and C# backend  
 **Performance Goals**: Lift creation flow completes in <=30 seconds on mobile; new lift visible in selection immediately after successful save  
-**Constraints**: Mobile-first UX, Azure-compatible deployment, resilient handling of flaky connectivity, SOLID boundaries, one production class per file, backend-owned business validation  
+**Constraints**: Mobile-first UX, Azure-compatible deployment, resilient handling of flaky connectivity, SOLID boundaries, one production class per file, backend-owned business validation, and CLI-driven generation for standard scaffolding/migration artifacts  
 **Scale/Scope**: Single feature slice for lift management in Settings, supporting individual lifter setup and immediate workout selection reuse
 
 ## Constitution Check
@@ -41,11 +43,14 @@ confirmed save.
 - [x] All affected business-layer logic has a concrete unit-test approach.
 - [x] All proposed infrastructure and runtime assumptions are compatible with Azure hosting
       and managed services.
+- [x] Standard scaffolding and migration artifacts will be generated with command-line tools
+      rather than hand-authored when project tooling provides a supported path.
 
 Post-design review: Pass. The selected design keeps Angular focused on navigation/form state,
 keeps validation and persistence orchestration in the backend application layer, uses SQL
-storage plus migrations, and preserves immediate-but-confirmed list updates via a shared
-frontend lift store refreshed from successful API responses.
+storage plus migrations, preserves immediate-but-confirmed list updates via a shared
+frontend lift store refreshed from successful API responses, and assumes Angular/.NET/EF
+tooling will generate standard project and migration assets.
 
 ## Project Structure
 
@@ -104,9 +109,11 @@ frontend/
 ```
 
 **Structure Decision**: Use a two-application structure with a single backend project organized
-into API/Application/Domain/Infrastructure folders and a separate Angular frontend. This keeps
-the feature simple enough for a greenfield repo while still honoring SOLID boundaries and
-one-class-per-file discoverability.
+into API/Application/Domain/Infrastructure folders and a separate Angular frontend. Create the
+base solution, projects, Angular workspace, and EF migrations with standard CLI commands, then
+add hand-written code only where business behavior or project-specific composition is required.
+This keeps the feature simple enough for a greenfield repo while still honoring SOLID
+boundaries and one-class-per-file discoverability.
 
 ## Complexity Tracking
 
