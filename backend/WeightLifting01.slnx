@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WeightLifting.Api/WeightLifting.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj" />
+    <Project Path="tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj" />
+    <Project Path="tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj" />
+  </Folder>
+</Solution>

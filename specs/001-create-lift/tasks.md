@@ -31,10 +31,10 @@ flow from `Settings -> Lifts` to workout lift selection.
 
 **Purpose**: Create the minimum project scaffolding needed to start building and validating the feature.
 
-- [ ] T001 Create the backend and frontend directory skeleton with command-line setup in `backend/` and `frontend/`
-- [ ] T002 Initialize the .NET 10 backend solution and projects with `dotnet new` and `dotnet sln` in `backend/src/WeightLifting.Api/WeightLifting.Api.csproj`, `backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj`, `backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj`, and `backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj`
-- [ ] T003 Initialize the Angular frontend workspace and app shell with Angular CLI in `frontend/angular.json`, `frontend/package.json`, and `frontend/src/app/app.routes.ts`
-- [ ] T004 [P] Configure baseline formatting and test runner settings in `backend/Directory.Build.props`, `frontend/eslint.config.js`, and `frontend/playwright.config.ts`
+- [X] T001 Create the backend and frontend directory skeleton with command-line setup in `backend/` and `frontend/`
+- [X] T002 Initialize the .NET 10 backend solution and projects with `dotnet new` and `dotnet sln` in `backend/src/WeightLifting.Api/WeightLifting.Api.csproj`, `backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj`, `backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj`, and `backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj`
+- [X] T003 Initialize the Angular frontend workspace and app shell with Angular CLI in `frontend/angular.json`, `frontend/package.json`, and `frontend/src/app/app.routes.ts`
+- [X] T004 [P] Configure baseline formatting and test runner settings in `backend/Directory.Build.props`, `frontend/eslint.config.js`, and `frontend/playwright.config.ts`
 
 ---
 
@@ -44,14 +44,14 @@ flow from `Settings -> Lifts` to workout lift selection.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create the SQL persistence baseline and EF Core database context in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs`
-- [ ] T006 [P] Create the initial lift persistence model in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Lifts/LiftEntity.cs`
-- [ ] T007 Create the initial SQL migration with `dotnet ef migrations add` in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
-- [ ] T008 [P] Add shared API error handling and problem details setup in `backend/src/WeightLifting.Api/Api/ProblemDetails/ProblemDetailsConfiguration.cs`
-- [ ] T009 [P] Add backend dependency registration for API, application, and persistence layers in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
-- [ ] T010 [P] Create the shared frontend lift API client in `frontend/src/app/core/api/lifts-api.service.ts`
-- [ ] T011 Create the shared frontend lift store used by settings and workouts in `frontend/src/app/core/state/lifts-store.service.ts`
-- [ ] T012 [P] Generate the `Settings -> Lifts` route shell with Angular CLI and wire it in `frontend/src/app/features/settings/lifts/lifts.routes.ts`
+- [X] T005 Create the SQL persistence baseline and EF Core database context in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs`
+- [X] T006 [P] Create the initial lift persistence model in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Lifts/LiftEntity.cs`
+- [X] T007 Create the initial SQL migration with `dotnet ef migrations add` in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
+- [X] T008 [P] Add shared API error handling and problem details setup in `backend/src/WeightLifting.Api/Api/ProblemDetails/ProblemDetailsConfiguration.cs`
+- [X] T009 [P] Add backend dependency registration for API, application, and persistence layers in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T010 [P] Create the shared frontend lift API client in `frontend/src/app/core/api/lifts-api.service.ts`
+- [X] T011 Create the shared frontend lift store used by settings and workouts in `frontend/src/app/core/state/lifts-store.service.ts`
+- [X] T012 [P] Generate the `Settings -> Lifts` route shell with Angular CLI and wire it in `frontend/src/app/features/settings/lifts/lifts.routes.ts`
 
 **Checkpoint**: Foundation ready. You should be able to validate app wiring, routing entry points, and persistence scaffolding before feature behavior is added.
 
