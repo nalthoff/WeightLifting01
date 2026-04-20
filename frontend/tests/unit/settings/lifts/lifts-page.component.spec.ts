@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { LiftsPageComponent } from '../../../../src/app/features/settings/lifts/lifts-page.component';
 import { LiftsPageFacade } from '../../../../src/app/features/settings/lifts/lifts-page.facade';
@@ -20,9 +21,22 @@ describe('LiftsPageComponent', () => {
   };
 
   beforeEach(async () => {
+    facade.load.calls.reset();
+    facade.submit.calls.reset();
+    facade.updateLiftName.calls.reset();
+    facade.liftName.set('');
+    facade.errorMessage.set(null);
+    facade.successMessage.set(null);
+    facade.isSaving.set(false);
+    facade.isLoading.set(false);
+    facade.lifts.set([{ id: '1', name: 'Squat', isActive: true }]);
+
     await TestBed.configureTestingModule({
       imports: [LiftsPageComponent],
-      providers: [{ provide: LiftsPageFacade, useValue: facade }],
+      providers: [
+        { provide: LiftsPageFacade, useValue: facade },
+        provideNoopAnimations(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LiftsPageComponent);
@@ -48,5 +62,15 @@ describe('LiftsPageComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Enter a lift name.');
+  });
+
+  it('renders Material-styled sections for the form and list', () => {
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.textContent).toContain('Add a lift');
+    expect(compiled.textContent).toContain('Current lifts');
+    expect(compiled.querySelectorAll('mat-card').length).toBe(3);
   });
 });

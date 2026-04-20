@@ -1,47 +1,78 @@
 <section class="page">
-  <header class="page__header">
-    <h1>Lifts</h1>
-    <p>Manage the lifts that should be available when building workouts.</p>
-  </header>
+  <mat-card class="page__hero" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Lifts</mat-card-title>
+      <mat-card-subtitle>
+        Manage the lifts that should be available when building workouts.
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
 
-  <form
-    class="page__form"
-    (ngSubmit)="facade.submit()"
-  >
-    <label class="page__label" for="liftName">Lift name</label>
-    <input
-      id="liftName"
-      name="liftName"
-      class="page__input"
-      [ngModel]="facade.liftName()"
-      (ngModelChange)="facade.updateLiftName($event)"
-      placeholder="e.g. Front Squat"
-    />
+  <mat-card class="page__panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Add a lift</mat-card-title>
+    </mat-card-header>
 
-    <button
-      type="submit"
-      class="page__button"
-      [disabled]="facade.isSaving()"
-    >
-      {{ facade.isSaving() ? 'Saving...' : 'Add lift' }}
-    </button>
-  </form>
+    <mat-card-content>
+      <form
+        class="page__form"
+        (ngSubmit)="facade.submit()"
+      >
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Lift name</mat-label>
+          <input
+            id="liftName"
+            matInput
+            name="liftName"
+            [ngModel]="facade.liftName()"
+            (ngModelChange)="facade.updateLiftName($event)"
+            placeholder="e.g. Front Squat"
+          />
+        </mat-form-field>
 
-  <p *ngIf="facade.errorMessage()" class="page__message page__message--error">
-    {{ facade.errorMessage() }}
-  </p>
-  <p *ngIf="facade.successMessage()" class="page__message page__message--success">
-    {{ facade.successMessage() }}
-  </p>
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          [disabled]="facade.isSaving()"
+        >
+          {{ facade.isSaving() ? 'Saving...' : 'Add lift' }}
+        </button>
+      </form>
 
-  <section class="page__list">
-    <h2>Current lifts</h2>
+      <div *ngIf="facade.errorMessage()" class="page__message page__message--error">
+        <mat-icon>error</mat-icon>
+        <span>{{ facade.errorMessage() }}</span>
+      </div>
 
-    <p *ngIf="facade.isLoading()">Loading lifts...</p>
-    <p *ngIf="!facade.isLoading() && facade.lifts().length === 0">No lifts added yet.</p>
+      <div *ngIf="facade.successMessage()" class="page__message page__message--success">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ facade.successMessage() }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
 
-    <ul *ngIf="facade.lifts().length > 0">
-      <li *ngFor="let lift of facade.lifts()">{{ lift.name }}</li>
-    </ul>
-  </section>
+  <mat-card class="page__panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Current lifts</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="page__list-content">
+      <div *ngIf="facade.isLoading()" class="page__message page__message--info">
+        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+        <span>Loading lifts...</span>
+      </div>
+
+      <p *ngIf="!facade.isLoading() && facade.lifts().length === 0" class="page__empty-state">
+        No lifts added yet.
+      </p>
+
+      <mat-list *ngIf="facade.lifts().length > 0">
+        <ng-container *ngFor="let lift of facade.lifts(); let isLast = last">
+          <mat-list-item>{{ lift.name }}</mat-list-item>
+          <mat-divider *ngIf="!isLast"></mat-divider>
+        </ng-container>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
 </section>

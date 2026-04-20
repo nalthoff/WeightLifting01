@@ -1,1 +1,38 @@
-/* You can add global styles to this file, and also import other style files */
+@use './styles/theme/material-theme' as materialTheme;
+
+html {
+  min-height: 100%;
+  background: #141318;
+}
+
+html.theme-dark {
+  // Future themes can target the html element with a different class without
+  // rewriting component-level styles.
+  @include materialTheme.cyclones-dark-theme();
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--app-surface-base);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

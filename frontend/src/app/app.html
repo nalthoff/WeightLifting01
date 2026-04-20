@@ -1,7 +1,24 @@
 <main class="app-shell">
-  <nav class="app-shell__nav">
-    <a routerLink="/settings/lifts">Settings / Lifts</a>
-  </nav>
+  <header class="app-shell__header">
+    <mat-toolbar class="app-shell__toolbar">
+      <span class="app-shell__brand">
+        <mat-icon>fitness_center</mat-icon>
+        <span>WeightLifting01</span>
+      </span>
 
-  <router-outlet></router-outlet>
+      <span class="app-shell__spacer"></span>
+
+      <a
+        mat-button
+        routerLink="/settings/lifts"
+        routerLinkActive="app-shell__nav-link--active"
+      >
+        Settings / Lifts
+      </a>
+    </mat-toolbar>
+  </header>
+
+  <section class="app-shell__content">
+    <router-outlet></router-outlet>
+  </section>
 </main>

@@ -2,11 +2,13 @@
 
 `WeightLifting01` is a mobile-first web app for quickly logging strength workouts in the gym.
 The current implementation includes the first feature slice for managing lifts from
-`Settings -> Lifts`.
+`Settings -> Lifts`, styled with an Angular Material dark theme that uses Iowa State-inspired
+cardinal and gold accents.
 
 ## Tech Stack
 
 - Frontend: Angular 20
+- UI Styling: Angular Material 20 with a custom dark theme
 - Backend: ASP.NET Core Web API on .NET 10
 - Database: SQL Server / LocalDB via Entity Framework Core
 - Tests: xUnit, Angular/Karma, Playwright
@@ -19,6 +21,7 @@ The repository is in early development. Right now the app supports:
 - creating a lift with a required name
 - rejecting blank or whitespace-only lift names
 - showing the new lift in the lift list after a successful save
+- using a shared Angular Material dark theme across the app shell and `Settings -> Lifts`
 
 ## Repository Layout
 
@@ -90,6 +93,9 @@ The Angular dev server runs on `http://localhost:4200`.
 During local development, frontend requests to `/api/*` are proxied to the backend at
 `http://localhost:5264` via `frontend/proxy.conf.json`.
 
+The default visible theme is dark mode. The frontend theme structure is set up so a light theme
+can be added later without replacing the current styling approach.
+
 ## Manual Verification
 
 After both apps are running:
@@ -99,6 +105,7 @@ After both apps are running:
 3. Try submitting an empty value and confirm the page shows a validation message.
 4. Create a lift such as `Front Squat`.
 5. Confirm the success message appears and the lift is shown in the list.
+6. Confirm the app shell and lifts page share the same dark Material-styled visual system.
 
 There is also a story-specific manual test guide at
 `specs/001-create-lift/manual-tests/us1-create-lift.md`.
@@ -152,5 +159,6 @@ For end-to-end runs, make sure the frontend and backend are already running loca
 ## Notes
 
 - The project follows a mobile-first design approach.
+- The frontend uses a custom Angular Material dark theme with Iowa State-inspired brand colors.
 - Business logic is intended to live in the backend and be covered by automated tests.
 - Production code is organized with one class per file for easier discovery and maintenance.

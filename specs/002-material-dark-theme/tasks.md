@@ -27,9 +27,9 @@ presentation-only.
 
 **Purpose**: Add the Material dependency and baseline files needed before styling work starts.
 
-- [ ] T001 Add Angular Material to the frontend workspace with Angular CLI in `frontend/package.json` and `frontend/angular.json`
-- [ ] T002 [P] Create the shared Material theme file structure in `frontend/src/styles.scss` and `frontend/src/styles/theme/_material-theme.scss`
-- [ ] T003 [P] Add or update frontend font/icon and global style prerequisites in `frontend/src/index.html`
+- [X] T001 Add Angular Material to the frontend workspace with Angular CLI in `frontend/package.json` and `frontend/angular.json`
+- [X] T002 [P] Create the shared Material theme file structure in `frontend/src/styles.scss` and `frontend/src/styles/theme/_material-theme.scss`
+- [X] T003 [P] Add or update frontend font/icon and global style prerequisites in `frontend/src/index.html`
 
 ---
 
@@ -39,10 +39,10 @@ presentation-only.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create the centralized dark theme profile with Iowa State-inspired brand tokens in `frontend/src/styles/theme/_material-theme.scss`
-- [ ] T005 [P] Create shared surface, spacing, and feedback-state helpers in `frontend/src/styles/theme/_surface-patterns.scss`
-- [ ] T006 Wire the global dark theme and future light-theme-ready selector structure in `frontend/src/styles.scss`
-- [ ] T007 [P] Update the app-level shell structure to support Material layout components in `frontend/src/app/app.ts` and `frontend/src/app/app.html`
+- [X] T004 Create the centralized dark theme profile with Iowa State-inspired brand tokens in `frontend/src/styles/theme/_material-theme.scss`
+- [X] T005 [P] Create shared surface, spacing, and feedback-state helpers in `frontend/src/styles/theme/_surface-patterns.scss`
+- [X] T006 Wire the global dark theme and future light-theme-ready selector structure in `frontend/src/styles.scss`
+- [X] T007 [P] Update the app-level shell structure to support Material layout components in `frontend/src/app/app.ts` and `frontend/src/app/app.html`
 
 **Checkpoint**: Shared Material theming foundation is ready for feature surfaces.
 
@@ -59,18 +59,18 @@ Material presentation without breaking the create-lift workflow.
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Update the app shell unit test expectations for the Material-styled navigation in `frontend/src/app/app.spec.ts`
-- [ ] T009 [P] [US1] Update the lifts page unit tests for Material-based structure and feedback-state rendering in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
-- [ ] T010 [P] [US1] Update the end-to-end coverage for the themed create-lift flow in `frontend/tests/e2e/settings-lifts/create-lift.spec.ts`
+- [X] T008 [P] [US1] Update the app shell unit test expectations for the Material-styled navigation in `frontend/src/app/app.spec.ts`
+- [X] T009 [P] [US1] Update the lifts page unit tests for Material-based structure and feedback-state rendering in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
+- [X] T010 [P] [US1] Update the end-to-end coverage for the themed create-lift flow in `frontend/tests/e2e/settings-lifts/create-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Replace the app shell markup with Material navigation structure in `frontend/src/app/app.html`
-- [ ] T012 [P] [US1] Replace the `Settings -> Lifts` page markup with Material form, button, card, and list structure in `frontend/src/app/features/settings/lifts/lifts-page.component.html`
-- [ ] T013 [US1] Add the Angular Material imports needed by the app shell and lifts page in `frontend/src/app/app.ts` and `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
-- [ ] T014 [US1] Apply mobile-first shell styling that consumes the shared theme in `frontend/src/app/app.scss`
-- [ ] T015 [US1] Apply mobile-first page styling for headings, form layout, list layout, and feedback states in `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
-- [ ] T016 [US1] Refine feedback-state presentation so loading, validation, success, and failure remain clear in the dark theme within `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T011 [P] [US1] Replace the app shell markup with Material navigation structure in `frontend/src/app/app.html`
+- [X] T012 [P] [US1] Replace the `Settings -> Lifts` page markup with Material form, button, card, and list structure in `frontend/src/app/features/settings/lifts/lifts-page.component.html`
+- [X] T013 [US1] Add the Angular Material imports needed by the app shell and lifts page in `frontend/src/app/app.ts` and `frontend/src/app/features/settings/lifts/lifts-page.component.ts`
+- [X] T014 [US1] Apply mobile-first shell styling that consumes the shared theme in `frontend/src/app/app.scss`
+- [X] T015 [US1] Apply mobile-first page styling for headings, form layout, list layout, and feedback states in `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T016 [US1] Refine feedback-state presentation so loading, validation, success, and failure remain clear in the dark theme within `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
 
 **Checkpoint**: The current visible app surfaces use a consistent dark Material theme and the create-lift flow remains independently testable.
 
@@ -87,11 +87,11 @@ of relying on one-off page styling.
 
 ### Implementation for User Story 2
 
-- [ ] T017 [P] [US2] Extract Iowa State-inspired brand color, typography, and density decisions into reusable theme tokens in `frontend/src/styles/theme/_material-theme.scss`
-- [ ] T018 [P] [US2] Extract shared container, card, control, and message patterns for reuse in `frontend/src/styles/theme/_surface-patterns.scss`
-- [ ] T019 [US2] Refactor shell and lifts page styles to consume shared theme helpers instead of duplicating values in `frontend/src/app/app.scss` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
-- [ ] T020 [US2] Add future light-theme-ready theme selectors and documentation comments in `frontend/src/styles.scss` and `frontend/src/styles/theme/_material-theme.scss`
-- [ ] T021 [US2] Update the feature quickstart to reflect the final shared theming validation steps in `specs/002-material-dark-theme/quickstart.md`
+- [X] T017 [P] [US2] Extract Iowa State-inspired brand color, typography, and density decisions into reusable theme tokens in `frontend/src/styles/theme/_material-theme.scss`
+- [X] T018 [P] [US2] Extract shared container, card, control, and message patterns for reuse in `frontend/src/styles/theme/_surface-patterns.scss`
+- [X] T019 [US2] Refactor shell and lifts page styles to consume shared theme helpers instead of duplicating values in `frontend/src/app/app.scss` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T020 [US2] Add future light-theme-ready theme selectors and documentation comments in `frontend/src/styles.scss` and `frontend/src/styles/theme/_material-theme.scss`
+- [X] T021 [US2] Update the feature quickstart to reflect the final shared theming validation steps in `specs/002-material-dark-theme/quickstart.md`
 
 **Checkpoint**: Shared theme foundations are reusable for future screens and the current UI no longer depends on one-off styling decisions.
 
@@ -101,10 +101,10 @@ of relying on one-off page styling.
 
 **Purpose**: Final validation and cleanup across both stories.
 
-- [ ] T022 [P] Run the frontend production build and Angular unit tests from `frontend/`
-- [ ] T023 [P] Run Playwright coverage for the themed `Settings -> Lifts` flow from `frontend/tests/e2e/`
+- [X] T022 [P] Run the frontend production build and Angular unit tests from `frontend/`
+- [X] T023 [P] Run Playwright coverage for the themed `Settings -> Lifts` flow from `frontend/tests/e2e/`
 - [ ] T024 Validate the quickstart flow manually on a mobile viewport using `specs/002-material-dark-theme/quickstart.md`
-- [ ] T025 [P] Update the root project documentation for the new Material dark theme setup in `README.md`
+- [X] T025 [P] Update the root project documentation for the new Material dark theme setup in `README.md`
 
 ---
 

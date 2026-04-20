@@ -1,0 +1,56 @@
+@use '@angular/material' as mat;
+
+$cyclones-cardinal: #c8102e;
+$cyclones-gold: #f1be48;
+$surface-base: #141318;
+$surface-panel: #1f1b22;
+$surface-panel-high: #2a252d;
+$surface-outline: #4a434b;
+$text-strong: #f6f1ec;
+$text-muted: #d7cdd2;
+$success: #8fd6a4;
+$success-bg: #183623;
+$error: #ffb4ab;
+$error-bg: #4c2b28;
+$info-bg: #222632;
+
+@mixin cyclones-dark-theme() {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$red-palette,
+      tertiary: mat.$yellow-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  --app-cardinal: #{$cyclones-cardinal};
+  --app-gold: #{$cyclones-gold};
+  --app-surface-base: #{$surface-base};
+  --app-surface-panel: #{$surface-panel};
+  --app-surface-panel-high: #{$surface-panel-high};
+  --app-surface-outline: #{$surface-outline};
+  --app-text-strong: #{$text-strong};
+  --app-text-muted: #{$text-muted};
+  --app-success: #{$success};
+  --app-success-bg: #{$success-bg};
+  --app-error: #{$error};
+  --app-error-bg: #{$error-bg};
+  --app-info-bg: #{$info-bg};
+
+  --mat-sys-primary: #{$cyclones-cardinal};
+  --mat-sys-on-primary: #fff8f8;
+  --mat-sys-secondary: #{$cyclones-gold};
+  --mat-sys-on-secondary: #2d2410;
+  --mat-sys-tertiary: #{$cyclones-gold};
+  --mat-sys-on-tertiary: #2d2410;
+  --mat-sys-surface: #{$surface-base};
+  --mat-sys-on-surface: #{$text-strong};
+  --mat-sys-surface-container: #{$surface-panel};
+  --mat-sys-surface-container-high: #{$surface-panel-high};
+  --mat-sys-outline: #{$surface-outline};
+  --mat-sys-error: #{$error};
+}

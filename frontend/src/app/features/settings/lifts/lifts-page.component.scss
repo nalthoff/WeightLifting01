@@ -1,49 +1,67 @@
+@use '../../../../styles/theme/surface-patterns' as surface;
+
 .page {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
+  @include surface.section-stack(1rem);
 }
 
-.page__header h1,
-.page__list h2 {
-  margin: 0 0 0.5rem;
+.page__hero,
+.page__panel {
+  @include surface.elevated-panel;
+}
+
+.page__hero mat-card-title,
+.page__panel mat-card-title {
+  @include surface.card-heading;
+}
+
+.page__hero mat-card-subtitle {
+  @include surface.supporting-copy;
 }
 
 .page__form {
-  display: grid;
-  gap: 0.75rem;
+  @include surface.section-stack(1rem);
+  padding-top: 0.5rem;
 }
 
-.page__label {
-  font-weight: 600;
+.page__form mat-form-field {
+  width: 100%;
 }
 
-.page__input,
-.page__button {
-  min-height: 2.75rem;
-  padding: 0.75rem;
-  font: inherit;
-}
-
-.page__button {
-  border: 0;
-  border-radius: 0.5rem;
-  background: #1f4acc;
-  color: #fff;
-}
-
-.page__button:disabled {
-  opacity: 0.7;
+.page__form button[mat-flat-button] {
+  min-height: 3rem;
+  font-weight: 700;
 }
 
 .page__message {
-  margin: 0;
+  margin-top: 1rem;
 }
 
 .page__message--error {
-  color: #b00020;
+  @include surface.feedback-state(error);
 }
 
 .page__message--success {
-  color: #0b6b2f;
+  @include surface.feedback-state(success);
+}
+
+.page__message--info {
+  @include surface.feedback-state(info);
+}
+
+.page__message mat-icon,
+.page__message mat-progress-spinner {
+  flex-shrink: 0;
+}
+
+.page__list-content {
+  padding-top: 0.5rem;
+}
+
+.page__empty-state {
+  @include surface.supporting-copy;
+  padding: 0.5rem 0;
+}
+
+.page mat-list-item {
+  color: var(--app-text-strong);
 }

@@ -1,0 +1,47 @@
+@mixin page-shell {
+  width: min(100%, 44rem);
+  margin-inline: auto;
+  padding: 1rem;
+}
+
+@mixin elevated-panel {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 1rem;
+  background: var(--app-surface-panel);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+}
+
+@mixin section-stack($gap: 1rem) {
+  display: grid;
+  gap: $gap;
+}
+
+@mixin feedback-state($tone) {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--app-surface-outline);
+
+  @if $tone == error {
+    background: var(--app-error-bg);
+    color: var(--app-error);
+  } @else if $tone == success {
+    background: var(--app-success-bg);
+    color: var(--app-success);
+  } @else {
+    background: var(--app-info-bg);
+    color: var(--app-text-strong);
+  }
+}
+
+@mixin card-heading {
+  margin: 0;
+  color: var(--app-text-strong);
+}
+
+@mixin supporting-copy {
+  margin: 0;
+  color: var(--app-text-muted);
+}

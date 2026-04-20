@@ -1,10 +1,56 @@
+@use '../styles/theme/surface-patterns' as surface;
+
 .app-shell {
   min-height: 100vh;
-  padding: 1rem;
+  background:
+    radial-gradient(circle at top, rgba(200, 16, 46, 0.12), transparent 32%),
+    var(--app-surface-base);
 }
 
-.app-shell__nav {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0.75rem 0.75rem 0;
+  backdrop-filter: blur(18px);
+}
+
+.app-shell__toolbar {
+  @include surface.elevated-panel;
+  min-height: 4rem;
+  padding-inline: 0.5rem;
+  color: var(--app-text-strong);
+  background: rgba(31, 27, 34, 0.92);
+}
+
+.app-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.app-shell__brand mat-icon {
+  color: var(--app-gold);
+}
+
+.app-shell__spacer {
+  flex: 1;
+}
+
+.app-shell__toolbar a[mat-button] {
+  color: var(--app-text-strong);
+  border-radius: 999px;
+}
+
+.app-shell__nav-link--active {
+  background: rgba(241, 190, 72, 0.14);
+  color: var(--app-gold);
+}
+
+.app-shell__content {
+  @include surface.page-shell;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 }
