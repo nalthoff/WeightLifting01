@@ -100,8 +100,8 @@
 
 **Purpose**: Final verification and cleanup after the rename feature works end-to-end.
 
-- [ ] T024 Run the backend unit, integration, contract, frontend unit, and e2e suites from `backend/tests/` and `frontend/tests/`
-- [ ] T025 Validate the rename quickstart manually on a mobile viewport using `specs/003-rename-lift/quickstart.md`
+- [X] T024 Run the backend unit, integration, contract, frontend unit, and e2e suites from `backend/tests/` and `frontend/tests/`
+- [X] T025 Validate the rename quickstart manually on a mobile viewport using `specs/003-rename-lift/quickstart.md`
 
 ---
 
