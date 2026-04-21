@@ -81,16 +81,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Add backend unit tests for normalized duplicate-name conflict detection in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/RenameLiftCommandHandlerTests.cs`
-- [ ] T018 [P] [US2] Add integration and contract coverage for conflicting rename targets and canonical list reads in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/RenameLiftIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
-- [ ] T019 [P] [US2] Add frontend unit tests for shared-store rename reconciliation in `frontend/tests/unit/core/state/lifts-store.service.spec.ts` and `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
+- [X] T017 [P] [US2] Add backend unit tests for normalized duplicate-name conflict detection in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/RenameLiftCommandHandlerTests.cs`
+- [X] T018 [P] [US2] Add integration and contract coverage for conflicting rename targets and canonical list reads in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/RenameLiftIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
+- [X] T019 [P] [US2] Add frontend unit tests for shared-store rename reconciliation in `frontend/tests/unit/core/state/lifts-store.service.spec.ts` and `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Add normalized duplicate-name checks against persisted lifts in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommandHandler.cs`
-- [ ] T021 [US2] Update rename conflict and missing-lift HTTP mappings in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
-- [ ] T022 [US2] Update canonical shared-list reconciliation for renamed lifts in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
-- [ ] T023 [US2] Surface duplicate-name conflicts while preserving the previously saved lift name in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T020 [US2] Add normalized duplicate-name checks against persisted lifts in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommandHandler.cs`
+- [X] T021 [US2] Update rename conflict and missing-lift HTTP mappings in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
+- [X] T022 [US2] Update canonical shared-list reconciliation for renamed lifts in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T023 [US2] Surface duplicate-name conflicts while preserving the previously saved lift name in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
 
 **Checkpoint**: At this point, User Stories 1 and 2 should both work independently, with duplicate-name conflicts and later list reads covered.
 

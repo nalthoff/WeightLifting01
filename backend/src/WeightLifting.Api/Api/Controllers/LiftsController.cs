@@ -62,6 +62,7 @@ public sealed class LiftsController(
 
     [HttpPut("{liftId:guid}")]
     [ProducesResponseType(typeof(RenameLiftResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<RenameLiftResponse>> RenameLift(
@@ -85,6 +86,10 @@ public sealed class LiftsController(
         catch (ArgumentException)
         {
             return UnprocessableEntity(CreateNameValidationResponse());
+        }
+        catch (DuplicateLiftNameException)
+        {
+            return Conflict(CreateNameConflictResponse());
         }
         catch (KeyNotFoundException)
         {
@@ -118,6 +123,16 @@ public sealed class LiftsController(
         errors = new Dictionary<string, string[]>
         {
             ["name"] = ["Lift name is required."],
+        },
+    };
+
+    private static object CreateNameConflictResponse() => new
+    {
+        title = "Validation failed",
+        status = StatusCodes.Status409Conflict,
+        errors = new Dictionary<string, string[]>
+        {
+            ["name"] = ["Lift name already exists."],
         },
     };
 }

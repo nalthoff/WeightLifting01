@@ -128,6 +128,45 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         Assert.Contains("Lift name is required.", payload.Errors["name"]);
     }
 
+    [Fact]
+    public async Task PutLiftWithDuplicateNameReturnsConflictPayloadAndLeavesListCanonical()
+    {
+        var client = factory.CreateClient();
+
+        var firstCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = "Front Squat",
+        });
+        var secondCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = "Overhead Press",
+        });
+
+        var firstLift = await firstCreateResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+        var secondLift = await secondCreateResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(firstLift);
+        Assert.NotNull(secondLift);
+
+        var response = await client.PutAsJsonAsync($"/api/lifts/{firstLift.Lift.Id}", new
+        {
+            name = "  OVERHEAD PRESS  ",
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Contains("Lift name already exists.", payload.Errors["name"]);
+
+        var listResponse = await client.GetAsync("/api/lifts");
+        var listPayload = await listResponse.Content.ReadFromJsonAsync<LiftListResponse>(JsonOptions);
+
+        Assert.NotNull(listPayload);
+        Assert.Contains(listPayload.Items, item => item.Id == firstLift.Lift.Id && item.Name == "Front Squat");
+        Assert.Contains(listPayload.Items, item => item.Id == secondLift.Lift.Id && item.Name == "Overhead Press");
+    }
+
     public sealed class CreateLiftResponse
     {
         public required LiftResponse Lift { get; init; }

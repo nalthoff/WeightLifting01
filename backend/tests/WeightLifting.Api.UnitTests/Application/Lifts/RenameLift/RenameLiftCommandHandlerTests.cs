@@ -44,6 +44,26 @@ public sealed class RenameLiftCommandHandlerTests
         Assert.Equal("Front Squat", persistedLift.Name);
     }
 
+    [Fact]
+    public async Task HandleAsyncThrowsWhenAnotherLiftAlreadyUsesNormalizedName()
+    {
+        await using var dbContext = CreateDbContext();
+        var liftId = await SeedLiftAsync(dbContext, "Front Squat");
+        await SeedLiftAsync(dbContext, "Overhead Press");
+        var handler = new RenameLiftCommandHandler(dbContext);
+
+        var action = () => handler.HandleAsync(new RenameLiftCommand
+        {
+            LiftId = liftId,
+            Name = "  OVERHEAD PRESS  ",
+        }, CancellationToken.None);
+
+        await Assert.ThrowsAsync<DuplicateLiftNameException>(action);
+
+        var persistedLift = await dbContext.Lifts.SingleAsync(lift => lift.Id == liftId);
+        Assert.Equal("Front Squat", persistedLift.Name);
+    }
+
     private static WeightLiftingDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<WeightLiftingDbContext>()

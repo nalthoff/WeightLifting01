@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
@@ -152,7 +153,20 @@ export class LiftsPageFacade {
             next: (refreshResponse) => this.liftsStoreService.setResponse(refreshResponse),
           });
         },
-        error: () => {
+        error: (error: HttpErrorResponse) => {
+          this.editingLiftName.set(editingLift.name);
+          this.editingLiftId.set(null);
+
+          if (error.status === 409) {
+            this.errorMessage.set('Lift name already exists.');
+            return;
+          }
+
+          if (error.status === 404) {
+            this.errorMessage.set('Lift no longer exists. Refresh and try again.');
+            return;
+          }
+
           this.errorMessage.set('Lift was not renamed. Try again.');
         },
       });

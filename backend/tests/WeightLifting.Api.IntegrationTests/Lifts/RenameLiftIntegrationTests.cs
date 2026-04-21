@@ -2,6 +2,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Lifts.Commands.CreateLift;
 using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
+using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Infrastructure.Persistence;
 
 namespace WeightLifting.Api.IntegrationTests.Lifts;
@@ -56,6 +57,35 @@ public sealed class RenameLiftIntegrationTests : IAsyncLifetime
         var persistedLift = await dbContext.Lifts.SingleAsync();
 
         Assert.Equal("Front Squat", persistedLift.Name);
+    }
+
+    [Fact]
+    public async Task RenameLiftWithDuplicateTargetNameThrowsAndPreservesCanonicalListRead()
+    {
+        var createHandler = new CreateLiftCommandHandler(dbContext);
+        var renameHandler = new RenameLiftCommandHandler(dbContext);
+        var listHandler = new GetLiftsQueryHandler(dbContext);
+
+        var frontSquat = await createHandler.HandleAsync(new CreateLiftCommand
+        {
+            Name = "Front Squat",
+        }, CancellationToken.None);
+
+        await createHandler.HandleAsync(new CreateLiftCommand
+        {
+            Name = "Overhead Press",
+        }, CancellationToken.None);
+
+        await Assert.ThrowsAsync<DuplicateLiftNameException>(() => renameHandler.HandleAsync(new RenameLiftCommand
+        {
+            LiftId = frontSquat.Id,
+            Name = "  overhead press ",
+        }, CancellationToken.None));
+
+        var lifts = await listHandler.HandleAsync(new GetLiftsQuery(), CancellationToken.None);
+
+        Assert.Contains(lifts, lift => lift.Name == "Front Squat");
+        Assert.Contains(lifts, lift => lift.Name == "Overhead Press");
     }
 
     public async Task InitializeAsync()

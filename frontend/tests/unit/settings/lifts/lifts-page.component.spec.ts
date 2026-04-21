@@ -76,6 +76,13 @@ describe('LiftsPageComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Enter a lift name.');
   });
 
+  it('renders duplicate-name conflict message from the facade', () => {
+    facade.errorMessage.set('Lift name already exists.');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Lift name already exists.');
+  });
+
   it('starts rename through the facade', () => {
     fixture.detectChanges();
 

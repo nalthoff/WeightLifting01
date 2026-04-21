@@ -8,6 +8,9 @@ public sealed class RenameLiftCommandHandler(WeightLiftingDbContext dbContext)
 {
     public async Task<Lift> HandleAsync(RenameLiftCommand command, CancellationToken cancellationToken)
     {
+        var normalizedRequestedName = Lift.NormalizeName(command.Name);
+        var normalizedRequestedNameLower = normalizedRequestedName.ToLowerInvariant();
+
         var liftEntity = await dbContext.Lifts
             .SingleOrDefaultAsync(lift => lift.Id == command.LiftId, cancellationToken);
 
@@ -29,10 +32,20 @@ public sealed class RenameLiftCommandHandler(WeightLiftingDbContext dbContext)
             return currentLift;
         }
 
-        liftEntity.Name = renamedLift.Name;
+        var hasDuplicateName = await dbContext.Lifts.AnyAsync(lift =>
+            lift.Id != command.LiftId
+            && lift.Name.Trim().ToLower() == normalizedRequestedNameLower,
+            cancellationToken);
+
+        if (hasDuplicateName)
+        {
+            throw new DuplicateLiftNameException(normalizedRequestedName);
+        }
+
+        liftEntity.Name = normalizedRequestedName;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return renamedLift;
+        return new Lift(liftEntity.Id, liftEntity.Name, liftEntity.IsActive, liftEntity.CreatedAtUtc);
     }
 }
