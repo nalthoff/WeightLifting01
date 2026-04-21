@@ -30,4 +30,18 @@ export class LiftsStoreService {
     this.items.set(nextItems);
     this.isLoaded.set(true);
   }
+
+  replace(item: LiftListItem): void {
+    const nextItems = [...this.items()];
+    const existingIndex = nextItems.findIndex((existingItem) => existingItem.id === item.id);
+
+    if (existingIndex < 0) {
+      return;
+    }
+
+    nextItems[existingIndex] = item;
+    nextItems.sort((left, right) => left.name.localeCompare(right.name));
+    this.items.set(nextItems);
+    this.isLoaded.set(true);
+  }
 }

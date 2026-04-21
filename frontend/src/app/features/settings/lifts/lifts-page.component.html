@@ -67,9 +67,72 @@
         No lifts added yet.
       </p>
 
-      <mat-list *ngIf="facade.lifts().length > 0">
+      <mat-list *ngIf="facade.lifts().length > 0" class="page__list">
         <ng-container *ngFor="let lift of facade.lifts(); let isLast = last">
-          <mat-list-item>{{ lift.name }}</mat-list-item>
+          <mat-list-item class="page__list-item">
+            <div class="page__list-row">
+              <ng-container *ngIf="facade.editingLiftId() !== lift.id; else renameRow">
+                <span class="page__lift-name">{{ lift.name }}</span>
+
+                <button
+                  type="button"
+                  mat-icon-button
+                  color="primary"
+                  [attr.aria-label]="'Edit ' + lift.name"
+                  [attr.data-testid]="'edit-lift-' + lift.id"
+                  (click)="facade.startRename(lift)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </ng-container>
+
+              <ng-template #renameRow>
+                <form
+                  class="page__inline-edit-form"
+                  [attr.data-testid]="'rename-form-' + lift.id"
+                  (ngSubmit)="facade.submitRename()"
+                >
+                  <mat-form-field
+                    class="page__rename-field"
+                    appearance="outline"
+                    subscriptSizing="dynamic"
+                  >
+                    <input
+                      matInput
+                      name="renameLiftName"
+                      [id]="'renameLiftName-' + lift.id"
+                      aria-label="Lift name"
+                      [ngModel]="facade.editingLiftName()"
+                      (ngModelChange)="facade.updateEditingLiftName($event)"
+                    />
+                  </mat-form-field>
+
+                  <div class="page__icon-actions">
+                    <button
+                      type="submit"
+                      mat-icon-button
+                      color="primary"
+                      aria-label="Save"
+                      [disabled]="facade.isSaving()"
+                    >
+                      <mat-icon>save</mat-icon>
+                    </button>
+
+                    <button
+                      type="button"
+                      mat-icon-button
+                      aria-label="Cancel"
+                      [disabled]="facade.isSaving()"
+                      (click)="facade.cancelRename()"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </form>
+              </ng-template>
+            </div>
+          </mat-list-item>
+
           <mat-divider *ngIf="!isLast"></mat-divider>
         </ng-container>
       </mat-list>

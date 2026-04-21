@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WeightLifting.Api.Api.Contracts.Lifts;
 using WeightLifting.Api.Application.Lifts.Commands.CreateLift;
+using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
 using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Domain.Lifts;
 
@@ -10,6 +11,7 @@ namespace WeightLifting.Api.Api.Controllers;
 [Route("api/lifts")]
 public sealed class LiftsController(
     CreateLiftCommandHandler createLiftCommandHandler,
+    RenameLiftCommandHandler renameLiftCommandHandler,
     GetLiftsQueryHandler getLiftsQueryHandler) : ControllerBase
 {
     [HttpGet]
@@ -54,14 +56,42 @@ public sealed class LiftsController(
         }
         catch (ArgumentException)
         {
-            return UnprocessableEntity(new
+            return UnprocessableEntity(CreateNameValidationResponse());
+        }
+    }
+
+    [HttpPut("{liftId:guid}")]
+    [ProducesResponseType(typeof(RenameLiftResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<RenameLiftResponse>> RenameLift(
+        Guid liftId,
+        [FromBody] RenameLiftRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var lift = await renameLiftCommandHandler.HandleAsync(new RenameLiftCommand
             {
-                title = "Validation failed",
-                status = StatusCodes.Status422UnprocessableEntity,
-                errors = new Dictionary<string, string[]>
-                {
-                    ["name"] = ["Lift name is required."],
-                },
+                LiftId = liftId,
+                Name = request.Name,
+            }, cancellationToken);
+
+            return Ok(new RenameLiftResponse
+            {
+                Lift = ToLiftResponse(lift),
+            });
+        }
+        catch (ArgumentException)
+        {
+            return UnprocessableEntity(CreateNameValidationResponse());
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new
+            {
+                title = "Lift not found",
+                status = StatusCodes.Status404NotFound,
             });
         }
     }
@@ -79,5 +109,15 @@ public sealed class LiftsController(
         Id = lift.Id,
         Name = lift.Name,
         IsActive = lift.IsActive,
+    };
+
+    private static object CreateNameValidationResponse() => new
+    {
+        title = "Validation failed",
+        status = StatusCodes.Status422UnprocessableEntity,
+        errors = new Dictionary<string, string[]>
+        {
+            ["name"] = ["Lift name is required."],
+        },
     };
 }

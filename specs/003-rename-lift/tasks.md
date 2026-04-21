@@ -25,8 +25,8 @@
 
 **Purpose**: Create the minimum feature scaffolding needed to start implementing and validating lift rename behavior.
 
-- [ ] T001 Create the rename command and test directory scaffolding in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/`, `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/`, and `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/`
-- [ ] T002 [P] Add the frontend rename test scaffolding in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts` and `frontend/tests/e2e/settings-lifts/rename-lift.spec.ts`
+- [X] T001 Create the rename command and test directory scaffolding in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/`, `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/`, and `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/`
+- [X] T002 [P] Add the frontend rename test scaffolding in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts` and `frontend/tests/e2e/settings-lifts/rename-lift.spec.ts`
 
 ---
 
@@ -36,10 +36,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create the backend rename request and response contracts in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/RenameLiftRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Lifts/RenameLiftResponse.cs`
-- [ ] T004 [P] Extend the shared frontend lifts API client with rename request/response types and a `renameLift` method in `frontend/src/app/core/api/lifts-api.service.ts`
-- [ ] T005 [P] Add a shared confirmed-rename replacement helper to `frontend/src/app/core/state/lifts-store.service.ts`
-- [ ] T006 Create the rename command model in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommand.cs`
+- [X] T003 Create the backend rename request and response contracts in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/RenameLiftRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Lifts/RenameLiftResponse.cs`
+- [X] T004 [P] Extend the shared frontend lifts API client with rename request/response types and a `renameLift` method in `frontend/src/app/core/api/lifts-api.service.ts`
+- [X] T005 [P] Add a shared confirmed-rename replacement helper to `frontend/src/app/core/state/lifts-store.service.ts`
+- [X] T006 Create the rename command model in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommand.cs`
 
 **Checkpoint**: Foundation ready. The repo has the rename contract surface, shared API client support, and store primitives needed for story implementation.
 
@@ -55,19 +55,19 @@
 
 > **NOTE: Write required tests before implementation. Business-layer unit tests are mandatory and should fail before the corresponding implementation is completed.**
 
-- [ ] T007 [P] [US1] Add backend unit tests for required-name trimming and unchanged-name handling in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/RenameLiftCommandHandlerTests.cs`
-- [ ] T008 [P] [US1] Add backend integration tests for successful rename persistence and failed-save behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/RenameLiftIntegrationTests.cs`
-- [ ] T009 [P] [US1] Add contract tests for `PUT /api/lifts/{liftId}` basic rename responses in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
-- [ ] T010 [P] [US1] Add Angular unit tests for entering edit mode and rename save feedback in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
-- [ ] T011 [P] [US1] Add a mobile e2e test for rename success and failed-save messaging in `frontend/tests/e2e/settings-lifts/rename-lift.spec.ts`
+- [X] T007 [P] [US1] Add backend unit tests for required-name trimming and unchanged-name handling in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/RenameLift/RenameLiftCommandHandlerTests.cs`
+- [X] T008 [P] [US1] Add backend integration tests for successful rename persistence and failed-save behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/RenameLiftIntegrationTests.cs`
+- [X] T009 [P] [US1] Add contract tests for `PUT /api/lifts/{liftId}` basic rename responses in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
+- [X] T010 [P] [US1] Add Angular unit tests for entering edit mode and rename save feedback in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
+- [X] T011 [P] [US1] Add a mobile e2e test for rename success and failed-save messaging in `frontend/tests/e2e/settings-lifts/rename-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Update lift rename behavior in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
-- [ ] T013 [US1] Implement the rename command handler in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommandHandler.cs`
-- [ ] T014 [US1] Implement the rename endpoint in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
-- [ ] T015 [US1] Extend rename edit-state, submit, cancel, and save-state handling in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
-- [ ] T016 [P] [US1] Update the settings-lifts page markup and styling for rename entry/edit states in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T012 [P] [US1] Update lift rename behavior in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
+- [X] T013 [US1] Implement the rename command handler in `backend/src/WeightLifting.Api/Application/Lifts/Commands/RenameLift/RenameLiftCommandHandler.cs`
+- [X] T014 [US1] Implement the rename endpoint in `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
+- [X] T015 [US1] Extend rename edit-state, submit, cancel, and save-state handling in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T016 [P] [US1] Update the settings-lifts page markup and styling for rename entry/edit states in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
 

@@ -62,6 +62,49 @@
   padding: 0.5rem 0;
 }
 
-.page mat-list-item {
+.page__list {
+  padding-top: 0;
+}
+
+.page__list-item {
+  min-height: 3.5rem;
+  height: auto;
+}
+
+.page__list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0;
   color: var(--app-text-strong);
+}
+
+.page__lift-name {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.page__inline-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.page__rename-field {
+  flex: 1;
+}
+
+.page__icon-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.page__icon-actions button {
+  width: 2.5rem;
+  height: 2.5rem;
 }

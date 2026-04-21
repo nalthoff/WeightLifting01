@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Lifts.Commands.CreateLift;
+using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
 using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Api.ProblemDetails;
 using WeightLifting.Api.Infrastructure.Persistence;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<CreateLiftCommandHandler>();
+        services.AddScoped<RenameLiftCommandHandler>();
         services.AddScoped<GetLiftsQueryHandler>();
 
         return services;

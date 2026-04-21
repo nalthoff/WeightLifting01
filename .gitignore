@@ -8,6 +8,10 @@ frontend/node_modules/
 frontend/.angular/
 frontend/dist/
 frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+
+backend/src/WeightLifting.Api/*.db*
 
 .DS_Store
 Thumbs.db

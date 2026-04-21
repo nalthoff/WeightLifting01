@@ -27,6 +27,19 @@ export interface CreateLiftResponse {
   };
 }
 
+export interface RenameLiftRequest {
+  name: string;
+}
+
+export interface RenameLiftResponse {
+  lift: {
+    id: string;
+    name: string;
+    isActive: boolean;
+    createdAtUtc: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -43,5 +56,9 @@ export class LiftsApiService {
 
   createLift(request: CreateLiftRequest): Observable<CreateLiftResponse> {
     return this.httpClient.post<CreateLiftResponse>('/api/lifts', request);
+  }
+
+  renameLift(liftId: string, request: RenameLiftRequest): Observable<RenameLiftResponse> {
+    return this.httpClient.put<RenameLiftResponse>(`/api/lifts/${liftId}`, request);
   }
 }

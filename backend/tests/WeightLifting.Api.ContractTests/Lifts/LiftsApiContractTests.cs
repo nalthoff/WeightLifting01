@@ -72,6 +72,62 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         Assert.Contains("Lift name is required.", payload.Errors["name"]);
     }
 
+    [Fact]
+    public async Task PutLiftReturnsRenamedLiftContract()
+    {
+        var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = "Front Squat",
+        });
+
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(createdPayload);
+
+        var response = await client.PutAsJsonAsync($"/api/lifts/{createdPayload.Lift.Id}", new
+        {
+            name = "Paused Front Squat",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<RenameLiftResponse>(JsonOptions);
+
+        Assert.NotNull(payload);
+        Assert.Equal(createdPayload.Lift.Id, payload.Lift.Id);
+        Assert.Equal("Paused Front Squat", payload.Lift.Name);
+        Assert.True(payload.Lift.IsActive);
+    }
+
+    [Fact]
+    public async Task PutLiftWithBlankNameReturnsValidationPayload()
+    {
+        var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = "Front Squat",
+        });
+
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(createdPayload);
+
+        var response = await client.PutAsJsonAsync($"/api/lifts/{createdPayload.Lift.Id}", new
+        {
+            name = "   ",
+        });
+
+        Assert.Equal((HttpStatusCode)422, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+
+        Assert.NotNull(payload);
+        Assert.Contains("Lift name is required.", payload.Errors["name"]);
+    }
+
     public sealed class CreateLiftResponse
     {
         public required LiftResponse Lift { get; init; }
@@ -84,6 +140,11 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         public required string Name { get; init; }
 
         public required bool IsActive { get; init; }
+    }
+
+    public sealed class RenameLiftResponse
+    {
+        public required LiftResponse Lift { get; init; }
     }
 
     public sealed class LiftListResponse

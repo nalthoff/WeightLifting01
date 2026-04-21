@@ -18,6 +18,18 @@ public sealed class Lift
 
     public DateTime CreatedAtUtc { get; }
 
+    public Lift Rename(string name)
+    {
+        var normalizedName = NormalizeName(name);
+
+        if (string.Equals(normalizedName, Name, StringComparison.Ordinal))
+        {
+            return this;
+        }
+
+        return new Lift(Id, normalizedName, IsActive, CreatedAtUtc);
+    }
+
     public static string NormalizeName(string name)
     {
         var normalizedName = name?.Trim() ?? string.Empty;

@@ -12,7 +12,13 @@ describe('LiftsPageComponent', () => {
     load: jasmine.createSpy('load'),
     submit: jasmine.createSpy('submit'),
     updateLiftName: jasmine.createSpy('updateLiftName'),
+    startRename: jasmine.createSpy('startRename'),
+    submitRename: jasmine.createSpy('submitRename'),
+    cancelRename: jasmine.createSpy('cancelRename'),
+    updateEditingLiftName: jasmine.createSpy('updateEditingLiftName'),
     liftName: signal(''),
+    editingLiftId: signal<string | null>(null),
+    editingLiftName: signal(''),
     errorMessage: signal<string | null>(null),
     successMessage: signal<string | null>(null),
     isSaving: signal(false),
@@ -24,7 +30,13 @@ describe('LiftsPageComponent', () => {
     facade.load.calls.reset();
     facade.submit.calls.reset();
     facade.updateLiftName.calls.reset();
+    facade.startRename.calls.reset();
+    facade.submitRename.calls.reset();
+    facade.cancelRename.calls.reset();
+    facade.updateEditingLiftName.calls.reset();
     facade.liftName.set('');
+    facade.editingLiftId.set(null);
+    facade.editingLiftName.set('');
     facade.errorMessage.set(null);
     facade.successMessage.set(null);
     facade.isSaving.set(false);
@@ -62,6 +74,28 @@ describe('LiftsPageComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Enter a lift name.');
+  });
+
+  it('starts rename through the facade', () => {
+    fixture.detectChanges();
+
+    const editButton = fixture.nativeElement.querySelector('[data-testid="edit-lift-1"]') as HTMLButtonElement;
+    editButton.click();
+
+    expect(facade.startRename).toHaveBeenCalledWith({ id: '1', name: 'Squat', isActive: true });
+  });
+
+  it('renders and submits the rename editor from the facade state', () => {
+    facade.editingLiftId.set('1');
+    facade.editingLiftName.set('Paused Squat');
+    fixture.detectChanges();
+
+    const renameForm = fixture.nativeElement.querySelector('[data-testid="rename-form-1"]') as HTMLFormElement;
+    const renameInput = fixture.nativeElement.querySelector('#renameLiftName-1') as HTMLInputElement;
+    renameForm.dispatchEvent(new Event('submit'));
+
+    expect(renameInput.getAttribute('aria-label')).toBe('Lift name');
+    expect(facade.submitRename).toHaveBeenCalled();
   });
 
   it('renders Material-styled sections for the form and list', () => {
