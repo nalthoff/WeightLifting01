@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: Home Workout Actions API
+  version: 0.1.0
+  description: Contracts for retrieving current active workout summary and completing it from home.
+paths:
+  /api/workouts/active:
+    get:
+      summary: Get current in-progress workout summary for home
+      operationId: getActiveWorkoutSummary
+      responses:
+        '200':
+          description: Active workout summary returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveWorkoutSummaryResponse'
+        '204':
+          description: No active workout exists
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/workouts/{workoutId}/complete:
+    post:
+      summary: Complete one in-progress workout
+      operationId: completeWorkout
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteWorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout cannot be completed in current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    WorkoutSessionSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - startedAtUtc
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress, Completed]
+        label:
+          type: string
+          nullable: true
+        startedAtUtc:
+          type: string
+          format: date-time
+        completedAtUtc:
+          type: string
+          format: date-time
+          nullable: true
+    ActiveWorkoutSummaryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workout
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    CompleteWorkoutResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workout
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer

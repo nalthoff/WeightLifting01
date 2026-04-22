@@ -1,4 +1,4 @@
----
+﻿---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
@@ -18,6 +18,7 @@ Auto-generated from all feature plans. Last updated: 2026-04-22
 - Existing SQL-backed backend remains unchanged (no data changes in this feature) (005-default-home-nav)
 - Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10 (006-start-blank-workout)
 - SQL Server / Azure SQL-compatible relational database via EF Core migrations (006-start-blank-workout)
+- SQL Server / Azure SQL-compatible relational database via existing workout persistence (008-home-active-workout)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -38,9 +39,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 008-home-active-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 007-add-workout-lifts: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 006-start-blank-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
-- 005-default-home-nav: Added Angular 20 frontend, C# .NET 10 backend (unchanged) + Angular Router, Angular Material toolbar/button/nav primitives, existing lifts feature routes
 
 
 <!-- MANUAL ADDITIONS START -->
