@@ -96,6 +96,41 @@ During local development, frontend requests to `/api/*` are proxied to the backe
 The default visible theme is dark mode. The frontend theme structure is set up so a light theme
 can be added later without replacing the current styling approach.
 
+## One-Click Debugging in Cursor/VS Code
+
+Use the built-in debug profile to launch the API and Angular app together:
+
+1. Open the Run and Debug view.
+2. Select `Debug API + Angular`.
+3. Click Start Debugging (F5).
+
+This profile will:
+
+- build and launch the .NET API on `http://localhost:5264`
+- start the Angular dev server on `http://localhost:4200`
+- open Chrome to the frontend URL so you can debug TypeScript in-browser
+
+### Prerequisites
+
+- C# extension for VS Code/Cursor (C# Dev Kit or C# extension with CoreCLR debug support)
+- JavaScript debugger support (built into VS Code/Cursor via `pwa-chrome`)
+- Frontend dependencies installed (`cd frontend && npm install`)
+
+### Fallback if auto-start fails
+
+If the compound profile cannot start everything automatically, start services manually in two
+terminals and then run the individual debug profiles:
+
+```bash
+cd backend/src/WeightLifting.Api
+dotnet watch
+```
+
+```bash
+cd frontend
+npm start
+```
+
 ## Manual Verification
 
 After both apps are running:
