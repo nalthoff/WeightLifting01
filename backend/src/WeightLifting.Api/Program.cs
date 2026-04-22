@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Api.DependencyInjection;
 using WeightLifting.Api.Infrastructure.Persistence;
 
@@ -16,6 +17,12 @@ if (app.Environment.IsEnvironment("Test"))
     var dbContext = scope.ServiceProvider.GetRequiredService<WeightLiftingDbContext>();
     await dbContext.Database.EnsureDeletedAsync();
     await dbContext.Database.EnsureCreatedAsync();
+}
+else
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WeightLiftingDbContext>();
+    await dbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

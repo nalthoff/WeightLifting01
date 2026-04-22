@@ -11,4 +11,9 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/settings/lifts/lifts.routes').then((module) => module.LIFTS_ROUTES),
   },
+  {
+    path: 'workouts',
+    loadChildren: () =>
+      import('./features/workouts/workouts.routes').then((module) => module.WORKOUTS_ROUTES),
+  },
 ];

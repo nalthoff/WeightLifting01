@@ -1,0 +1,40 @@
+import { expect, test } from '@playwright/test';
+
+test('start workout with optional label shows label on active workout', async ({ page }) => {
+  const workoutId = `workout-${Date.now()}`;
+  const startedAtUtc = '2026-04-22T12:05:00Z';
+  const label = `Monday Strength ${Date.now()}`;
+  let requestBody: { label?: string } | undefined;
+
+  await page.route('**/api/workouts', async (route) => {
+    if (route.request().method() !== 'POST') {
+      await route.continue();
+      return;
+    }
+
+    requestBody = route.request().postDataJSON() as { label?: string };
+
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        workout: {
+          id: workoutId,
+          status: 'InProgress',
+          label,
+          startedAtUtc,
+        },
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  await page.getByLabel('Workout label (optional)').fill(label);
+  await page.getByRole('button', { name: 'Start Workout' }).click();
+
+  expect(requestBody).toEqual({ label });
+  await expect(page).toHaveURL(new RegExp(`/workouts/${workoutId}$`));
+  await expect(page.getByText(`Label: ${label}`)).toBeVisible();
+  await expect(page.getByText('Status: InProgress')).toBeVisible();
+});

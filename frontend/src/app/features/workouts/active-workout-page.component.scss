@@ -1,0 +1,25 @@
+@use '../../../styles/theme/surface-patterns' as surface;
+
+.active-workout {
+  @include surface.section-stack(1rem);
+}
+
+.active-workout__panel {
+  @include surface.elevated-panel;
+}
+
+.active-workout__panel mat-card-title {
+  @include surface.card-heading;
+}
+
+.active-workout__panel mat-card-subtitle {
+  @include surface.supporting-copy;
+}
+
+.active-workout__content {
+  @include surface.section-stack(0.625rem);
+}
+
+.active-workout__content p {
+  margin: 0;
+}

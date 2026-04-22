@@ -1,0 +1,39 @@
+<section class="active-workout">
+  <mat-card class="active-workout__panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Workout in progress</mat-card-title>
+      <mat-card-subtitle *ngIf="workout(); else missingWorkout">
+        Your session is active and ready for logging.
+      </mat-card-subtitle>
+      <ng-template #missingWorkout>
+        <mat-card-subtitle>
+          No in-progress workout is loaded in this session.
+        </mat-card-subtitle>
+      </ng-template>
+    </mat-card-header>
+
+    <mat-card-content *ngIf="workout() as activeWorkout; else unavailableContent" class="active-workout__content">
+      <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
+      <p><strong>Started:</strong> {{ activeWorkout.startedAtUtc | date: 'medium' }}</p>
+      <p *ngIf="activeWorkout.label; else noLabel">
+        <strong>Label:</strong> {{ activeWorkout.label }}
+      </p>
+      <ng-template #noLabel>
+        <p><strong>Label:</strong> No label set</p>
+      </ng-template>
+    </mat-card-content>
+
+    <ng-template #unavailableContent>
+      <mat-card-content class="active-workout__content">
+        <p *ngIf="isLoadingWorkout(); else unavailableMessage">Loading workout details...</p>
+        <ng-template #unavailableMessage>
+          <p>{{ loadError() ?? 'Return home and start or continue a workout.' }}</p>
+        </ng-template>
+      </mat-card-content>
+    </ng-template>
+
+    <mat-card-actions>
+      <a mat-button routerLink="/">Back to home</a>
+    </mat-card-actions>
+  </mat-card>
+</section>

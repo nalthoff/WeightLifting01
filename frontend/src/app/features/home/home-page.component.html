@@ -1,3 +1,55 @@
-<main>
-  <h1>Home</h1>
-</main>
+<section class="home">
+  <mat-card class="home__hero" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Start Workout</mat-card-title>
+      <mat-card-subtitle>Start a blank session and begin logging immediately.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="home__form" (ngSubmit)="startWorkout()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Workout label (optional)</mat-label>
+          <input
+            matInput
+            name="workoutLabel"
+            [ngModel]="workoutLabel()"
+            (ngModelChange)="workoutLabel.set($event)"
+            placeholder="e.g. Monday Strength"
+          />
+          <mat-hint>Leave blank for a fast start.</mat-hint>
+        </mat-form-field>
+
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          class="home__start-button"
+          [disabled]="isStartingWorkout()"
+        >
+          {{ isStartingWorkout() ? 'Starting...' : 'Start Workout' }}
+        </button>
+      </form>
+
+      <div *ngIf="conflictMessage()" class="home__message home__message--info">
+        <mat-icon>info</mat-icon>
+        <div class="home__message-content">
+          <span>{{ conflictMessage() }}</span>
+
+          <div *ngIf="canContinueExisting()" class="home__prompt-actions">
+            <button type="button" mat-flat-button color="primary" (click)="continueExistingWorkout()">
+              Continue workout
+            </button>
+            <button type="button" mat-stroked-button (click)="dismissContinuePrompt()">
+              Not now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage()" class="home__message home__message--error">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>

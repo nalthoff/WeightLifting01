@@ -1,0 +1,55 @@
+@use '../../../styles/theme/surface-patterns' as surface;
+
+.home {
+  @include surface.section-stack(1rem);
+}
+
+.home__hero {
+  @include surface.elevated-panel;
+}
+
+.home__hero mat-card-title {
+  @include surface.card-heading;
+}
+
+.home__hero mat-card-subtitle {
+  @include surface.supporting-copy;
+}
+
+.home__form {
+  @include surface.section-stack(0.875rem);
+  margin-top: 0.5rem;
+}
+
+.home__form mat-form-field {
+  width: 100%;
+}
+
+.home__start-button {
+  width: 100%;
+  min-height: 3rem;
+  font-weight: 700;
+}
+
+.home__message {
+  margin-top: 1rem;
+}
+
+.home__message--info {
+  @include surface.feedback-state(info);
+}
+
+.home__message--error {
+  @include surface.feedback-state(error);
+}
+
+.home__message-content {
+  @include surface.section-stack(0.75rem);
+  width: 100%;
+}
+
+.home__prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

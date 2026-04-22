@@ -45,3 +45,11 @@ Validate that a user can start a blank workout from home, receive backend-author
 
 1. Confirm existing Settings -> Lifts flows remain reachable.
 2. Confirm no set/lift logging screens were introduced in this slice.
+
+## Verification Run (2026-04-22)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter StartWorkout` (Passed: 7)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter StartWorkout` (Passed: 5)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter WorkoutsApiContractTests` (Passed: 3)
+- `npm run build` in `frontend` (Passed)
+- `npm run e2e -- "e2e/workouts/.*\\.spec\\.ts"` in `frontend` (Passed: 3)
