@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: Workout Sessions API
+  version: 0.1.0
+  description: Contracts for starting and continuing workout sessions.
+paths:
+  /api/workouts:
+    post:
+      summary: Start a blank workout session
+      operationId: startWorkout
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartWorkoutRequest'
+      responses:
+        '201':
+          description: Workout started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartWorkoutCreatedResponse'
+        '409':
+          description: An in-progress workout already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExistingInProgressWorkoutResponse'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    StartWorkoutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          nullable: true
+          description: Optional session label. Whitespace-only is treated as no label.
+    WorkoutSessionSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - startedAtUtc
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress]
+        label:
+          type: string
+          nullable: true
+        startedAtUtc:
+          type: string
+          format: date-time
+          description: UTC timestamp assigned by server.
+    StartWorkoutCreatedResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workout
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    ExistingInProgressWorkoutResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - status
+        - workout
+      properties:
+        title:
+          type: string
+          example: Workout already in progress
+        status:
+          type: integer
+          enum: [409]
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
