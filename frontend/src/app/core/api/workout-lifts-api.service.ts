@@ -1,0 +1,39 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+
+export interface WorkoutLiftEntry {
+  id: string;
+  workoutId: string;
+  liftId: string;
+  displayName: string;
+  addedAtUtc: string;
+  position: number;
+}
+
+export interface WorkoutLiftListResponse {
+  items: WorkoutLiftEntry[];
+}
+
+export interface AddWorkoutLiftRequest {
+  liftId: string;
+}
+
+export interface AddWorkoutLiftResponse {
+  workoutLift: WorkoutLiftEntry;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class WorkoutLiftsApiService {
+  private readonly httpClient = inject(HttpClient);
+
+  listWorkoutLifts(workoutId: string): Observable<WorkoutLiftListResponse> {
+    return this.httpClient.get<WorkoutLiftListResponse>(`/api/workouts/${workoutId}/lifts`);
+  }
+
+  addWorkoutLift(workoutId: string, request: AddWorkoutLiftRequest): Observable<AddWorkoutLiftResponse> {
+    return this.httpClient.post<AddWorkoutLiftResponse>(`/api/workouts/${workoutId}/lifts`, request);
+  }
+}

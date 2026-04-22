@@ -10,6 +10,7 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
 {
     public DbSet<LiftEntity> Lifts => Set<LiftEntity>();
     public DbSet<WorkoutEntity> Workouts => Set<WorkoutEntity>();
+    public DbSet<WorkoutLiftEntryEntity> WorkoutLiftEntries => Set<WorkoutLiftEntryEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +69,38 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
             entity.HasIndex(workout => workout.UserId)
                 .HasFilter($"[{nameof(WorkoutEntity.Status)}] = {(int)WorkoutStatus.InProgress}")
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<WorkoutLiftEntryEntity>(entity =>
+        {
+            entity.ToTable("WorkoutLiftEntries");
+
+            entity.HasKey(workoutLiftEntry => workoutLiftEntry.Id);
+
+            entity.Property(workoutLiftEntry => workoutLiftEntry.DisplayName)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(workoutLiftEntry => workoutLiftEntry.AddedAtUtc)
+                .IsRequired();
+
+            entity.Property(workoutLiftEntry => workoutLiftEntry.Position)
+                .IsRequired();
+
+            entity.HasIndex(workoutLiftEntry => new { workoutLiftEntry.WorkoutId, workoutLiftEntry.Position })
+                .IsUnique();
+
+            entity.HasIndex(workoutLiftEntry => new { workoutLiftEntry.WorkoutId, workoutLiftEntry.LiftId });
+
+            entity.HasOne<WorkoutEntity>()
+                .WithMany()
+                .HasForeignKey(workoutLiftEntry => workoutLiftEntry.WorkoutId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<LiftEntity>()
+                .WithMany()
+                .HasForeignKey(workoutLiftEntry => workoutLiftEntry.LiftId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

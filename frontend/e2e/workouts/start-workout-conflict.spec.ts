@@ -35,6 +35,6 @@ test('conflict prompts continue-existing workout and navigates to existing sessi
   await page.getByRole('button', { name: 'Continue workout' }).click();
 
   await expect(page).toHaveURL(new RegExp(`/workouts/${existingWorkoutId}$`));
-  await expect(page.getByText(`Label: ${existingLabel}`)).toBeVisible();
+  await expect(page.locator('mat-card-title')).toHaveText(existingLabel);
   await expect(page.getByText('Status: InProgress')).toBeVisible();
 });

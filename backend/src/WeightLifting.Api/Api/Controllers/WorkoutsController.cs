@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using WeightLifting.Api.Api.Contracts.Workouts;
+using WeightLifting.Api.Application.Workouts;
+using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
+using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
 using WeightLifting.Api.Domain.Workouts;
 
 namespace WeightLifting.Api.Api.Controllers;
@@ -9,6 +12,8 @@ namespace WeightLifting.Api.Api.Controllers;
 [ApiController]
 [Route("api/workouts")]
 public sealed class WorkoutsController(
+    AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
+    ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
     GetWorkoutByIdQueryHelper getWorkoutByIdQueryHelper) : ControllerBase
 {
@@ -78,12 +83,114 @@ public sealed class WorkoutsController(
         }
     }
 
+    [HttpGet("{workoutId:guid}/lifts")]
+    [ProducesResponseType(typeof(WorkoutLiftListResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WorkoutLiftListResponse>> ListWorkoutLifts(
+        Guid workoutId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workoutLifts = await listWorkoutLiftsQueryHelper.GetAsync(workoutId, cancellationToken);
+            return Ok(new WorkoutLiftListResponse
+            {
+                Items = workoutLifts.Select(ToWorkoutLiftEntryResponse).ToList(),
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new
+            {
+                title = "Workout not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+    }
+
+    [HttpPost("{workoutId:guid}/lifts")]
+    [ProducesResponseType(typeof(AddWorkoutLiftResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<AddWorkoutLiftResponse>> AddWorkoutLift(
+        Guid workoutId,
+        [FromBody] AddWorkoutLiftRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        if (request is null || request.LiftId == Guid.Empty)
+        {
+            return UnprocessableEntity(CreateLiftIdValidationResponse());
+        }
+
+        try
+        {
+            var result = await addWorkoutLiftCommandHandler.HandleAsync(
+                new AddWorkoutLiftCommand
+                {
+                    WorkoutId = workoutId,
+                    LiftId = request.LiftId,
+                },
+                cancellationToken);
+
+            return Created(
+                $"/api/workouts/{workoutId}/lifts/{result.WorkoutLift.Id}",
+                new AddWorkoutLiftResponse
+                {
+                    WorkoutLift = ToWorkoutLiftEntryResponse(result.WorkoutLift),
+                });
+        }
+        catch (WorkoutNotInProgressException)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot accept lifts",
+                status = StatusCodes.Status409Conflict,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["workout"] = ["Workout must be in progress to add lifts."],
+                },
+            });
+        }
+        catch (LiftNotActiveException)
+        {
+            return UnprocessableEntity(new
+            {
+                title = "Validation failed",
+                status = StatusCodes.Status422UnprocessableEntity,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["liftId"] = ["Lift must be active to add to the workout."],
+                },
+            });
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+                detail = exception.Message,
+            });
+        }
+    }
+
     private static WorkoutSessionSummaryResponse ToWorkoutSummary(Workout workout) => new()
     {
         Id = workout.Id,
         Status = workout.Status.ToString(),
         Label = workout.Label,
         StartedAtUtc = workout.StartedAtUtc,
+    };
+
+    private static WorkoutLiftEntryResponse ToWorkoutLiftEntryResponse(WorkoutLiftEntry workoutLiftEntry) => new()
+    {
+        Id = workoutLiftEntry.Id,
+        WorkoutId = workoutLiftEntry.WorkoutId,
+        LiftId = workoutLiftEntry.LiftId,
+        DisplayName = workoutLiftEntry.DisplayName,
+        AddedAtUtc = workoutLiftEntry.AddedAtUtc,
+        Position = workoutLiftEntry.Position,
     };
 
     private static object CreateLabelValidationResponse() => new
@@ -93,6 +200,16 @@ public sealed class WorkoutsController(
         errors = new Dictionary<string, string[]>
         {
             ["label"] = [$"Workout label must be {Workout.MaxLabelLength} characters or fewer."],
+        },
+    };
+
+    private static object CreateLiftIdValidationResponse() => new
+    {
+        title = "Validation failed",
+        status = StatusCodes.Status422UnprocessableEntity,
+        errors = new Dictionary<string, string[]>
+        {
+            ["liftId"] = ["Lift id is required."],
         },
     };
 }

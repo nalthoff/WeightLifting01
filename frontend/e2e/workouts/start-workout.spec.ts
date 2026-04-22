@@ -29,8 +29,7 @@ test('start workout from home navigates to active workout', async ({ page }) => 
   await page.getByRole('button', { name: 'Start Workout' }).click();
 
   await expect(page).toHaveURL(new RegExp(`/workouts/${workoutId}$`));
-  await expect(page.getByText('Workout in progress')).toBeVisible();
+  await expect(page.locator('mat-card-title')).toHaveText('Workout');
   await expect(page.getByText('Status: InProgress')).toBeVisible();
   await expect(page.getByText('Started:')).toBeVisible();
-  await expect(page.getByText('Label: No label set')).toBeVisible();
 });

@@ -17,8 +17,8 @@
 
 **Purpose**: Reuse existing workout/lift patterns and keep architecture simple.
 
-- [ ] T001 Review reuse points in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
-- [ ] T002 Review active-workout UI integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T001 Review reuse points in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
+- [X] T002 Review active-workout UI integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
 
 ---
 
@@ -26,12 +26,12 @@
 
 **Purpose**: Add shared workout-lift persistence and core backend wiring before story work.
 
-- [ ] T003 Create workout-lift persistence entity in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Workouts/WorkoutLiftEntryEntity.cs`
-- [ ] T004 Update `WeightLiftingDbContext` mapping for workout-lift entries in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs`
-- [ ] T005 Add EF migration for workout-lift association schema in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
-- [ ] T006 Add workout-lift API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`
-- [ ] T007 Create query/command support models for workout-lift entries in `backend/src/WeightLifting.Api/Application/Workouts/`
-- [ ] T008 Register workout-lift query/command services in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T003 Create workout-lift persistence entity in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Workouts/WorkoutLiftEntryEntity.cs`
+- [X] T004 Update `WeightLiftingDbContext` mapping for workout-lift entries in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs`
+- [X] T005 Add EF migration for workout-lift association schema in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
+- [X] T006 Add workout-lift API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`
+- [X] T007 Create query/command support models for workout-lift entries in `backend/src/WeightLifting.Api/Application/Workouts/`
+- [X] T008 Register workout-lift query/command services in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
 
 **Checkpoint**: Foundation complete; user stories can proceed.
 
@@ -45,21 +45,21 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add backend unit tests for add-workout-lift happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
-- [ ] T010 [P] [US1] Add backend integration tests for add/list workout-lifts in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutLiftsIntegrationTests.cs`
-- [ ] T011 [P] [US1] Add contract tests for `GET/POST /api/workouts/{workoutId}/lifts` success responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T012 [P] [US1] Add mobile e2e test for Add Lift happy path in `frontend/e2e/workouts/add-workout-lift.spec.ts`
+- [X] T009 [P] [US1] Add backend unit tests for add-workout-lift happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
+- [X] T010 [P] [US1] Add backend integration tests for add/list workout-lifts in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutLiftsIntegrationTests.cs`
+- [X] T011 [P] [US1] Add contract tests for `GET/POST /api/workouts/{workoutId}/lifts` success responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T012 [P] [US1] Add mobile e2e test for Add Lift happy path in `frontend/e2e/workouts/add-workout-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Implement add-workout-lift command and result models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/`
-- [ ] T014 [P] [US1] Implement list-workout-lifts query helper in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListWorkoutLifts/ListWorkoutLiftsQueryHelper.cs`
-- [ ] T015 [US1] Implement add-workout-lift business handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
-- [ ] T016 [US1] Add list/add workout-lifts endpoints in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T017 [P] [US1] Add workout-lifts API client methods in `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T018 [P] [US1] Extend workout state for lift entries in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T019 [US1] Add Add Lift primary action and picker UI in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T020 [US1] Integrate successful add response into immediate active-workout rendering in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T013 [P] [US1] Implement add-workout-lift command and result models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/`
+- [X] T014 [P] [US1] Implement list-workout-lifts query helper in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListWorkoutLifts/ListWorkoutLiftsQueryHelper.cs`
+- [X] T015 [US1] Implement add-workout-lift business handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
+- [X] T016 [US1] Add list/add workout-lifts endpoints in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T017 [P] [US1] Add workout-lifts API client methods in `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T018 [P] [US1] Extend workout state for lift entries in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T019 [US1] Add Add Lift primary action and picker UI in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T020 [US1] Integrate successful add response into immediate active-workout rendering in `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US1 independently functional and testable.
 
@@ -73,15 +73,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T021 [P] [US2] Add unit tests confirming duplicate add is allowed in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
-- [ ] T022 [P] [US2] Add integration tests for duplicate workout-lift entries in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutLiftsIntegrationTests.cs`
-- [ ] T023 [P] [US2] Add e2e duplicate-add behavior test in `frontend/e2e/workouts/add-workout-lift-duplicates.spec.ts`
+- [X] T021 [P] [US2] Add unit tests confirming duplicate add is allowed in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
+- [X] T022 [P] [US2] Add integration tests for duplicate workout-lift entries in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutLiftsIntegrationTests.cs`
+- [X] T023 [P] [US2] Add e2e duplicate-add behavior test in `frontend/e2e/workouts/add-workout-lift-duplicates.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Ensure backend add-lift handler does not enforce duplicate blocking in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
-- [ ] T025 [US2] Ensure workout-lift persistence constraints permit duplicates in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs` and migration files in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
-- [ ] T026 [US2] Render duplicate workout-lift entries distinctly in active workout UI in `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T024 [US2] Ensure backend add-lift handler does not enforce duplicate blocking in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
+- [X] T025 [US2] Ensure workout-lift persistence constraints permit duplicates in `backend/src/WeightLifting.Api/Infrastructure/Persistence/WeightLiftingDbContext.cs` and migration files in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
+- [X] T026 [US2] Render duplicate workout-lift entries distinctly in active workout UI in `frontend/src/app/features/workouts/active-workout-page.component.html`
 
 **Checkpoint**: US2 independently functional and testable.
 
@@ -95,17 +95,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Add unit tests for active-lift-only and failure-path validation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
-- [ ] T028 [P] [US3] Add contract tests for validation/not-found/error payloads in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T029 [P] [US3] Add e2e tests for empty picker and failed add behavior in `frontend/e2e/workouts/add-workout-lift-failures.spec.ts`
+- [X] T027 [P] [US3] Add unit tests for active-lift-only and failure-path validation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/AddWorkoutLift/AddWorkoutLiftCommandHandlerTests.cs`
+- [X] T028 [P] [US3] Add contract tests for validation/not-found/error payloads in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T029 [P] [US3] Add e2e tests for empty picker and failed add behavior in `frontend/e2e/workouts/add-workout-lift-failures.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T030 [US3] Enforce active-lift-only selection rule in backend handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
-- [ ] T031 [US3] Return clear API error responses for add-lift failure scenarios in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T032 [US3] Implement empty-state guidance for no active lifts in `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T033 [US3] Implement explicit add-failure messaging and prevent ghost list updates in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T034 [US3] Add simple add-action in-flight guard for rapid taps in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T030 [US3] Enforce active-lift-only selection rule in backend handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
+- [X] T031 [US3] Return clear API error responses for add-lift failure scenarios in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T032 [US3] Implement empty-state guidance for no active lifts in `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T033 [US3] Implement explicit add-failure messaging and prevent ghost list updates in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T034 [US3] Add simple add-action in-flight guard for rapid taps in `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US3 independently functional and testable.
 
@@ -115,10 +115,10 @@
 
 **Purpose**: Final verification, simplicity cleanup, and workflow validation.
 
-- [ ] T035 [P] Refactor to keep business rules out of Angular components and preserve one-class-per-file organization in `backend/src/WeightLifting.Api/Application/Workouts/` and `frontend/src/app/features/workouts/`
-- [ ] T036 [P] Run full targeted backend tests for workout and workout-lift flows in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T037 [P] Run frontend build and e2e suites for workout flows from `frontend/package.json` scripts
-- [ ] T038 Update verification notes in `specs/007-add-workout-lifts/quickstart.md`
+- [X] T035 [P] Refactor to keep business rules out of Angular components and preserve one-class-per-file organization in `backend/src/WeightLifting.Api/Application/Workouts/` and `frontend/src/app/features/workouts/`
+- [X] T036 [P] Run full targeted backend tests for workout and workout-lift flows in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T037 [P] Run frontend build and e2e suites for workout flows from `frontend/package.json` scripts
+- [X] T038 Update verification notes in `specs/007-add-workout-lifts/quickstart.md`
 
 ---
 

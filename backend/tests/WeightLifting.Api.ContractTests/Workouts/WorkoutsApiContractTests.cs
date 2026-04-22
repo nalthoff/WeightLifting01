@@ -58,6 +58,21 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     }
 
     [Fact]
+    public async Task GetWorkoutWhenMissingReturnsNotFoundPayload()
+    {
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync($"/api/workouts/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("Workout not found", payload.Title);
+        Assert.Equal((int)HttpStatusCode.NotFound, payload.Status);
+    }
+
+    [Fact]
     public async Task PostWorkoutWhenAlreadyInProgressReturnsConflictPayload()
     {
         var client = factory.CreateClient();
@@ -158,5 +173,12 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     public sealed class ValidationErrorResponse
     {
         public required Dictionary<string, string[]> Errors { get; init; }
+    }
+
+    public sealed class NotFoundResponse
+    {
+        public required string Title { get; init; }
+
+        public required int Status { get; init; }
     }
 }

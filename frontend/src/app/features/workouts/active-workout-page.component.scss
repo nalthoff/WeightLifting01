@@ -23,3 +23,90 @@
 .active-workout__content p {
   margin: 0;
 }
+
+.active-workout__lift-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.active-workout__lift-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.active-workout__picker {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.active-workout__picker-copy {
+  color: var(--app-text-muted);
+}
+
+.active-workout__picker-field {
+  width: 100%;
+}
+
+.active-workout__picker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.active-workout__picker-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.active-workout__feedback {
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+}
+
+.active-workout__feedback--error {
+  @include surface.feedback-state(error);
+}
+
+.active-workout__feedback--info {
+  @include surface.feedback-state(info);
+}
+
+.active-workout__info {
+  color: var(--app-text-muted);
+}
+
+.active-workout__lift-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.active-workout__lift-list-item {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.active-workout__lift-name {
+  font-weight: 600;
+}
+
+.active-workout__lift-meta {
+  color: var(--app-text-muted);
+  font-size: 0.825rem;
+}

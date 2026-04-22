@@ -46,3 +46,11 @@ Validate that a lifter can add one or more active lifts from the active workout 
 1. Confirm existing lift library management in Settings remains unchanged.
 2. Confirm start-workout and active-workout baseline behavior remains intact.
 3. Confirm remove-lift behavior is not introduced in this slice.
+
+## Verification Run (2026-04-22)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter AddWorkoutLiftCommandHandlerTests` (Passed: 5)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter WorkoutLiftsIntegrationTests` (Passed: 2)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter WorkoutLiftsApiContractTests` (Passed: 7)
+- `npm run build` in `frontend` (Passed)
+- `npm run e2e -- e2e/workouts/add-workout-lift.spec.ts e2e/workouts/add-workout-lift-duplicates.spec.ts e2e/workouts/add-workout-lift-failures.spec.ts` in `frontend` (Passed: 4)

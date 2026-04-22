@@ -1,26 +1,93 @@
 <section class="active-workout">
   <mat-card class="active-workout__panel" appearance="outlined">
     <mat-card-header>
-      <mat-card-title>Workout in progress</mat-card-title>
-      <mat-card-subtitle *ngIf="workout(); else missingWorkout">
-        Your session is active and ready for logging.
-      </mat-card-subtitle>
-      <ng-template #missingWorkout>
-        <mat-card-subtitle>
-          No in-progress workout is loaded in this session.
-        </mat-card-subtitle>
-      </ng-template>
+      <mat-card-title>{{ workout()?.label || 'Workout' }}</mat-card-title>
+      <mat-card-subtitle *ngIf="!workout()">No in-progress workout is loaded in this session.</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content *ngIf="workout() as activeWorkout; else unavailableContent" class="active-workout__content">
       <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
       <p><strong>Started:</strong> {{ activeWorkout.startedAtUtc | date: 'medium' }}</p>
-      <p *ngIf="activeWorkout.label; else noLabel">
-        <strong>Label:</strong> {{ activeWorkout.label }}
+
+      <p *ngIf="isLoadingWorkoutLifts()" class="active-workout__info">Loading workout lifts...</p>
+      <p *ngIf="workoutLiftsLoadError()" class="active-workout__feedback active-workout__feedback--error">
+        {{ workoutLiftsLoadError() }}
       </p>
-      <ng-template #noLabel>
-        <p><strong>Label:</strong> No label set</p>
-      </ng-template>
+
+      <p
+        *ngIf="
+          !isLoadingWorkoutLifts() &&
+          !workoutLiftsLoadError() &&
+          workoutLiftEntries().length === 0
+        "
+        class="active-workout__feedback active-workout__feedback--info"
+      >
+        No lifts added yet. Tap Add Lift to start building this workout.
+      </p>
+
+      <ul *ngIf="workoutLiftEntries().length > 0" class="active-workout__lift-list">
+        <li *ngFor="let entry of workoutLiftEntries()" class="active-workout__lift-list-item">
+          <span class="active-workout__lift-name">{{ entry.displayName }}</span>
+          <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
+        </li>
+      </ul>
+
+      <div class="active-workout__lift-header">
+        <button type="button" mat-flat-button color="primary" (click)="openAddLiftPicker()">
+          <mat-icon>add</mat-icon>
+          Add Lift
+        </button>
+      </div>
+
+      <div *ngIf="isPickerOpen()" class="active-workout__picker">
+        <div *ngIf="isLoadingActiveLifts()" class="active-workout__info">
+          Loading active lifts...
+        </div>
+
+        <div *ngIf="activeLiftsLoadError()" class="active-workout__feedback active-workout__feedback--error">
+          {{ activeLiftsLoadError() }}
+        </div>
+
+        <div
+          *ngIf="
+            !isLoadingActiveLifts() &&
+            !activeLiftsLoadError() &&
+            activeLiftOptions().length === 0
+          "
+          class="active-workout__feedback active-workout__feedback--info"
+        >
+          No active lifts available. Add or activate lifts in Settings before adding to this workout.
+          <a mat-button routerLink="/settings/lifts">Go to Settings</a>
+        </div>
+
+        <div *ngIf="!isLoadingActiveLifts() && activeLiftOptions().length > 0" class="active-workout__picker-actions">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__picker-field">
+            <mat-label>Active lift</mat-label>
+            <select
+              matNativeControl
+              [value]="selectedLiftId()"
+              (change)="updateSelectedLiftId($any($event.target).value)"
+            >
+              <option *ngFor="let lift of activeLiftOptions()" [value]="lift.id">
+                {{ lift.name }}
+              </option>
+            </select>
+          </mat-form-field>
+
+          <div class="active-workout__picker-buttons">
+            <button type="button" mat-flat-button color="primary" [disabled]="isAddingLift()" (click)="addSelectedLift()">
+              {{ isAddingLift() ? 'Adding...' : 'Add selected lift' }}
+            </button>
+            <button type="button" mat-button [disabled]="isAddingLift()" (click)="closeAddLiftPicker()">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="addLiftError()" class="active-workout__feedback active-workout__feedback--error">
+          {{ addLiftError() }}
+        </div>
+      </div>
     </mat-card-content>
 
     <ng-template #unavailableContent>
