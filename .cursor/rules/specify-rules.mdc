@@ -38,9 +38,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 007-add-workout-lifts: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 006-start-blank-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 005-default-home-nav: Added Angular 20 frontend, C# .NET 10 backend (unchanged) + Angular Router, Angular Material toolbar/button/nav primitives, existing lifts feature routes
-- 004-deactivate-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core, SQL Server provider
 
 
 <!-- MANUAL ADDITIONS START -->
