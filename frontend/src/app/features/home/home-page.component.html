@@ -1,4 +1,38 @@
 <section class="home">
+  <mat-card *ngIf="hasActiveWorkout()" class="home__active-workout" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ activeWorkoutTitle() }}</mat-card-title>
+      <mat-card-subtitle>In progress since {{ activeWorkout()?.startedAtUtc | date: 'short' }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="home__active-actions">
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          class="home__active-action"
+          data-testid="home-active-workout-continue"
+          [disabled]="isCompletingWorkout()"
+          (click)="continueExistingWorkout()"
+        >
+          Continue
+        </button>
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          class="home__active-action"
+          data-testid="home-active-workout-complete"
+          [disabled]="isCompletingWorkout()"
+          (click)="completeActiveWorkout()"
+        >
+          {{ isCompletingWorkout() ? 'Completing...' : 'Complete' }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
   <mat-card class="home__hero" appearance="outlined">
     <mat-card-header>
       <mat-card-title>Start Workout</mat-card-title>
@@ -49,6 +83,16 @@
       <div *ngIf="errorMessage()" class="home__message home__message--error">
         <mat-icon>error</mat-icon>
         <span>{{ errorMessage() }}</span>
+      </div>
+
+      <div *ngIf="completeSuccessMessage()" class="home__message home__message--success" data-testid="home-complete-success">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ completeSuccessMessage() }}</span>
+      </div>
+
+      <div *ngIf="completeErrorMessage()" class="home__message home__message--error" data-testid="home-complete-error">
+        <mat-icon>error</mat-icon>
+        <span>{{ completeErrorMessage() }}</span>
       </div>
     </mat-card-content>
   </mat-card>

@@ -16,8 +16,7 @@ const e2eDatabasePath = `Data Source=${e2eDatabaseFile.replace(/\\/g, '/')}`;
 const reuseExistingServer = process.env.PW_E2E_REUSE === '1';
 
 export default defineConfig({
-  testDir: '.',
-  testMatch: ['tests/e2e/**/*.spec.ts', 'e2e/**/*.spec.ts'],
+  testDir: './tests/e2e',
   fullyParallel: true,
   timeout: 30_000,
   globalTeardown: './playwright.global-teardown.ts',

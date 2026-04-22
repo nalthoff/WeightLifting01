@@ -16,6 +16,19 @@ export class WorkoutsStoreService {
     this.activeWorkoutLiftEntries.set([]);
   }
 
+  reconcileActiveWorkout(workout: WorkoutSessionSummary | null): void {
+    if (!workout || workout.status !== 'InProgress') {
+      this.clearActiveWorkout();
+      return;
+    }
+
+    if (this.activeWorkout()?.id !== workout.id) {
+      this.activeWorkoutLiftEntries.set([]);
+    }
+
+    this.activeWorkout.set(workout);
+  }
+
   clearActiveWorkout(): void {
     this.activeWorkout.set(null);
     this.activeWorkoutLiftEntries.set([]);

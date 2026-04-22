@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 
 export interface WorkoutSessionSummary {
   id: string;
-  status: 'InProgress';
+  status: 'InProgress' | 'Completed';
   label?: string | null;
   startedAtUtc: string;
+  completedAtUtc?: string | null;
 }
 
 export interface StartWorkoutRequest {
@@ -18,6 +19,14 @@ export interface StartWorkoutCreatedResponse {
 }
 
 export interface GetWorkoutResponse {
+  workout: WorkoutSessionSummary;
+}
+
+export interface GetActiveWorkoutSummaryResponse {
+  workout: WorkoutSessionSummary;
+}
+
+export interface CompleteWorkoutResponse {
   workout: WorkoutSessionSummary;
 }
 
@@ -39,5 +48,13 @@ export class WorkoutsApiService {
 
   getWorkout(workoutId: string): Observable<GetWorkoutResponse> {
     return this.httpClient.get<GetWorkoutResponse>(`/api/workouts/${workoutId}`);
+  }
+
+  getActiveWorkoutSummary(): Observable<GetActiveWorkoutSummaryResponse> {
+    return this.httpClient.get<GetActiveWorkoutSummaryResponse>('/api/workouts/active');
+  }
+
+  completeWorkout(workoutId: string): Observable<CompleteWorkoutResponse> {
+    return this.httpClient.post<CompleteWorkoutResponse>(`/api/workouts/${workoutId}/complete`, {});
   }
 }

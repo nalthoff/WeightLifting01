@@ -25,6 +25,7 @@ public sealed class GetWorkoutByIdQueryHelper(WeightLiftingDbContext dbContext)
             workoutEntity.Status,
             workoutEntity.Label,
             workoutEntity.StartedAtUtc,
+            workoutEntity.CompletedAtUtc,
             workoutEntity.CreatedAtUtc,
             workoutEntity.UpdatedAtUtc);
     }

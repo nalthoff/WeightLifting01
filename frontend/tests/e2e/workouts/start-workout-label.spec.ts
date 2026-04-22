@@ -36,5 +36,5 @@ test('start workout with optional label shows label on active workout', async ({
   expect(requestBody).toEqual({ label });
   await expect(page).toHaveURL(new RegExp(`/workouts/${workoutId}$`));
   await expect(page.locator('mat-card-title')).toHaveText(label);
-  await expect(page.getByText('Status: InProgress')).toBeVisible();
+  await expect(page.locator('p', { hasText: 'Status:' })).toContainText('InProgress');
 });

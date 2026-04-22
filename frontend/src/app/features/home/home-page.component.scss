@@ -8,11 +8,23 @@
   @include surface.elevated-panel;
 }
 
+.home__active-workout {
+  @include surface.elevated-panel;
+}
+
 .home__hero mat-card-title {
   @include surface.card-heading;
 }
 
 .home__hero mat-card-subtitle {
+  @include surface.supporting-copy;
+}
+
+.home__active-workout mat-card-title {
+  @include surface.card-heading;
+}
+
+.home__active-workout mat-card-subtitle {
   @include surface.supporting-copy;
 }
 
@@ -43,6 +55,10 @@
   @include surface.feedback-state(error);
 }
 
+.home__message--success {
+  @include surface.feedback-state(success);
+}
+
 .home__message-content {
   @include surface.section-stack(0.75rem);
   width: 100%;
@@ -52,4 +68,22 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.home__active-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.home__active-action {
+  width: 100%;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+
+@media (min-width: 30rem) {
+  .home__active-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

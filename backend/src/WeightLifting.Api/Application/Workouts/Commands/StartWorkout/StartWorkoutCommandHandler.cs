@@ -33,6 +33,7 @@ public sealed class StartWorkoutCommandHandler(
             WorkoutStatus.InProgress,
             command.Label,
             nowUtc,
+            null,
             nowUtc,
             nowUtc);
 
@@ -43,6 +44,7 @@ public sealed class StartWorkoutCommandHandler(
             Status = workout.Status,
             Label = workout.Label,
             StartedAtUtc = workout.StartedAtUtc,
+            CompletedAtUtc = workout.CompletedAtUtc,
             CreatedAtUtc = workout.CreatedAtUtc,
             UpdatedAtUtc = workout.UpdatedAtUtc,
         });

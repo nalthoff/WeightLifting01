@@ -14,6 +14,8 @@ public sealed class WorkoutEntity
 
     public DateTime StartedAtUtc { get; set; }
 
+    public DateTime? CompletedAtUtc { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
 
     public DateTime UpdatedAtUtc { get; set; }

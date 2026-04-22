@@ -58,6 +58,8 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
             entity.Property(workout => workout.StartedAtUtc)
                 .IsRequired();
 
+            entity.Property(workout => workout.CompletedAtUtc);
+
             entity.Property(workout => workout.CreatedAtUtc)
                 .IsRequired();
 

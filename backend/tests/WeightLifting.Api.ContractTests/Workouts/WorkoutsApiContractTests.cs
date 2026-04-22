@@ -73,6 +73,36 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     }
 
     [Fact]
+    public async Task GetActiveWorkoutWhenNoWorkoutExistsReturnsNoContent()
+    {
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/workouts/active");
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetActiveWorkoutReturnsSummaryContract()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "Home Session",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var response = await client.GetAsync("/api/workouts/active");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ActiveWorkoutSummaryResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("InProgress", payload.Workout.Status);
+        Assert.Equal("Home Session", payload.Workout.Label);
+        Assert.Null(payload.Workout.CompletedAtUtc);
+    }
+
+    [Fact]
     public async Task PostWorkoutWhenAlreadyInProgressReturnsConflictPayload()
     {
         var client = factory.CreateClient();
@@ -129,6 +159,65 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         Assert.Equal(HttpStatusCode.Created, validResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task PostCompleteWorkoutReturnsCompletedWorkoutContract()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "Completion Session",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(createdPayload);
+
+        var completeResponse = await client.PostAsync($"/api/workouts/{createdPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
+
+        var payload = await completeResponse.Content.ReadFromJsonAsync<CompleteWorkoutResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(createdPayload.Workout.Id, payload.Workout.Id);
+        Assert.Equal("Completed", payload.Workout.Status);
+        Assert.NotNull(payload.Workout.CompletedAtUtc);
+    }
+
+    [Fact]
+    public async Task PostCompleteWorkoutWhenMissingReturnsNotFoundPayload()
+    {
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsync($"/api/workouts/{Guid.NewGuid()}/complete", null);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("Workout not found", payload.Title);
+        Assert.Equal((int)HttpStatusCode.NotFound, payload.Status);
+    }
+
+    [Fact]
+    public async Task PostCompleteWorkoutWhenAlreadyCompletedReturnsConflictPayload()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "Already Done",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(createdPayload);
+
+        var firstComplete = await client.PostAsync($"/api/workouts/{createdPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.OK, firstComplete.StatusCode);
+
+        var secondComplete = await client.PostAsync($"/api/workouts/{createdPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.Conflict, secondComplete.StatusCode);
+
+        var payload = await secondComplete.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Contains("Workout must be in progress to complete.", payload.Errors["workout"]);
+    }
+
     public async Task InitializeAsync()
     {
         using var client = factory.CreateClient();
@@ -168,6 +257,18 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         public string? Label { get; init; }
 
         public required DateTime StartedAtUtc { get; init; }
+
+        public DateTime? CompletedAtUtc { get; init; }
+    }
+
+    public sealed class ActiveWorkoutSummaryResponse
+    {
+        public required WorkoutSessionSummaryResponse Workout { get; init; }
+    }
+
+    public sealed class CompleteWorkoutResponse
+    {
+        public required WorkoutSessionSummaryResponse Workout { get; init; }
     }
 
     public sealed class ValidationErrorResponse

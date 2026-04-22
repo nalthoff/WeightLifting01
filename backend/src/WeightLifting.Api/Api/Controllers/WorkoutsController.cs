@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using WeightLifting.Api.Api.Contracts.Workouts;
 using WeightLifting.Api.Application.Workouts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
+using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
+using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
 using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
@@ -13,12 +15,32 @@ namespace WeightLifting.Api.Api.Controllers;
 [Route("api/workouts")]
 public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
+    CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
+    GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
     GetWorkoutByIdQueryHelper getWorkoutByIdQueryHelper) : ControllerBase
 {
     // Placeholder identity until auth context is wired.
     private const string DefaultUserId = "default-user";
+
+    [HttpGet("active")]
+    [ProducesResponseType(typeof(ActiveWorkoutSummaryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<ActionResult<ActiveWorkoutSummaryResponse>> GetActiveWorkoutSummary(
+        CancellationToken cancellationToken = default)
+    {
+        var workout = await getActiveWorkoutSummaryQueryHelper.GetAsync(cancellationToken);
+        if (workout is null)
+        {
+            return NoContent();
+        }
+
+        return Ok(new ActiveWorkoutSummaryResponse
+        {
+            Workout = ToWorkoutSummary(workout),
+        });
+    }
 
     [HttpGet("{workoutId:guid}")]
     [ProducesResponseType(typeof(GetWorkoutResponse), StatusCodes.Status200OK)]
@@ -81,6 +103,49 @@ public sealed class WorkoutsController(
         {
             return UnprocessableEntity(CreateLabelValidationResponse());
         }
+    }
+
+    [HttpPost("{workoutId:guid}/complete")]
+    [ProducesResponseType(typeof(CompleteWorkoutResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<CompleteWorkoutResponse>> CompleteWorkout(
+        Guid workoutId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await completeWorkoutCommandHandler.HandleAsync(
+            new CompleteWorkoutCommand
+            {
+                WorkoutId = workoutId,
+            },
+            cancellationToken);
+
+        if (result.Outcome == CompleteWorkoutOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Workout not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == CompleteWorkoutOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot be completed",
+                status = StatusCodes.Status409Conflict,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["workout"] = ["Workout must be in progress to complete."],
+                },
+            });
+        }
+
+        return Ok(new CompleteWorkoutResponse
+        {
+            Workout = ToWorkoutSummary(result.Workout!),
+        });
     }
 
     [HttpGet("{workoutId:guid}/lifts")]
@@ -181,6 +246,7 @@ public sealed class WorkoutsController(
         Status = workout.Status.ToString(),
         Label = workout.Label,
         StartedAtUtc = workout.StartedAtUtc,
+        CompletedAtUtc = workout.CompletedAtUtc,
     };
 
     private static WorkoutLiftEntryResponse ToWorkoutLiftEntryResponse(WorkoutLiftEntry workoutLiftEntry) => new()

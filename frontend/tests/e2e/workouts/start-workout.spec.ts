@@ -30,6 +30,6 @@ test('start workout from home navigates to active workout', async ({ page }) => 
 
   await expect(page).toHaveURL(new RegExp(`/workouts/${workoutId}$`));
   await expect(page.locator('mat-card-title')).toHaveText('Workout');
-  await expect(page.getByText('Status: InProgress')).toBeVisible();
-  await expect(page.getByText('Started:')).toBeVisible();
+  await expect(page.locator('p', { hasText: 'Status:' })).toContainText('InProgress');
+  await expect(page.locator('p', { hasText: 'Started:' })).toBeVisible();
 });

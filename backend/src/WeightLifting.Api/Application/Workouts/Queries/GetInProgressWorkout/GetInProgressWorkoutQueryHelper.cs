@@ -25,6 +25,7 @@ public sealed class GetInProgressWorkoutQueryHelper(WeightLiftingDbContext dbCon
             workoutEntity.Status,
             workoutEntity.Label,
             workoutEntity.StartedAtUtc,
+            workoutEntity.CompletedAtUtc,
             workoutEntity.CreatedAtUtc,
             workoutEntity.UpdatedAtUtc);
     }

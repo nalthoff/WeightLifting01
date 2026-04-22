@@ -9,4 +9,6 @@ public sealed class WorkoutSessionSummaryResponse
     public string? Label { get; init; }
 
     public required DateTime StartedAtUtc { get; init; }
+
+    public DateTime? CompletedAtUtc { get; init; }
 }

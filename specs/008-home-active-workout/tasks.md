@@ -25,8 +25,8 @@
 
 **Purpose**: Prepare minimal scaffolding for home card tests and workout-completion API surface changes.
 
-- [ ] T001 Create home-active-workout test scaffolding files in `frontend/tests/unit/home/home-active-workout-card.spec.ts` and `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
-- [ ] T002 [P] Create backend completion test scaffolding files in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs`, `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs`, and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [X] T001 Create home-active-workout test scaffolding files in `frontend/tests/unit/home/home-active-workout-card.spec.ts` and `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
+- [X] T002 [P] Create backend completion test scaffolding files in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs`, `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs`, and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
 
 ---
 
@@ -36,9 +36,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Add/extend completion and active-summary API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/` and align `specs/008-home-active-workout/contracts/home-workout-actions-api.yaml`
-- [ ] T004 [P] Extend workout API client methods for active summary + completion in `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T005 Extend shared workout state primitives for active-workout refresh and completion reconciliation in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T003 Add/extend completion and active-summary API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/` and align `specs/008-home-active-workout/contracts/home-workout-actions-api.yaml`
+- [X] T004 [P] Extend workout API client methods for active summary + completion in `frontend/src/app/core/api/workouts-api.service.ts`
+- [X] T005 Extend shared workout state primitives for active-workout refresh and completion reconciliation in `frontend/src/app/core/state/workouts-store.service.ts`
 
 **Checkpoint**: Foundation ready; client and server contract surfaces support home summary and completion operations.
 
@@ -54,14 +54,14 @@
 
 > **NOTE: Write required tests before implementation. Business-layer unit tests are mandatory and should fail before the corresponding implementation is completed.**
 
-- [ ] T006 [P] [US1] Add frontend unit tests for home card rendering and Continue routing in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
-- [ ] T007 [P] [US1] Add backend integration and contract coverage for active summary retrieval in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ActiveWorkoutSummaryIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [X] T006 [P] [US1] Add frontend unit tests for home card rendering and Continue routing in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
+- [X] T007 [P] [US1] Add backend integration and contract coverage for active summary retrieval in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ActiveWorkoutSummaryIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Add backend endpoint/query path for active workout summary in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetActiveWorkoutSummary/`
-- [ ] T009 [US1] Update home page component state + continue action wiring in `frontend/src/app/features/home/home-page.component.ts`
-- [ ] T010 [P] [US1] Implement home active-workout card markup and styling with label fallback/start time/Continue action in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.scss`
+- [X] T008 [P] [US1] Add backend endpoint/query path for active workout summary in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetActiveWorkoutSummary/`
+- [X] T009 [US1] Update home page component state + continue action wiring in `frontend/src/app/features/home/home-page.component.ts`
+- [X] T010 [P] [US1] Implement home active-workout card markup and styling with label fallback/start time/Continue action in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.scss`
 
 **Checkpoint**: User Story 1 is independently functional from home discovery through continue navigation.
 
@@ -75,16 +75,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T011 [P] [US2] Add backend unit tests for completion lifecycle transitions and invalid-state handling in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs`
-- [ ] T012 [P] [US2] Add backend integration/contract tests for `POST /api/workouts/{workoutId}/complete` success path in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T013 [P] [US2] Add frontend unit tests for complete success flow (stay home, remove card, show success) in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
+- [X] T011 [P] [US2] Add backend unit tests for completion lifecycle transitions and invalid-state handling in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs`
+- [X] T012 [P] [US2] Add backend integration/contract tests for `POST /api/workouts/{workoutId}/complete` success path in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [X] T013 [P] [US2] Add frontend unit tests for complete success flow (stay home, remove card, show success) in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Implement backend completion command/handler and lifecycle updates in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkout/` and `backend/src/WeightLifting.Api/Domain/Workouts/WorkoutSession.cs`
-- [ ] T015 [US2] Add completion endpoint wiring and DI registration in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
-- [ ] T016 [US2] Implement home complete action, loading guard, and success feedback state updates in `frontend/src/app/features/home/home-page.component.ts`
-- [ ] T017 [P] [US2] Add complete-action button states and success feedback UI in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.scss`
+- [X] T014 [P] [US2] Implement backend completion command/handler and lifecycle updates in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkout/` and `backend/src/WeightLifting.Api/Domain/Workouts/WorkoutSession.cs`
+- [X] T015 [US2] Add completion endpoint wiring and DI registration in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T016 [US2] Implement home complete action, loading guard, and success feedback state updates in `frontend/src/app/features/home/home-page.component.ts`
+- [X] T017 [P] [US2] Add complete-action button states and success feedback UI in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.scss`
 
 **Checkpoint**: User Story 2 is independently functional with one-tap home completion and correct success behavior.
 
@@ -98,15 +98,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T018 [P] [US3] Add backend unit/integration coverage for not-found/conflict completion outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs` and `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs`
-- [ ] T019 [P] [US3] Add frontend unit tests for completion error and stale-state reconciliation in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
-- [ ] T020 [P] [US3] Add mobile e2e coverage for home completion failure and rapid-tap behavior in `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
+- [X] T018 [P] [US3] Add backend unit/integration coverage for not-found/conflict completion outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CompleteWorkout/CompleteWorkoutCommandHandlerTests.cs` and `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/CompleteWorkoutIntegrationTests.cs`
+- [X] T019 [P] [US3] Add frontend unit tests for completion error and stale-state reconciliation in `frontend/tests/unit/home/home-active-workout-card.spec.ts`
+- [X] T020 [P] [US3] Add mobile e2e coverage for home completion failure and rapid-tap behavior in `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T021 [P] [US3] Add backend completion error mapping for not-found/conflict paths in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and related application result models
-- [ ] T022 [US3] Implement frontend completion failure messaging + race-state refresh logic in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T023 [US3] Add duplicate-tap guard and disabled-state handling for Complete action in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
+- [X] T021 [P] [US3] Add backend completion error mapping for not-found/conflict paths in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and related application result models
+- [X] T022 [US3] Implement frontend completion failure messaging + race-state refresh logic in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T023 [US3] Add duplicate-tap guard and disabled-state handling for Complete action in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
 
 **Checkpoint**: User Story 3 is independently functional with resilient error handling and authoritative state reconciliation.
 
@@ -116,8 +116,8 @@
 
 **Purpose**: End-to-end validation, regression safety, and final docs alignment.
 
-- [ ] T024 [P] Run backend unit/integration/contract suites for workouts lifecycle changes from `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T025 [P] Run frontend unit and e2e suites for home active-workout behavior from `frontend/tests/unit/home/` and `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
+- [X] T024 [P] Run backend unit/integration/contract suites for workouts lifecycle changes from `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T025 [P] Run frontend unit and e2e suites for home active-workout behavior from `frontend/tests/unit/home/` and `frontend/tests/e2e/workouts/home-active-workout.spec.ts`
 - [ ] T026 Validate manual quickstart scenarios and capture results in `specs/008-home-active-workout/quickstart.md`
 - [ ] T027 Validate primary mobile logging flow regression (start workout -> continue/detail -> complete from home) using `frontend/tests/e2e/workouts/` and `specs/006-start-blank-workout/quickstart.md`
 
