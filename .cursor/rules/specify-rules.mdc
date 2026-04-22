@@ -1,11 +1,11 @@
----
+﻿---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
 ---
 # WeightLifting01 Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-21
+Auto-generated from all feature plans. Last updated: 2026-04-22
 
 ## Active Technologies
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core (001-create-lift)
@@ -14,6 +14,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-21
 - Azure SQL / SQL Server-compatible relational storage using the existing `Lifts` table (003-rename-lift)
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (004-deactivate-lift)
 - Azure SQL / SQL Server-compatible relational storage using the existing `Lifts` table and `IsActive` column (004-deactivate-lift)
+- Angular 20 frontend, C# .NET 10 backend (unchanged) + Angular Router, Angular Material toolbar/button/nav primitives, existing lifts feature routes (005-default-home-nav)
+- Existing SQL-backed backend remains unchanged (no data changes in this feature) (005-default-home-nav)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -34,9 +36,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 005-default-home-nav: Added Angular 20 frontend, C# .NET 10 backend (unchanged) + Angular Router, Angular Material toolbar/button/nav primitives, existing lifts feature routes
 - 004-deactivate-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core, SQL Server provider
 - 003-rename-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core, SQL Server provider
-- 001-create-lift: Added Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core
 
 
 <!-- MANUAL ADDITIONS START -->
