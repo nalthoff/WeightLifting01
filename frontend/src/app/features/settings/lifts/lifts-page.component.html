@@ -53,8 +53,22 @@
   </mat-card>
 
   <mat-card class="page__panel" appearance="outlined">
-    <mat-card-header>
+    <mat-card-header class="page__list-header">
       <mat-card-title>Current lifts</mat-card-title>
+      <mat-button-toggle-group
+        class="page__list-filter"
+        name="liftsFilter"
+        [value]="facade.selectedFilter()"
+        aria-label="Lift visibility filter"
+        (change)="facade.setSelectedFilter($event.value)"
+      >
+        <mat-button-toggle value="active" data-testid="lifts-filter-active">
+          Active only
+        </mat-button-toggle>
+        <mat-button-toggle value="all" data-testid="lifts-filter-all">
+          Include inactive
+        </mat-button-toggle>
+      </mat-button-toggle-group>
     </mat-card-header>
 
     <mat-card-content class="page__list-content">
@@ -64,26 +78,45 @@
       </div>
 
       <p *ngIf="!facade.isLoading() && facade.lifts().length === 0" class="page__empty-state">
-        No lifts added yet.
+        {{ facade.selectedFilter() === 'active' ? 'No active lifts yet.' : 'No lifts added yet.' }}
       </p>
 
       <mat-list *ngIf="facade.lifts().length > 0" class="page__list">
         <ng-container *ngFor="let lift of facade.lifts(); let isLast = last">
           <mat-list-item class="page__list-item">
-            <div class="page__list-row">
+            <div class="page__list-row" [class.page__list-row--inactive]="!lift.isActive">
               <ng-container *ngIf="facade.editingLiftId() !== lift.id; else renameRow">
-                <span class="page__lift-name">{{ lift.name }}</span>
+                <div class="page__lift-summary">
+                  <span class="page__lift-name">{{ lift.name }}</span>
+                  <span *ngIf="!lift.isActive" class="page__lift-status">Inactive</span>
+                </div>
 
-                <button
-                  type="button"
-                  mat-icon-button
-                  color="primary"
-                  [attr.aria-label]="'Edit ' + lift.name"
-                  [attr.data-testid]="'edit-lift-' + lift.id"
-                  (click)="facade.startRename(lift)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
+                <div class="page__icon-actions">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="primary"
+                    [attr.aria-label]="'Edit ' + lift.name"
+                    [attr.data-testid]="'edit-lift-' + lift.id"
+                    [disabled]="facade.isSaving()"
+                    (click)="facade.startRename(lift)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <button
+                    *ngIf="lift.isActive"
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    [attr.aria-label]="'Deactivate ' + lift.name"
+                    [attr.data-testid]="'deactivate-lift-' + lift.id"
+                    [disabled]="facade.isSaving()"
+                    (click)="openDeactivateDialog(lift)"
+                  >
+                    <mat-icon>block</mat-icon>
+                  </button>
+                </div>
               </ng-container>
 
               <ng-template #renameRow>

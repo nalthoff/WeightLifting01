@@ -34,7 +34,7 @@ public sealed class RenameLiftCommandHandler(WeightLiftingDbContext dbContext)
 
         var hasDuplicateName = await dbContext.Lifts.AnyAsync(lift =>
             lift.Id != command.LiftId
-            && lift.Name.Trim().ToLower() == normalizedRequestedNameLower,
+            && lift.NameNormalized == normalizedRequestedNameLower,
             cancellationToken);
 
         if (hasDuplicateName)
@@ -43,8 +43,16 @@ public sealed class RenameLiftCommandHandler(WeightLiftingDbContext dbContext)
         }
 
         liftEntity.Name = normalizedRequestedName;
+        liftEntity.NameNormalized = normalizedRequestedNameLower;
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (ex.IsUniqueConstraintViolation())
+        {
+            throw new DuplicateLiftNameException(normalizedRequestedName);
+        }
 
         return new Lift(liftEntity.Id, liftEntity.Name, liftEntity.IsActive, liftEntity.CreatedAtUtc);
     }

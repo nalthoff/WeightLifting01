@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Lifts.Commands.CreateLift;
+using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
 using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Infrastructure.Persistence;
 
@@ -27,6 +28,24 @@ public sealed class CreateLiftIntegrationTests : IAsyncLifetime
         var createdLift = Assert.Single(lifts);
         Assert.Equal("Front Squat", createdLift.Name);
         Assert.True(createdLift.IsActive);
+    }
+
+    [Fact]
+    public async Task CreateLiftWithDuplicateNameThrows()
+    {
+        var createHandler = new CreateLiftCommandHandler(dbContext);
+
+        await createHandler.HandleAsync(new CreateLiftCommand
+        {
+            Name = "Bench Press",
+        }, CancellationToken.None);
+
+        var action = () => createHandler.HandleAsync(new CreateLiftCommand
+        {
+            Name = "bench press",
+        }, CancellationToken.None);
+
+        await Assert.ThrowsAsync<DuplicateLiftNameException>(action);
     }
 
     public async Task InitializeAsync()

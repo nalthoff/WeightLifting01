@@ -26,8 +26,8 @@
 
 **Purpose**: Create the minimum scaffolding needed to add lift deactivation without introducing new application boundaries.
 
-- [ ] T001 Create the deactivate command and backend test directory scaffolding in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/`, `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/DeactivateLift/`, and `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/`
-- [ ] T002 [P] Add frontend deactivate/filter test scaffolding in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`, `frontend/tests/unit/core/state/lifts-store.service.spec.ts`, and `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
+- [X] T001 Create the deactivate command and backend test directory scaffolding in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/`, `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/DeactivateLift/`, and `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/`
+- [X] T002 [P] Add frontend deactivate/filter test scaffolding in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`, `frontend/tests/unit/core/state/lifts-store.service.spec.ts`, and `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
 
 ---
 
@@ -37,9 +37,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create the backend deactivate response contract in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/DeactivateLiftResponse.cs`
-- [ ] T004 [P] Extend the shared frontend lifts API client with deactivate response typing and a `deactivateLift` method in `frontend/src/app/core/api/lifts-api.service.ts`
-- [ ] T005 Create the deactivate command model in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/DeactivateLiftCommand.cs`
+- [X] T003 Create the backend deactivate response contract in `backend/src/WeightLifting.Api/Api/Contracts/Lifts/DeactivateLiftResponse.cs`
+- [X] T004 [P] Extend the shared frontend lifts API client with deactivate response typing and a `deactivateLift` method in `frontend/src/app/core/api/lifts-api.service.ts`
+- [X] T005 Create the deactivate command model in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/DeactivateLiftCommand.cs`
 
 **Checkpoint**: Foundation ready. The repo has the minimal deactivate contract surface needed to extend the existing lift stack.
 
@@ -55,19 +55,19 @@
 
 > **NOTE: Write required tests before implementation. Business-layer unit tests are mandatory and should fail before the corresponding implementation is completed.**
 
-- [ ] T006 [P] [US1] Add backend unit tests for deactivate state transitions, missing-lift handling, and no-op behavior in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/DeactivateLift/DeactivateLiftCommandHandlerTests.cs`
-- [ ] T007 [P] [US1] Add backend integration tests for deactivate persistence and default active-only list exclusion in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/DeactivateLiftIntegrationTests.cs`
-- [ ] T008 [P] [US1] Add contract tests for `PUT /api/lifts/{liftId}/deactivate` success and not-found responses in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
-- [ ] T009 [P] [US1] Add Angular unit tests for deactivate confirmation state and save feedback in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
-- [ ] T010 [P] [US1] Add a mobile e2e test for successful, cancelled, and failed deactivate flows in `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
+- [X] T006 [P] [US1] Add backend unit tests for deactivate state transitions, missing-lift handling, and no-op behavior in `backend/tests/WeightLifting.Api.UnitTests/Application/Lifts/DeactivateLift/DeactivateLiftCommandHandlerTests.cs`
+- [X] T007 [P] [US1] Add backend integration tests for deactivate persistence and default active-only list exclusion in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/DeactivateLiftIntegrationTests.cs`
+- [X] T008 [P] [US1] Add contract tests for `PUT /api/lifts/{liftId}/deactivate` success and not-found responses in `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
+- [X] T009 [P] [US1] Add Angular unit tests for deactivate confirmation state and save feedback in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts`
+- [X] T010 [P] [US1] Add a mobile e2e test for successful, cancelled, and failed deactivate flows in `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Extend the existing lift domain object with deactivate behavior in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
-- [ ] T012 [US1] Implement the deactivate command handler in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/DeactivateLiftCommandHandler.cs`
-- [ ] T013 [US1] Register the deactivate handler and add the deactivate endpoint in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs` and `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
-- [ ] T014 [US1] Extend the existing lifts facade with deactivate confirmation, submit, cancel, and failure handling in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
-- [ ] T015 [P] [US1] Update the current settings-lifts page markup and styling for deactivate controls and confirmation UI in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T011 [P] [US1] Extend the existing lift domain object with deactivate behavior in `backend/src/WeightLifting.Api/Domain/Lifts/Lift.cs`
+- [X] T012 [US1] Implement the deactivate command handler in `backend/src/WeightLifting.Api/Application/Lifts/Commands/DeactivateLift/DeactivateLiftCommandHandler.cs`
+- [X] T013 [US1] Register the deactivate handler and add the deactivate endpoint in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs` and `backend/src/WeightLifting.Api/Api/Controllers/LiftsController.cs`
+- [X] T014 [US1] Extend the existing lifts facade with deactivate confirmation, submit, cancel, and failure handling in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T015 [P] [US1] Update the current settings-lifts page markup and styling for deactivate controls and confirmation UI in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
 
@@ -81,15 +81,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T016 [P] [US2] Add backend integration and contract coverage for `activeOnly=true` versus `activeOnly=false` lift-list reads after deactivation in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/DeactivateLiftIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
-- [ ] T017 [P] [US2] Add frontend unit tests for filter toggling, inactive lift rendering, and selected-filter refresh behavior in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts` and `frontend/tests/unit/core/state/lifts-store.service.spec.ts`
-- [ ] T018 [P] [US2] Add mobile e2e coverage for the include-inactive filter behavior in `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
+- [X] T016 [P] [US2] Add backend integration and contract coverage for `activeOnly=true` versus `activeOnly=false` lift-list reads after deactivation in `backend/tests/WeightLifting.Api.IntegrationTests/Lifts/DeactivateLiftIntegrationTests.cs` and `backend/tests/WeightLifting.Api.ContractTests/Lifts/LiftsApiContractTests.cs`
+- [X] T017 [P] [US2] Add frontend unit tests for filter toggling, inactive lift rendering, and selected-filter refresh behavior in `frontend/tests/unit/settings/lifts/lifts-page.component.spec.ts` and `frontend/tests/unit/core/state/lifts-store.service.spec.ts`
+- [X] T018 [P] [US2] Add mobile e2e coverage for the include-inactive filter behavior in `frontend/tests/e2e/settings-lifts/deactivate-lift.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Extend the existing lifts facade to track the selected active/inactive filter and reload lifts with the current `activeOnly` value in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
-- [ ] T020 [P] [US2] Update the current settings-lifts page markup and styling to expose the filter and visually distinguish inactive lifts in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
-- [ ] T021 [US2] Adjust shared lift-store reconciliation so confirmed deactivation and filtered list refreshes preserve the selected view without introducing duplicate state models in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T019 [US2] Extend the existing lifts facade to track the selected active/inactive filter and reload lifts with the current `activeOnly` value in `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
+- [X] T020 [P] [US2] Update the current settings-lifts page markup and styling to expose the filter and visually distinguish inactive lifts in `frontend/src/app/features/settings/lifts/lifts-page.component.html` and `frontend/src/app/features/settings/lifts/lifts-page.component.scss`
+- [X] T021 [US2] Adjust shared lift-store reconciliation so confirmed deactivation and filtered list refreshes preserve the selected view without introducing duplicate state models in `frontend/src/app/core/state/lifts-store.service.ts` and `frontend/src/app/features/settings/lifts/lifts-page.facade.ts`
 
 **Checkpoint**: At this point, User Stories 1 and 2 should both work independently, with inactive lifts hidden by default and viewable on demand.
 
@@ -99,8 +99,8 @@
 
 **Purpose**: Final verification and cleanup after deactivation and filtering work end-to-end.
 
-- [ ] T022 Run the backend unit, integration, contract, frontend unit, and e2e suites from `backend/tests/` and `frontend/tests/`
-- [ ] T023 Validate the deactivate quickstart manually on a mobile viewport using `specs/004-deactivate-lift/quickstart.md`
+- [X] T022 Run the backend unit, integration, contract, frontend unit, and e2e suites from `backend/tests/` and `frontend/tests/`
+- [X] T023 Validate the deactivate quickstart manually on a mobile viewport using `specs/004-deactivate-lift/quickstart.md`
 
 ---
 

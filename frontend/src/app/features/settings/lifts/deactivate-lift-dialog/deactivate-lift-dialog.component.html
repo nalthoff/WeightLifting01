@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Deactivate lift</h2>
+
+<mat-dialog-content class="dialog__content">
+  <p>
+    Deactivate <strong>{{ data.liftName }}</strong>? It will be hidden from active-only lists.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog__actions">
+  <button
+    type="button"
+    mat-stroked-button
+    [attr.data-testid]="'cancel-deactivate-lift-' + data.liftId"
+    [mat-dialog-close]="false"
+  >
+    Keep active
+  </button>
+  <button
+    type="button"
+    mat-flat-button
+    color="warn"
+    [attr.data-testid]="'confirm-deactivate-lift-' + data.liftId"
+    [mat-dialog-close]="true"
+  >
+    Deactivate lift
+  </button>
+</mat-dialog-actions>

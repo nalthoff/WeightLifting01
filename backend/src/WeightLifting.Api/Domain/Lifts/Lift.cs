@@ -30,6 +30,16 @@ public sealed class Lift
         return new Lift(Id, normalizedName, IsActive, CreatedAtUtc);
     }
 
+    public Lift Deactivate()
+    {
+        if (!IsActive)
+        {
+            return this;
+        }
+
+        return new Lift(Id, Name, false, CreatedAtUtc);
+    }
+
     public static string NormalizeName(string name)
     {
         var normalizedName = name?.Trim() ?? string.Empty;
@@ -41,4 +51,10 @@ public sealed class Lift
 
         return normalizedName;
     }
+
+    /// <summary>
+    /// Canonical key for uniqueness (trimmed display name, invariant lowercase).
+    /// </summary>
+    public static string NormalizeForUniqueLookup(string trimmedDisplayName) =>
+        trimmedDisplayName.ToLowerInvariant();
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
+using WeightLifting.Api.Domain.Lifts;
 using WeightLifting.Api.Infrastructure.Persistence;
 using WeightLifting.Api.Infrastructure.Persistence.Lifts;
 
@@ -81,6 +82,7 @@ public sealed class RenameLiftCommandHandlerTests
         {
             Id = liftId,
             Name = name,
+            NameNormalized = Lift.NormalizeForUniqueLookup(name),
             IsActive = true,
             CreatedAtUtc = DateTime.UtcNow,
         });

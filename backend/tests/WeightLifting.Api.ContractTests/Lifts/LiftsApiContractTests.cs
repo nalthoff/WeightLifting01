@@ -1,11 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using WeightLifting.Api.Infrastructure.Persistence;
+using WeightLifting.Api.ContractTests;
 
 namespace WeightLifting.Api.ContractTests.Lifts;
 
@@ -14,14 +10,18 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    /// <summary>Prefix makes accidental leakage into a dev database obvious; guard prevents LocalDB use.</summary>
+    private static string UniqueLiftName(string label) => $"[contract] {label} {Guid.NewGuid():N}";
+
     [Fact]
     public async Task PostLiftReturnsCreatedLiftContract()
     {
         var client = factory.CreateClient();
+        var liftName = UniqueLiftName("Overhead Press");
 
         var response = await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Overhead Press",
+            name = liftName,
         });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -30,7 +30,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 
         Assert.NotNull(payload);
         Assert.NotEqual(Guid.Empty, payload.Lift.Id);
-        Assert.Equal("Overhead Press", payload.Lift.Name);
+        Assert.Equal(liftName, payload.Lift.Name);
         Assert.True(payload.Lift.IsActive);
     }
 
@@ -38,10 +38,11 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
     public async Task GetLiftsReturnsListContract()
     {
         var client = factory.CreateClient();
+        var liftName = UniqueLiftName("Bench Press");
 
         await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Bench Press",
+            name = liftName,
         });
 
         var response = await client.GetAsync("/api/lifts");
@@ -51,7 +52,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         var payload = await response.Content.ReadFromJsonAsync<LiftListResponse>(JsonOptions);
 
         Assert.NotNull(payload);
-        Assert.NotEmpty(payload.Items);
+        Assert.Contains(payload.Items, item => item.Name == liftName);
     }
 
     [Fact]
@@ -73,13 +74,40 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
     }
 
     [Fact]
+    public async Task PostLiftWithDuplicateNameReturnsConflictPayload()
+    {
+        var client = factory.CreateClient();
+        var liftName = UniqueLiftName("Bench Press");
+
+        var firstResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = liftName,
+        });
+        Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);
+
+        var duplicateResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = $"  {liftName.ToUpperInvariant()}  ",
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, duplicateResponse.StatusCode);
+
+        var payload = await duplicateResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+
+        Assert.NotNull(payload);
+        Assert.Contains("Lift name already exists.", payload.Errors["name"]);
+    }
+
+    [Fact]
     public async Task PutLiftReturnsRenamedLiftContract()
     {
         var client = factory.CreateClient();
+        var originalName = UniqueLiftName("Front Squat");
+        var renamed = UniqueLiftName("Paused Front Squat");
 
         var createResponse = await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Front Squat",
+            name = originalName,
         });
 
         var createdPayload = await createResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
@@ -88,7 +116,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 
         var response = await client.PutAsJsonAsync($"/api/lifts/{createdPayload.Lift.Id}", new
         {
-            name = "Paused Front Squat",
+            name = renamed,
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -97,7 +125,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 
         Assert.NotNull(payload);
         Assert.Equal(createdPayload.Lift.Id, payload.Lift.Id);
-        Assert.Equal("Paused Front Squat", payload.Lift.Name);
+        Assert.Equal(renamed, payload.Lift.Name);
         Assert.True(payload.Lift.IsActive);
     }
 
@@ -108,7 +136,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 
         var createResponse = await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Front Squat",
+            name = UniqueLiftName("Front Squat"),
         });
 
         var createdPayload = await createResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
@@ -132,14 +160,17 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
     public async Task PutLiftWithDuplicateNameReturnsConflictPayloadAndLeavesListCanonical()
     {
         var client = factory.CreateClient();
+        var token = Guid.NewGuid().ToString("N");
+        var firstName = $"[contract] Front Squat {token}";
+        var secondName = $"[contract] Overhead Press {token}";
 
         var firstCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Front Squat",
+            name = firstName,
         });
         var secondCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
         {
-            name = "Overhead Press",
+            name = secondName,
         });
 
         var firstLift = await firstCreateResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
@@ -150,7 +181,7 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
 
         var response = await client.PutAsJsonAsync($"/api/lifts/{firstLift.Lift.Id}", new
         {
-            name = "  OVERHEAD PRESS  ",
+            name = $"  {secondName.ToUpperInvariant()}  ",
         });
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
@@ -163,8 +194,87 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         var listPayload = await listResponse.Content.ReadFromJsonAsync<LiftListResponse>(JsonOptions);
 
         Assert.NotNull(listPayload);
-        Assert.Contains(listPayload.Items, item => item.Id == firstLift.Lift.Id && item.Name == "Front Squat");
-        Assert.Contains(listPayload.Items, item => item.Id == secondLift.Lift.Id && item.Name == "Overhead Press");
+        Assert.Contains(listPayload.Items, item => item.Id == firstLift.Lift.Id && item.Name == firstName);
+        Assert.Contains(listPayload.Items, item => item.Id == secondLift.Lift.Id && item.Name == secondName);
+    }
+
+    [Fact]
+    public async Task PutLiftDeactivateReturnsDeactivatedLiftContract()
+    {
+        var client = factory.CreateClient();
+        var liftName = UniqueLiftName("Front Squat");
+
+        var createResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = liftName,
+        });
+
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(createdPayload);
+
+        var response = await client.PutAsync($"/api/lifts/{createdPayload.Lift.Id}/deactivate", null);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<DeactivateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(payload);
+        Assert.Equal(createdPayload.Lift.Id, payload.Lift.Id);
+        Assert.Equal(liftName, payload.Lift.Name);
+        Assert.False(payload.Lift.IsActive);
+    }
+
+    [Fact]
+    public async Task PutLiftDeactivateWithMissingLiftReturnsNotFound()
+    {
+        var client = factory.CreateClient();
+
+        var response = await client.PutAsync($"/api/lifts/{Guid.NewGuid()}/deactivate", null);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetLiftsActiveOnlyFilterExcludesInactiveWhenTrueAndIncludesInactiveWhenFalse()
+    {
+        var client = factory.CreateClient();
+        var firstName = UniqueLiftName("Front Squat");
+        var secondName = UniqueLiftName("Overhead Press");
+
+        var firstCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = firstName,
+        });
+        var secondCreateResponse = await client.PostAsJsonAsync("/api/lifts", new
+        {
+            name = secondName,
+        });
+
+        var firstLift = await firstCreateResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+        var secondLift = await secondCreateResponse.Content.ReadFromJsonAsync<CreateLiftResponse>(JsonOptions);
+
+        Assert.NotNull(firstLift);
+        Assert.NotNull(secondLift);
+
+        var deactivateResponse = await client.PutAsync($"/api/lifts/{firstLift.Lift.Id}/deactivate", null);
+        Assert.Equal(HttpStatusCode.OK, deactivateResponse.StatusCode);
+
+        var activeOnlyResponse = await client.GetAsync("/api/lifts?activeOnly=true");
+        var activeOnlyPayload = await activeOnlyResponse.Content.ReadFromJsonAsync<LiftListResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, activeOnlyResponse.StatusCode);
+        Assert.NotNull(activeOnlyPayload);
+        Assert.DoesNotContain(activeOnlyPayload.Items, item => item.Id == firstLift.Lift.Id);
+        Assert.Contains(activeOnlyPayload.Items, item => item.Id == secondLift.Lift.Id && item.IsActive);
+
+        var includeInactiveResponse = await client.GetAsync("/api/lifts?activeOnly=false");
+        var includeInactivePayload = await includeInactiveResponse.Content.ReadFromJsonAsync<LiftListResponse>(JsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, includeInactiveResponse.StatusCode);
+        Assert.NotNull(includeInactivePayload);
+        Assert.Contains(includeInactivePayload.Items, item => item.Id == firstLift.Lift.Id && !item.IsActive);
+        Assert.Contains(includeInactivePayload.Items, item => item.Id == secondLift.Lift.Id && item.IsActive);
     }
 
     public sealed class CreateLiftResponse
@@ -186,6 +296,11 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
         public required LiftResponse Lift { get; init; }
     }
 
+    public sealed class DeactivateLiftResponse
+    {
+        public required LiftResponse Lift { get; init; }
+    }
+
     public sealed class LiftListResponse
     {
         public required IReadOnlyList<LiftListItemResponse> Items { get; init; }
@@ -203,42 +318,5 @@ public sealed class LiftsApiContractTests(LiftsContractWebApplicationFactory fac
     public sealed class ValidationErrorResponse
     {
         public required Dictionary<string, string[]> Errors { get; init; }
-    }
-}
-
-public sealed class LiftsContractWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
-{
-    private readonly string databasePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.db");
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Test");
-        builder.ConfigureAppConfiguration((_, configBuilder) =>
-        {
-            configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Persistence:Provider"] = "Sqlite",
-                ["ConnectionStrings:DefaultConnection"] = $"Data Source={databasePath}",
-            });
-        });
-    }
-
-    public async Task InitializeAsync()
-    {
-        using var client = CreateClient();
-        using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<WeightLiftingDbContext>();
-        await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
-    }
-
-    public new Task DisposeAsync()
-    {
-        if (File.Exists(databasePath))
-        {
-            File.Delete(databasePath);
-        }
-
-        return Task.CompletedTask;
     }
 }

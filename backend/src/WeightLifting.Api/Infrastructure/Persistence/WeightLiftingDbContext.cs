@@ -20,6 +20,13 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
                 .HasMaxLength(200)
                 .IsRequired();
 
+            entity.Property(lift => lift.NameNormalized)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.HasIndex(lift => lift.NameNormalized)
+                .IsUnique();
+
             entity.Property(lift => lift.IsActive)
                 .HasDefaultValue(true);
 

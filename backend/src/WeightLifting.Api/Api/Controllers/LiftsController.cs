@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WeightLifting.Api.Api.Contracts.Lifts;
 using WeightLifting.Api.Application.Lifts.Commands.CreateLift;
+using WeightLifting.Api.Application.Lifts.Commands.DeactivateLift;
 using WeightLifting.Api.Application.Lifts.Commands.RenameLift;
 using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Domain.Lifts;
@@ -12,6 +13,7 @@ namespace WeightLifting.Api.Api.Controllers;
 public sealed class LiftsController(
     CreateLiftCommandHandler createLiftCommandHandler,
     RenameLiftCommandHandler renameLiftCommandHandler,
+    DeactivateLiftCommandHandler deactivateLiftCommandHandler,
     GetLiftsQueryHandler getLiftsQueryHandler) : ControllerBase
 {
     [HttpGet]
@@ -35,6 +37,7 @@ public sealed class LiftsController(
     [HttpPost]
     [ProducesResponseType(typeof(CreateLiftResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateLiftResponse>> CreateLift(
         [FromBody] CreateLiftRequest request,
         CancellationToken cancellationToken = default)
@@ -53,6 +56,10 @@ public sealed class LiftsController(
             };
 
             return Created($"/api/lifts/{lift.Id}", response);
+        }
+        catch (DuplicateLiftNameException)
+        {
+            return Conflict(CreateNameConflictResponse());
         }
         catch (ArgumentException)
         {
@@ -90,6 +97,35 @@ public sealed class LiftsController(
         catch (DuplicateLiftNameException)
         {
             return Conflict(CreateNameConflictResponse());
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new
+            {
+                title = "Lift not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+    }
+
+    [HttpPut("{liftId:guid}/deactivate")]
+    [ProducesResponseType(typeof(DeactivateLiftResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DeactivateLiftResponse>> DeactivateLift(
+        Guid liftId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var lift = await deactivateLiftCommandHandler.HandleAsync(new DeactivateLiftCommand
+            {
+                LiftId = liftId,
+            }, cancellationToken);
+
+            return Ok(new DeactivateLiftResponse
+            {
+                Lift = ToLiftResponse(lift),
+            });
         }
         catch (KeyNotFoundException)
         {

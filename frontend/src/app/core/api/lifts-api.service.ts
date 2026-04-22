@@ -40,6 +40,15 @@ export interface RenameLiftResponse {
   };
 }
 
+export interface DeactivateLiftResponse {
+  lift: {
+    id: string;
+    name: string;
+    isActive: boolean;
+    createdAtUtc: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -60,5 +69,9 @@ export class LiftsApiService {
 
   renameLift(liftId: string, request: RenameLiftRequest): Observable<RenameLiftResponse> {
     return this.httpClient.put<RenameLiftResponse>(`/api/lifts/${liftId}`, request);
+  }
+
+  deactivateLift(liftId: string): Observable<DeactivateLiftResponse> {
+    return this.httpClient.put<DeactivateLiftResponse>(`/api/lifts/${liftId}/deactivate`, null);
   }
 }
