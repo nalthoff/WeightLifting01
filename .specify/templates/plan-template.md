@@ -35,14 +35,15 @@
       treated as the design baseline.
 - [ ] The feature preserves or improves "just enough history" needed to help users choose
       the next working weight.
-- [ ] Angular owns presentation concerns only; business rules are assigned to C# backend or
-      a dedicated business layer.
+- [ ] Angular owns presentation concerns only; business rules are assigned to the C#
+      backend application/domain layer.
 - [ ] The design follows SOLID principles with clear responsibilities and explicit
       dependency boundaries.
 - [ ] Production code organization keeps one class per file unless a documented exception is
       required by the framework or language construct.
-- [ ] SQL persistence changes, if any, include schema ownership and migration planning.
-- [ ] All affected business-layer logic has a concrete unit-test approach.
+- [ ] SQL persistence changes, if any, include explicit schema updates and versioned
+      migration planning.
+- [ ] All affected backend application/domain logic has a concrete unit-test approach.
 - [ ] All proposed infrastructure and runtime assumptions are compatible with Azure hosting
       and managed services.
 

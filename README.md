@@ -197,5 +197,8 @@ local development database.
 
 - The project follows a mobile-first design approach.
 - The frontend uses a custom Angular Material dark theme with Iowa State-inspired brand colors.
-- Business logic is intended to live in the backend and be covered by automated tests.
+- Business logic is intended to live in the backend application/domain layer and be covered
+  by automated tests.
+- Any persisted data model change is expected to include SQL schema updates and versioned
+  EF Core migrations.
 - Production code is organized with one class per file for easier discovery and maintenance.

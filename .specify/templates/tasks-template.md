@@ -9,8 +9,8 @@ description: "Task list template for feature implementation"
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
 **Tests**: Include test tasks whenever the feature changes behavior. Unit tests are REQUIRED
-for any business-layer logic. Add integration, contract, or end-to-end tests when API,
-persistence, or cross-boundary behavior changes.
+for any backend application/domain logic. Add integration, contract, or end-to-end tests
+when API, SQL persistence, or cross-boundary behavior changes.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 

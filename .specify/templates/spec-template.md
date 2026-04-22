@@ -97,10 +97,10 @@
 Include requirements, when relevant, for:
 - mobile-first behavior in the primary logging flow
 - workout history that supports next-weight decisions
-- business-rule ownership outside Angular presentation code
+- business-rule ownership in the C# backend application/domain layer (not Angular)
 - SOLID-aligned service and domain boundaries for new or changed backend logic
 - discoverable production code organization with one class per file
-- SQL persistence and migration expectations for data changes
+- SQL schema and versioned migration expectations for persisted data model changes
 - Azure-compatible infrastructure and deployment assumptions
 
 *Example of marking unclear requirements:*

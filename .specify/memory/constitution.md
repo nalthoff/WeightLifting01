@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 1.1.1
 - Modified principles:
-  - III. Angular and C# Separation of Concerns -> III. Angular, C#, and SOLID Boundaries
+  - III. Angular, C#, and SOLID Boundaries -> III. Angular, C#, and SOLID Boundaries
 - Added sections:
   - None
 - Removed sections:
@@ -11,6 +11,7 @@ Sync Impact Report
   - ✅ .specify/templates/plan-template.md
   - ✅ .specify/templates/spec-template.md
   - ✅ .specify/templates/tasks-template.md
+  - ✅ README.md
 - Follow-up TODOs:
   - None
 -->
@@ -36,13 +37,15 @@ tracking sprawl.
 ### III. Angular, C#, and SOLID Boundaries
 The frontend MUST be implemented in Angular and the backend MUST be implemented in C# on a
 supported .NET runtime. Presentation concerns belong in Angular; business rules for workout
-logging, progression, validation, and history interpretation MUST live in backend services
-or a dedicated business layer that can be tested independently of the UI. Persistent data
-MUST be modeled in SQL. New or revised code MUST follow SOLID principles so responsibilities
-remain narrow, dependencies stay explicit, and behavior can be extended without fragile
-cross-cutting changes. Each production class MUST live in its own file unless a language or
-framework construct makes that impossible or clearly less readable. The rationale is to keep
-behavior consistent across clients, preserve maintainability, and make code easy to locate.
+logging, progression, validation, and history interpretation MUST live in the backend
+application/domain layer where behavior can be tested independently of the UI. Persistent
+data MUST be modeled in SQL. If a change affects the persisted data model, the same change
+MUST include schema updates and versioned migrations so environments remain consistent and
+deployable. New or revised code MUST follow SOLID principles so responsibilities remain
+narrow, dependencies stay explicit, and behavior can be extended without fragile cross-cutting
+changes. Each production class MUST live in its own file unless a language or framework
+construct makes that impossible or clearly less readable. The rationale is to keep behavior
+consistent across clients, preserve maintainability, and make code easy to locate.
 
 ### IV. Unit-Tested Business Logic
 Any business layer logic MUST be covered by automated unit tests in the same change that
@@ -86,8 +89,9 @@ the project operationally portable within the intended cloud platform from the s
   ownership, C# backend ownership, SQL persistence approach, Azure deployment compatibility,
   SOLID-aligned design boundaries, one-class-per-file organization, and a unit-test strategy
   for all affected business logic.
-- Every task list MUST include concrete work for business-layer unit tests whenever business
-  rules change, plus schema or migration tasks whenever persisted workout data changes.
+- Every task list MUST include concrete work for backend application/domain unit tests whenever
+  business rules change, plus SQL schema and migration tasks whenever persisted workout data
+  changes.
 - Pull requests and reviews MUST reject implementations that place business rules in Angular
   components, skip required unit tests, or add infrastructure that is not Azure-compatible
   without an approved exception. Reviews MUST also reject avoidable multi-class files or
@@ -112,4 +116,4 @@ writing the implementation plan, and during pull request review. Any exception M
 explicitly justified in the plan's Complexity Tracking section with the simpler alternative
 that was rejected.
 
-**Version**: 1.1.0 | **Ratified**: 2026-04-20 | **Last Amended**: 2026-04-20
+**Version**: 1.1.1 | **Ratified**: 2026-04-20 | **Last Amended**: 2026-04-22
