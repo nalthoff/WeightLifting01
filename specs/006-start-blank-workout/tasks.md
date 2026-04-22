@@ -33,6 +33,7 @@
 - [ ] T007 Add EF migration for workouts table and indexes in `backend/src/WeightLifting.Api/Infrastructure/Persistence/Migrations/`
 - [ ] T008 Create base API contract models for workouts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`
 - [ ] T009 Register workout handlers/services in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [ ] T010 Enable automatic EF migrations during API startup in `backend/src/WeightLifting.Api/Program.cs`
 
 **Checkpoint**: Workout persistence and wiring are in place; story work can begin.
 
@@ -46,21 +47,21 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add unit tests for start command happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
-- [ ] T011 [P] [US1] Add integration test for POST start success in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
-- [ ] T012 [P] [US1] Add contract test for `201 Created` response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T013 [P] [US1] Add frontend e2e happy-path start test in `frontend/e2e/workouts/start-workout.spec.ts`
+- [ ] T011 [P] [US1] Add unit tests for start command happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
+- [ ] T012 [P] [US1] Add integration test for POST start success in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
+- [ ] T013 [P] [US1] Add contract test for `201 Created` response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [ ] T014 [P] [US1] Add frontend e2e happy-path start test in `frontend/e2e/workouts/start-workout.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Implement start command and result models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/`
-- [ ] T015 [US1] Implement start command handler (create + UTC start assignment) in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
-- [ ] T016 [US1] Implement workouts start endpoint in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T017 [P] [US1] Add frontend workouts API client methods in `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T018 [P] [US1] Add workout session state store in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T019 [US1] Add Start Workout entry to home page in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
-- [ ] T020 [US1] Create minimal active-session screen in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T021 [US1] Add workouts routes and navigation in `frontend/src/app/features/workouts/workouts.routes.ts` and `frontend/src/app/app.routes.ts`
+- [ ] T015 [P] [US1] Implement start command and result models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/`
+- [ ] T016 [US1] Implement start command handler (create + UTC start assignment) in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
+- [ ] T017 [US1] Implement workouts start endpoint in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [ ] T018 [P] [US1] Add frontend workouts API client methods in `frontend/src/app/core/api/workouts-api.service.ts`
+- [ ] T019 [P] [US1] Add workout session state store in `frontend/src/app/core/state/workouts-store.service.ts`
+- [ ] T020 [US1] Add Start Workout entry to home page in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
+- [ ] T021 [US1] Create minimal active-session screen in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [ ] T022 [US1] Add workouts routes and navigation in `frontend/src/app/features/workouts/workouts.routes.ts` and `frontend/src/app/app.routes.ts`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -74,15 +75,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T022 [P] [US2] Add unit tests for label normalization rules in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
-- [ ] T023 [P] [US2] Add integration test for optional label behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
-- [ ] T024 [P] [US2] Add frontend e2e label entry test in `frontend/e2e/workouts/start-workout-label.spec.ts`
+- [ ] T023 [P] [US2] Add unit tests for label normalization rules in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
+- [ ] T024 [P] [US2] Add integration test for optional label behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
+- [ ] T025 [P] [US2] Add frontend e2e label entry test in `frontend/e2e/workouts/start-workout-label.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Add backend label validation/normalization in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
-- [ ] T026 [US2] Add optional label input on home start flow in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.ts`
-- [ ] T027 [US2] Show saved label on active-session screen in `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [ ] T026 [US2] Add backend label validation/normalization in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
+- [ ] T027 [US2] Add optional label input on home start flow in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.ts`
+- [ ] T028 [US2] Show saved label on active-session screen in `frontend/src/app/features/workouts/active-workout-page.component.html`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -96,16 +97,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Add unit tests for one-active-workout rule in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
-- [ ] T029 [P] [US3] Add integration test for conflict response in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
-- [ ] T030 [P] [US3] Add contract test for `409 Conflict` response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T031 [P] [US3] Add frontend e2e continue-existing prompt test in `frontend/e2e/workouts/start-workout-conflict.spec.ts`
+- [ ] T029 [P] [US3] Add unit tests for one-active-workout rule in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs`
+- [ ] T030 [P] [US3] Add integration test for conflict response in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
+- [ ] T031 [P] [US3] Add contract test for `409 Conflict` response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [ ] T032 [P] [US3] Add frontend e2e continue-existing prompt test in `frontend/e2e/workouts/start-workout-conflict.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Implement active-workout lookup and conflict outcome in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
-- [ ] T033 [US3] Return structured `409` continue payload in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T034 [US3] Add continue-existing-session prompt handling in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
+- [ ] T033 [US3] Implement active-workout lookup and conflict outcome in `backend/src/WeightLifting.Api/Application/Workouts/Commands/StartWorkout/StartWorkoutCommandHandler.cs`
+- [ ] T034 [US3] Return structured `409` continue payload in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [ ] T035 [US3] Add continue-existing-session prompt handling in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -115,9 +116,9 @@
 
 **Purpose**: Keep UX clear on flaky connectivity and finalize verification.
 
-- [ ] T035 [P] Add backend integration test coverage for timeout/error semantics in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
-- [ ] T036 [P] Add explicit frontend error-state messaging for failed starts in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.ts`
-- [ ] T037 Run and document quickstart verification in `specs/006-start-blank-workout/quickstart.md`
+- [ ] T036 [P] Add backend integration test coverage for timeout/error semantics in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/StartWorkoutIntegrationTests.cs`
+- [ ] T037 [P] Add explicit frontend error-state messaging for failed starts in `frontend/src/app/features/home/home-page.component.html` and `frontend/src/app/features/home/home-page.component.ts`
+- [ ] T038 Run and document quickstart verification in `specs/006-start-blank-workout/quickstart.md`
 
 ---
 
@@ -146,7 +147,7 @@
 
 ### Parallel Opportunities
 
-- Foundational data + API contract tasks can run in parallel where file boundaries differ (`T003`-`T009`).
+- Foundational data + API contract tasks can run in parallel where file boundaries differ (`T003`-`T010`).
 - In each story, backend and frontend scaffolding tasks marked `[P]` can run together.
 - Contract/integration/e2e tests marked `[P]` can be authored in parallel once API contracts stabilize.
 
@@ -155,9 +156,9 @@
 ## Parallel Example: User Story 1
 
 ```bash
-Task: "T010 [US1] unit tests in backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs"
-Task: "T017 [US1] workouts API client in frontend/src/app/core/api/workouts-api.service.ts"
-Task: "T018 [US1] workouts store in frontend/src/app/core/state/workouts-store.service.ts"
+Task: "T011 [US1] unit tests in backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/StartWorkout/StartWorkoutCommandHandlerTests.cs"
+Task: "T018 [US1] workouts API client in frontend/src/app/core/api/workouts-api.service.ts"
+Task: "T019 [US1] workouts store in frontend/src/app/core/state/workouts-store.service.ts"
 ```
 
 ---
