@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Workout Lift Removal API
+  version: 0.1.0
+  description: Contract for removing one lift entry from an in-progress workout.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}:
+    delete:
+      summary: Remove one lift entry from an in-progress workout
+      operationId: removeWorkoutLiftEntry
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: workoutLiftEntryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lift entry removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveWorkoutLiftResponse'
+        '404':
+          description: Workout or lift entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in a removable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '422':
+          description: Invalid identifier(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  schemas:
+    RemoveWorkoutLiftResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+        - removedWorkoutLiftEntryId
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        removedWorkoutLiftEntryId:
+          type: string
+          format: uuid
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

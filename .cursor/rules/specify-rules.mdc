@@ -1,4 +1,4 @@
-﻿---
+---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
@@ -39,9 +39,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 009-remove-workout-lift: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 008-home-active-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 007-add-workout-lifts: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
-- 006-start-blank-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->
