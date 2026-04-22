@@ -27,10 +27,29 @@
 
       <ul *ngIf="workoutLiftEntries().length > 0" class="active-workout__lift-list">
         <li *ngFor="let entry of workoutLiftEntries()" class="active-workout__lift-list-item">
-          <span class="active-workout__lift-name">{{ entry.displayName }}</span>
-          <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
+          <div class="active-workout__lift-details">
+            <span class="active-workout__lift-name">{{ entry.displayName }}</span>
+            <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
+          </div>
+          <button
+            type="button"
+            mat-icon-button
+            color="warn"
+            class="active-workout__lift-remove"
+            [disabled]="isRemovingLift()"
+            [attr.aria-label]="'Remove ' + entry.displayName + ' entry #' + entry.position"
+            (click)="removeWorkoutLiftEntry(entry.id)"
+          >
+            <mat-icon>
+              {{ isRemovingLift() && removingWorkoutLiftEntryId() === entry.id ? 'hourglass_empty' : 'delete' }}
+            </mat-icon>
+          </button>
         </li>
       </ul>
+
+      <p *ngIf="removeLiftError()" class="active-workout__feedback active-workout__feedback--error">
+        {{ removeLiftError() }}
+      </p>
 
       <div class="active-workout__lift-header">
         <button type="button" mat-flat-button color="primary" (click)="openAddLiftPicker()">

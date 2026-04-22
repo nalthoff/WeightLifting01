@@ -110,4 +110,3 @@ frontend/
 - SQL schema changes are expected to be unnecessary if existing workout-lift persistence already supports delete by entry id; if schema changes emerge they require migration artifacts.
 - Unit tests will cover backend removal business rules, with integration/contract/e2e coverage for boundary behavior.
 - Azure compatibility assumptions remain unchanged.
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

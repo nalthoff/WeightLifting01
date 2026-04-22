@@ -3,6 +3,7 @@ using WeightLifting.Api.Api.Contracts.Workouts;
 using WeightLifting.Api.Application.Workouts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
@@ -16,6 +17,7 @@ namespace WeightLifting.Api.Api.Controllers;
 public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
+    RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
     GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
@@ -240,6 +242,58 @@ public sealed class WorkoutsController(
         }
     }
 
+    [HttpDelete("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}")]
+    [ProducesResponseType(typeof(RemoveWorkoutLiftResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<RemoveWorkoutLiftResponse>> RemoveWorkoutLift(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        CancellationToken cancellationToken = default)
+    {
+        if (workoutId == Guid.Empty || workoutLiftEntryId == Guid.Empty)
+        {
+            return UnprocessableEntity(CreateRemoveWorkoutLiftValidationResponse(workoutId, workoutLiftEntryId));
+        }
+
+        var result = await removeWorkoutLiftCommandHandler.HandleAsync(
+            new RemoveWorkoutLiftCommand
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+            },
+            cancellationToken);
+
+        if (result.Outcome == RemoveWorkoutLiftOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == RemoveWorkoutLiftOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot remove lifts",
+                status = StatusCodes.Status409Conflict,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["workout"] = ["Workout must be in progress to remove lifts."],
+                },
+            });
+        }
+
+        return Ok(new RemoveWorkoutLiftResponse
+        {
+            WorkoutId = result.WorkoutId,
+            WorkoutLiftEntryId = result.WorkoutLiftEntryId,
+        });
+    }
+
     private static WorkoutSessionSummaryResponse ToWorkoutSummary(Workout workout) => new()
     {
         Id = workout.Id,
@@ -278,4 +332,27 @@ public sealed class WorkoutsController(
             ["liftId"] = ["Lift id is required."],
         },
     };
+
+    private static object CreateRemoveWorkoutLiftValidationResponse(
+        Guid workoutId,
+        Guid workoutLiftEntryId)
+    {
+        var errors = new Dictionary<string, string[]>();
+        if (workoutId == Guid.Empty)
+        {
+            errors["workoutId"] = ["Workout id is required."];
+        }
+
+        if (workoutLiftEntryId == Guid.Empty)
+        {
+            errors["workoutLiftEntryId"] = ["Workout lift entry id is required."];
+        }
+
+        return new
+        {
+            title = "Validation failed",
+            status = StatusCodes.Status422UnprocessableEntity,
+            errors,
+        };
+    }
 }

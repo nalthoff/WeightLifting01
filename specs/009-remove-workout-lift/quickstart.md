@@ -45,3 +45,11 @@ Validate that a lifter can remove a mistaken lift entry from the active workout 
 
 1. Verify no blocking confirmation modal is required in this slice.
 2. Record conditional confirmation as deferred behavior pending set-logging availability.
+
+## Verification Run (2026-04-22)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter RemoveWorkoutLift` (Passed: 5)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter RemoveWorkoutLift` (Passed: 4)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter WorkoutLiftsApiContractTests` (Passed: 10)
+- `npm run build` in `frontend` (Passed)
+- `npm run e2e -- tests/e2e/workouts/remove-workout-lift.spec.ts tests/e2e/workouts/remove-workout-lift-duplicates.spec.ts tests/e2e/workouts/remove-workout-lift-failures.spec.ts` in `frontend` (Passed: 5)

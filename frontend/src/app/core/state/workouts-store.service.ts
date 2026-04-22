@@ -54,4 +54,14 @@ export class WorkoutsStoreService {
     );
     this.activeWorkoutLiftEntries.set(nextEntries);
   }
+
+  removeActiveWorkoutLiftEntryById(workoutId: string, workoutLiftEntryId: string): void {
+    const activeWorkout = this.activeWorkout();
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      return;
+    }
+
+    const remainingEntries = this.activeWorkoutLiftEntries().filter((entry) => entry.id !== workoutLiftEntryId);
+    this.activeWorkoutLiftEntries.set(remainingEntries);
+  }
 }

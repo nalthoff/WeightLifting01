@@ -47,6 +47,9 @@ export class ActiveWorkoutPageComponent {
   readonly selectedLiftId = signal<string>('');
   readonly isAddingLift = signal(false);
   readonly addLiftError = signal<string | null>(null);
+  readonly isRemovingLift = signal(false);
+  readonly removingWorkoutLiftEntryId = signal<string | null>(null);
+  readonly removeLiftError = signal<string | null>(null);
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly workoutId = this.routeWorkoutId.asReadonly();
   readonly workout = computed(() => {
@@ -127,6 +130,9 @@ export class ActiveWorkoutPageComponent {
       .subscribe({
         next: (response) => {
           this.workoutsStoreService.appendActiveWorkoutLiftEntry(response.workoutLift);
+          this.isPickerOpen.set(false);
+          this.addLiftError.set(null);
+          this.removeLiftError.set(null);
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 404) {
@@ -142,6 +148,60 @@ export class ActiveWorkoutPageComponent {
           }
 
           this.addLiftError.set('Lift was not added. Check your connection and try again.');
+        },
+      });
+  }
+
+  removeWorkoutLiftEntry(workoutLiftEntryId: string): void {
+    if (this.isRemovingLift()) {
+      return;
+    }
+
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.removeLiftError.set('Workout ID is missing.');
+      return;
+    }
+
+    this.isRemovingLift.set(true);
+    this.removingWorkoutLiftEntryId.set(workoutLiftEntryId);
+    this.removeLiftError.set(null);
+
+    this.workoutLiftsApiService
+      .removeWorkoutLift(workoutId, workoutLiftEntryId)
+      .pipe(
+        finalize(() => {
+          this.isRemovingLift.set(false);
+          this.removingWorkoutLiftEntryId.set(null);
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          const removedEntryId = response.workoutLiftEntryId ?? response.removedWorkoutLiftEntryId;
+          if (!removedEntryId) {
+            this.removeLiftError.set('Lift was removed, but the list could not be refreshed. Reload and try again.');
+            return;
+          }
+
+          this.workoutsStoreService.removeActiveWorkoutLiftEntryById(
+            response.workoutId,
+            removedEntryId,
+          );
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.removeLiftError.set('This lift entry was already removed or no longer exists. Refresh and try again.');
+            return;
+          }
+
+          if (error.status === 409) {
+            this.removeLiftError.set(
+              error.error?.title ?? 'This workout is not in a removable state right now. Try again in a moment.',
+            );
+            return;
+          }
+
+          this.removeLiftError.set('Lift was not removed. Check your connection and try again.');
         },
       });
   }

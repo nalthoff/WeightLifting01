@@ -91,6 +91,90 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
     }
 
     [Fact]
+    public async Task DeleteWorkoutLiftReturnsSuccessContract()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Remove Workout");
+        var lift = await CreateLiftAsync(client, "Remove Front Squat");
+        var addResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new
+        {
+            liftId = lift.Id,
+        });
+        Assert.Equal(HttpStatusCode.Created, addResponse.StatusCode);
+        var addedPayload = await addResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addedPayload);
+
+        var response = await client.DeleteAsync($"/api/workouts/{workout.Id}/lifts/{addedPayload.WorkoutLift.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<RemoveWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(workout.Id, payload.WorkoutId);
+        Assert.Equal(addedPayload.WorkoutLift.Id, payload.WorkoutLiftEntryId);
+
+        var listResponse = await client.GetAsync($"/api/workouts/{workout.Id}/lifts");
+        var listPayload = await listResponse.Content.ReadFromJsonAsync<WorkoutLiftListResponse>(JsonOptions);
+        Assert.NotNull(listPayload);
+        Assert.Empty(listPayload.Items);
+    }
+
+    [Fact]
+    public async Task DeleteWorkoutLiftWithMissingWorkoutOrEntryReturnsNotFoundPayload()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Delete Not Found Workout");
+        var lift = await CreateLiftAsync(client, "Delete Not Found Lift");
+        var addResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new
+        {
+            liftId = lift.Id,
+        });
+        Assert.Equal(HttpStatusCode.Created, addResponse.StatusCode);
+        var addedPayload = await addResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addedPayload);
+
+        var missingWorkoutResponse = await client.DeleteAsync($"/api/workouts/{Guid.NewGuid()}/lifts/{addedPayload.WorkoutLift.Id}");
+        var missingEntryResponse = await client.DeleteAsync($"/api/workouts/{workout.Id}/lifts/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, missingWorkoutResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missingEntryResponse.StatusCode);
+
+        var missingWorkoutPayload = await missingWorkoutResponse.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+        var missingEntryPayload = await missingEntryResponse.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+
+        Assert.NotNull(missingWorkoutPayload);
+        Assert.NotNull(missingEntryPayload);
+        Assert.Equal("Resource not found", missingWorkoutPayload.Title);
+        Assert.Equal("Resource not found", missingEntryPayload.Title);
+        Assert.Equal((int)HttpStatusCode.NotFound, missingWorkoutPayload.Status);
+        Assert.Equal((int)HttpStatusCode.NotFound, missingEntryPayload.Status);
+    }
+
+    [Fact]
+    public async Task DeleteWorkoutLiftWithCompletedWorkoutReturnsConflictPayload()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Delete Conflict Workout");
+        var lift = await CreateLiftAsync(client, "Delete Conflict Lift");
+        var addResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new
+        {
+            liftId = lift.Id,
+        });
+        Assert.Equal(HttpStatusCode.Created, addResponse.StatusCode);
+        var addedPayload = await addResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addedPayload);
+        await MarkWorkoutCompletedAsync(workout.Id);
+
+        var response = await client.DeleteAsync($"/api/workouts/{workout.Id}/lifts/{addedPayload.WorkoutLift.Id}");
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Contains("Workout must be in progress to remove lifts.", payload.Errors["workout"]);
+    }
+
+    [Fact]
     public async Task PostWorkoutLiftWithMissingLiftIdReturnsValidationPayload()
     {
         var client = factory.CreateClient();
@@ -258,6 +342,13 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required IReadOnlyList<WorkoutLiftEntryResponse> Items { get; init; }
     }
 
+    public sealed class RemoveWorkoutLiftResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required Guid WorkoutLiftEntryId { get; init; }
+    }
+
     public sealed class WorkoutLiftEntryResponse
     {
         public required Guid Id { get; init; }
@@ -285,5 +376,12 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required int Status { get; init; }
 
         public required string Detail { get; init; }
+    }
+
+    public sealed class NotFoundResponse
+    {
+        public required string Title { get; init; }
+
+        public required int Status { get; init; }
     }
 }

@@ -17,8 +17,8 @@
 
 **Purpose**: Confirm reuse points and current remove-lift gaps before implementation.
 
-- [ ] T001 Review existing add/list workout-lift patterns in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
-- [ ] T002 Review active-workout list rendering/state integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts`, `frontend/src/app/features/workouts/active-workout-page.component.html`, and `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T001 Review existing add/list workout-lift patterns in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
+- [X] T002 Review active-workout list rendering/state integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts`, `frontend/src/app/features/workouts/active-workout-page.component.html`, and `frontend/src/app/core/state/workouts-store.service.ts`
 
 ---
 
@@ -26,11 +26,11 @@
 
 **Purpose**: Add shared remove-lift contracts and backend/frontend scaffolding required by all stories.
 
-- [ ] T003 Create remove-workout-lift API contract models in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/RemoveWorkoutLiftResponse.cs`
-- [ ] T004 Create remove-workout-lift command and outcome models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftResult.cs`
-- [ ] T005 [P] Add remove-workout-lift API client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T006 [P] Add store helper for removing active workout entry by id in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T007 Register remove-workout-lift handler in dependency injection in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T003 Create remove-workout-lift API contract models in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/RemoveWorkoutLiftResponse.cs`
+- [X] T004 Create remove-workout-lift command and outcome models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftResult.cs`
+- [X] T005 [P] Add remove-workout-lift API client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T006 [P] Add store helper for removing active workout entry by id in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T007 Register remove-workout-lift handler in dependency injection in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
 
 **Checkpoint**: Foundation complete; user-story implementation can begin.
 
@@ -44,18 +44,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Add unit tests for remove-workout-lift happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
-- [ ] T009 [P] [US1] Add integration test for successful entry removal persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/RemoveWorkoutLiftIntegrationTests.cs`
-- [ ] T010 [P] [US1] Add contract test for `DELETE /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T011 [P] [US1] Add e2e test for active-workout remove-lift happy path in `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`
+- [X] T008 [P] [US1] Add unit tests for remove-workout-lift happy path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
+- [X] T009 [P] [US1] Add integration test for successful entry removal persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/RemoveWorkoutLiftIntegrationTests.cs`
+- [X] T010 [P] [US1] Add contract test for `DELETE /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T011 [P] [US1] Add e2e test for active-workout remove-lift happy path in `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Implement remove-workout-lift business handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandler.cs`
-- [ ] T013 [US1] Add remove-workout-lift endpoint in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T014 [US1] Integrate remove action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T015 [US1] Render remove controls for workout-lift rows in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T016 [US1] Apply successful remove response to store state in `frontend/src/app/core/state/workouts-store.service.ts` and `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T012 [P] [US1] Implement remove-workout-lift business handler in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandler.cs`
+- [X] T013 [US1] Add remove-workout-lift endpoint in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T014 [US1] Integrate remove action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T015 [US1] Render remove controls for workout-lift rows in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T016 [US1] Apply successful remove response to store state in `frontend/src/app/core/state/workouts-store.service.ts` and `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -69,14 +69,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Add unit tests verifying remove-by-entry-id precision with duplicates in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
-- [ ] T018 [P] [US2] Add integration test for duplicate-instance removal behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/RemoveWorkoutLiftIntegrationTests.cs`
-- [ ] T019 [P] [US2] Add e2e test for duplicate-instance removal in `frontend/tests/e2e/workouts/remove-workout-lift-duplicates.spec.ts`
+- [X] T017 [P] [US2] Add unit tests verifying remove-by-entry-id precision with duplicates in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
+- [X] T018 [P] [US2] Add integration test for duplicate-instance removal behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/RemoveWorkoutLiftIntegrationTests.cs`
+- [X] T019 [P] [US2] Add e2e test for duplicate-instance removal in `frontend/tests/e2e/workouts/remove-workout-lift-duplicates.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Ensure backend removal query filters by workout id and workout-lift-entry id in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandler.cs`
-- [ ] T021 [US2] Ensure UI remove action binds to entry id (not lift id) in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T020 [US2] Ensure backend removal query filters by workout id and workout-lift-entry id in `backend/src/WeightLifting.Api/Application/Workouts/Commands/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandler.cs`
+- [X] T021 [US2] Ensure UI remove action binds to entry id (not lift id) in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
 
 **Checkpoint**: US2 remains independently functional and testable.
 
@@ -90,15 +90,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Add unit tests for not-found and conflict removal outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
-- [ ] T023 [P] [US3] Add contract tests for remove-lift error payloads in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T024 [P] [US3] Add e2e failure-path tests for remove-lift errors in `frontend/tests/e2e/workouts/remove-workout-lift-failures.spec.ts`
+- [X] T022 [P] [US3] Add unit tests for not-found and conflict removal outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/RemoveWorkoutLift/RemoveWorkoutLiftCommandHandlerTests.cs`
+- [X] T023 [P] [US3] Add contract tests for remove-lift error payloads in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T024 [P] [US3] Add e2e failure-path tests for remove-lift errors in `frontend/tests/e2e/workouts/remove-workout-lift-failures.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Implement controller error mapping for not-found/conflict/validation outcomes in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T026 [US3] Implement frontend remove-failure feedback states with no local ghost removal in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T027 [US3] Add in-flight guard for rapid repeated remove taps in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T025 [US3] Implement controller error mapping for not-found/conflict/validation outcomes in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T026 [US3] Implement frontend remove-failure feedback states with no local ghost removal in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T027 [US3] Add in-flight guard for rapid repeated remove taps in `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US3 remains independently functional and testable.
 
@@ -108,11 +108,11 @@
 
 **Purpose**: Final verification and cross-story cleanup.
 
-- [ ] T028 [P] Update quickstart verification notes for remove-lift flow in `specs/009-remove-workout-lift/quickstart.md`
-- [ ] T029 [P] Run targeted backend unit/integration/contract suites for remove-lift behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T030 [P] Run frontend build and remove-lift e2e suites via scripts in `frontend/package.json`
-- [ ] T031 Validate mobile viewport usability for active-workout remove flow in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T032 Confirm deferred confirmation behavior is documented (no blocking modal until set logging exists) in `specs/009-remove-workout-lift/spec.md` and `specs/009-remove-workout-lift/quickstart.md`
+- [X] T028 [P] Update quickstart verification notes for remove-lift flow in `specs/009-remove-workout-lift/quickstart.md`
+- [X] T029 [P] Run targeted backend unit/integration/contract suites for remove-lift behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T030 [P] Run frontend build and remove-lift e2e suites via scripts in `frontend/package.json`
+- [X] T031 Validate mobile viewport usability for active-workout remove flow in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T032 Confirm deferred confirmation behavior is documented (no blocking modal until set logging exists) in `specs/009-remove-workout-lift/spec.md` and `specs/009-remove-workout-lift/quickstart.md`
 
 ---
 

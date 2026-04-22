@@ -23,6 +23,13 @@ export interface AddWorkoutLiftResponse {
   workoutLift: WorkoutLiftEntry;
 }
 
+export interface RemoveWorkoutLiftResponse {
+  workoutId: string;
+  workoutLiftEntryId: string;
+  // Backward-compatible alias in case older API shape is returned.
+  removedWorkoutLiftEntryId?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -35,5 +42,11 @@ export class WorkoutLiftsApiService {
 
   addWorkoutLift(workoutId: string, request: AddWorkoutLiftRequest): Observable<AddWorkoutLiftResponse> {
     return this.httpClient.post<AddWorkoutLiftResponse>(`/api/workouts/${workoutId}/lifts`, request);
+  }
+
+  removeWorkoutLift(workoutId: string, workoutLiftEntryId: string): Observable<RemoveWorkoutLiftResponse> {
+    return this.httpClient.delete<RemoveWorkoutLiftResponse>(
+      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}`,
+    );
   }
 }

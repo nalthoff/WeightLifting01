@@ -98,6 +98,13 @@
   border-radius: 0.625rem;
   padding: 0.625rem 0.75rem;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.active-workout__lift-details {
+  display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
@@ -109,4 +116,8 @@
 .active-workout__lift-meta {
   color: var(--app-text-muted);
   font-size: 0.825rem;
+}
+
+.active-workout__lift-remove {
+  flex-shrink: 0;
 }
