@@ -39,9 +39,17 @@
   flex: 1;
 }
 
-.app-shell__toolbar a[mat-button] {
+.app-shell__nav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.app-shell__nav-link {
   color: var(--app-text-strong);
   border-radius: 999px;
+  min-height: 2.75rem;
+  padding-inline: 0.875rem;
 }
 
 .app-shell__nav-link--active {
@@ -53,4 +61,25 @@
   @include surface.page-shell;
   padding-top: 1rem;
   padding-bottom: 2rem;
+}
+
+@media (max-width: 600px) {
+  .app-shell__header {
+    padding: 0.5rem 0.5rem 0;
+  }
+
+  .app-shell__toolbar {
+    min-height: 3.5rem;
+    padding-inline: 0.25rem;
+  }
+
+  .app-shell__brand {
+    gap: 0.375rem;
+    font-size: 0.95rem;
+  }
+
+  .app-shell__nav-link {
+    min-height: 2.5rem;
+    padding-inline: 0.75rem;
+  }
 }

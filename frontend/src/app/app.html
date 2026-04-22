@@ -8,13 +8,29 @@
 
       <span class="app-shell__spacer"></span>
 
-      <a
-        mat-button
-        routerLink="/settings/lifts"
-        routerLinkActive="app-shell__nav-link--active"
-      >
-        Settings / Lifts
-      </a>
+      <nav class="app-shell__nav" aria-label="Primary navigation">
+        <a
+          mat-button
+          class="app-shell__nav-link"
+          data-testid="home-nav-link"
+          routerLink="/"
+          routerLinkActive="app-shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Home
+        </a>
+
+        <a
+          mat-button
+          class="app-shell__nav-link"
+          data-testid="settings-nav-link"
+          routerLink="/settings/lifts"
+          routerLinkActive="app-shell__nav-link--active"
+          aria-label="Settings - Lifts"
+        >
+          Settings
+        </a>
+      </nav>
     </mat-toolbar>
   </header>
 

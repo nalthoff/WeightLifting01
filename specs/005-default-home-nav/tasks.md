@@ -25,8 +25,8 @@
 
 **Purpose**: Create the smallest scaffolding needed for a dedicated home route and navigation updates.
 
-- [ ] T001 Create home feature folder and component files in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
-- [ ] T002 [P] Create test file scaffolding for routing/navigation behavior in `frontend/tests/unit/app/app.routes.spec.ts` and `frontend/tests/e2e/navigation/home-navigation.spec.ts`
+- [X] T001 Create home feature folder and component files in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/features/home/home-page.component.html`
+- [X] T002 [P] Create test file scaffolding for routing/navigation behavior in `frontend/tests/unit/app/app.routes.spec.ts` and `frontend/tests/e2e/navigation/home-navigation.spec.ts`
 
 ---
 
@@ -36,8 +36,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Update top-level route definitions in `frontend/src/app/app.routes.ts` to support a dedicated home route and preserve direct `settings/lifts` access
-- [ ] T004 [P] Add a minimal home route component template contract in `frontend/src/app/features/home/home-page.component.html` with only allowed semantic structure (no feature content)
+- [X] T003 Update top-level route definitions in `frontend/src/app/app.routes.ts` to support a dedicated home route and preserve direct `settings/lifts` access
+- [X] T004 [P] Add a minimal home route component template contract in `frontend/src/app/features/home/home-page.component.html` with only allowed semantic structure (no feature content)
 
 **Checkpoint**: Foundation ready; root can resolve to home and `settings/lifts` route remains addressable.
 
@@ -51,13 +51,13 @@
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Add unit tests for root-to-home route behavior in `frontend/tests/unit/app/app.routes.spec.ts`
-- [ ] T006 [P] [US1] Extend app shell unit assertions for home-state rendering expectations in `frontend/src/app/app.spec.ts`
+- [X] T005 [P] [US1] Add unit tests for root-to-home route behavior in `frontend/tests/unit/app/app.routes.spec.ts`
+- [X] T006 [P] [US1] Extend app shell unit assertions for home-state rendering expectations in `frontend/src/app/app.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implement minimal standalone home component logic in `frontend/src/app/features/home/home-page.component.ts`
-- [ ] T008 [US1] Ensure home main content remains intentionally empty/minimal in `frontend/src/app/features/home/home-page.component.html`
+- [X] T007 [US1] Implement minimal standalone home component logic in `frontend/src/app/features/home/home-page.component.ts`
+- [X] T008 [US1] Ensure home main content remains intentionally empty/minimal in `frontend/src/app/features/home/home-page.component.html`
 
 **Checkpoint**: User Story 1 is complete and testable independently from root URL behavior alone.
 
@@ -71,12 +71,12 @@
 
 ### Tests for User Story 2
 
-- [ ] T009 [P] [US2] Add unit tests for Settings navigation visibility and destination in `frontend/src/app/app.spec.ts`
+- [X] T009 [P] [US2] Add unit tests for Settings navigation visibility and destination in `frontend/src/app/app.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Update app shell navigation labels/links to expose a clear Settings path in `frontend/src/app/app.html`
-- [ ] T011 [P] [US2] Update active-link styling selectors for revised navigation labels/structure in `frontend/src/app/app.scss`
+- [X] T010 [US2] Update app shell navigation labels/links to expose a clear Settings path in `frontend/src/app/app.html`
+- [X] T011 [P] [US2] Update active-link styling selectors for revised navigation labels/structure in `frontend/src/app/app.scss`
 
 **Checkpoint**: User Story 2 is complete and users can reach lifts via the Settings path.
 
@@ -90,12 +90,12 @@
 
 ### Tests for User Story 3
 
-- [ ] T012 [P] [US3] Add e2e deep-link smoke test for `settings/lifts` in `frontend/tests/e2e/navigation/home-navigation.spec.ts`
-- [ ] T013 [P] [US3] Add unit-level route guard/redirect regression test for direct `settings/lifts` access in `frontend/tests/unit/app/app.routes.spec.ts`
+- [X] T012 [P] [US3] Add e2e deep-link smoke test for `settings/lifts` in `frontend/tests/e2e/navigation/home-navigation.spec.ts`
+- [X] T013 [P] [US3] Add unit-level route guard/redirect regression test for direct `settings/lifts` access in `frontend/tests/unit/app/app.routes.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Verify and adjust route ordering or matching rules in `frontend/src/app/app.routes.ts` so deep links are not redirected away from `settings/lifts`
+- [X] T014 [US3] Verify and adjust route ordering or matching rules in `frontend/src/app/app.routes.ts` so deep links are not redirected away from `settings/lifts`
 
 **Checkpoint**: User Story 3 is complete and bookmarked direct links keep working.
 

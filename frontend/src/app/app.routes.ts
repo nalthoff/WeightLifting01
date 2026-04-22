@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'settings/lifts',
+    loadComponent: () =>
+      import('./features/home/home-page.component').then((module) => module.HomePageComponent),
   },
   {
     path: 'settings/lifts',
