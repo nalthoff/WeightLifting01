@@ -94,7 +94,7 @@
                 </div>
                 <ng-template #editSetRowTemplate>
                   <div class="active-workout__set-edit-row">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
                       <mat-label>Reps</mat-label>
                       <input
                         matInput
@@ -108,7 +108,7 @@
                         (input)="updateSetEditReps(entry.id, setEntry, $any($event.target).value)"
                       />
                     </mat-form-field>
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--weight">
                       <mat-label>Weight</mat-label>
                       <input
                         matInput
@@ -125,22 +125,30 @@
                     <div class="active-workout__set-edit-actions">
                       <button
                         type="button"
-                        mat-flat-button
+                        mat-icon-button
                         color="primary"
+                        class="active-workout__set-submit active-workout__set-submit--icon"
                         [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
                         [attr.aria-label]="'Save set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
                         (click)="saveSetEdit(entry.id, setEntry)"
                       >
-                        {{ getSetEditSession(entry.id, setEntry.id)?.isSaving ? 'Saving...' : (getSetEditSession(entry.id, setEntry.id)?.errorMessage ? 'Retry Save' : 'Save') }}
+                        <mat-icon>
+                          {{
+                            getSetEditSession(entry.id, setEntry.id)?.isSaving
+                              ? 'hourglass_empty'
+                              : (getSetEditSession(entry.id, setEntry.id)?.errorMessage ? 'refresh' : 'check')
+                          }}
+                        </mat-icon>
                       </button>
                       <button
                         type="button"
-                        mat-button
+                        mat-icon-button
+                        class="active-workout__set-submit active-workout__set-submit--icon"
                         [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
                         [attr.aria-label]="'Cancel edit for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
                         (click)="cancelSetEdit(entry.id, setEntry.id)"
                       >
-                        Cancel
+                        <mat-icon>close</mat-icon>
                       </button>
                     </div>
                     <p
@@ -157,8 +165,10 @@
               </li>
             </ul>
 
+            <div class="active-workout__set-divider" aria-hidden="true"></div>
+
             <div class="active-workout__set-form">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
                 <mat-label>Reps</mat-label>
                 <input
                   matInput
@@ -172,8 +182,8 @@
                   (input)="updateAddSetReps(entry.id, $any($event.target).value)"
                 />
               </mat-form-field>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>Weight (optional)</mat-label>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--weight">
+                <mat-label>Weight</mat-label>
                 <input
                   matInput
                   type="number"
@@ -188,14 +198,14 @@
               </mat-form-field>
               <button
                 type="button"
-                mat-flat-button
+                mat-icon-button
                 color="primary"
-                class="active-workout__set-submit"
+                class="active-workout__set-submit active-workout__set-submit--icon"
                 [disabled]="isAddingSet(entry.id)"
-                [attr.aria-label]="'Add set for ' + entry.displayName + ' entry #' + entry.position"
+                [attr.aria-label]="(isAddingSet(entry.id) ? 'Saving set for ' : 'Add set for ') + entry.displayName + ' entry #' + entry.position"
                 (click)="addSet(entry.id)"
               >
-                {{ isAddingSet(entry.id) ? 'Saving...' : 'Add Set' }}
+                <mat-icon>{{ isAddingSet(entry.id) ? 'hourglass_empty' : 'add' }}</mat-icon>
               </button>
             </div>
 
