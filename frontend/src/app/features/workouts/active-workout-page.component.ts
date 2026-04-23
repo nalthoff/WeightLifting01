@@ -13,6 +13,7 @@ import { finalize, map } from 'rxjs';
 import { LiftsApiService } from '../../core/api/lifts-api.service';
 import { WorkoutLiftsApiService } from '../../core/api/workout-lifts-api.service';
 import { WorkoutsApiService } from '../../core/api/workouts-api.service';
+import type { WorkoutLiftEntryState, WorkoutSetEntry } from '../../core/state/workouts-store.models';
 import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
 
 @Component({
@@ -52,6 +53,9 @@ export class ActiveWorkoutPageComponent {
   readonly removeLiftError = signal<string | null>(null);
   readonly isReorderingLift = signal(false);
   readonly reorderLiftError = signal<string | null>(null);
+  readonly addSetErrorByEntryId = signal<Record<string, string | null>>({});
+  readonly isAddingSetByEntryId = signal<Record<string, boolean>>({});
+  readonly addSetDraftByEntryId = signal<Record<string, { reps: string; weight: string }>>({});
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly workoutId = this.routeWorkoutId.asReadonly();
   readonly workout = computed(() => {
@@ -237,6 +241,103 @@ export class ActiveWorkoutPageComponent {
     return entry.id;
   }
 
+  trackWorkoutSet(_index: number, setEntry: WorkoutSetEntry): string {
+    return setEntry.id;
+  }
+
+  getAddSetDraft(entryId: string): { reps: string; weight: string } {
+    return this.addSetDraftByEntryId()[entryId] ?? { reps: '', weight: '' };
+  }
+
+  updateAddSetReps(entryId: string, repsValue: string): void {
+    this.updateAddSetDraft(entryId, { reps: repsValue });
+    this.setAddSetError(entryId, null);
+  }
+
+  updateAddSetWeight(entryId: string, weightValue: string): void {
+    this.updateAddSetDraft(entryId, { weight: weightValue });
+    this.setAddSetError(entryId, null);
+  }
+
+  isAddingSet(entryId: string): boolean {
+    return this.isAddingSetByEntryId()[entryId] === true;
+  }
+
+  getAddSetError(entryId: string): string | null {
+    return this.addSetErrorByEntryId()[entryId] ?? null;
+  }
+
+  addSet(entryId: string): void {
+    if (this.isAddingSet(entryId)) {
+      return;
+    }
+
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.setAddSetError(entryId, 'Workout ID is missing.');
+      return;
+    }
+
+    const draft = this.getAddSetDraft(entryId);
+    const reps = Number(draft.reps);
+    if (!Number.isInteger(reps) || reps < 1) {
+      this.setAddSetError(entryId, 'Reps are required and must be at least 1.');
+      return;
+    }
+
+    let weight: number | null = null;
+    if (draft.weight.trim().length > 0) {
+      const parsedWeight = Number(draft.weight);
+      if (!Number.isFinite(parsedWeight) || parsedWeight < 0) {
+        this.setAddSetError(entryId, 'Weight must be 0 or greater when provided.');
+        return;
+      }
+
+      weight = parsedWeight;
+    }
+
+    this.setIsAddingSet(entryId, true);
+    this.setAddSetError(entryId, null);
+
+    this.workoutLiftsApiService
+      .addWorkoutSet(workoutId, entryId, { reps, weight })
+      .pipe(finalize(() => this.setIsAddingSet(entryId, false)))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.appendWorkoutSet(response.workoutId, response.workoutLiftEntryId, response.set);
+          this.updateAddSetDraft(entryId, { reps: '', weight: '' });
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.setAddSetError(entryId, 'This workout entry no longer exists. Refresh and try again.');
+            return;
+          }
+
+          if (error.status === 409 || error.status === 422) {
+            this.setAddSetError(
+              entryId,
+              error.error?.title ?? 'This set could not be added in the workout\'s current state.',
+            );
+            return;
+          }
+
+          this.setAddSetError(entryId, 'Set was not saved. Check your connection and try again.');
+        },
+      });
+  }
+
+  getSetsForEntry(entry: WorkoutLiftEntryState): WorkoutSetEntry[] {
+    return entry.sets;
+  }
+
+  formatSetWeight(setEntry: WorkoutSetEntry): string {
+    if (setEntry.weight === null) {
+      return '-';
+    }
+
+    return `${setEntry.weight} lb`;
+  }
+
   private ensureWorkoutLoaded(workoutId: string | null): void {
     if (!workoutId) {
       this.loadError.set('Workout ID is missing.');
@@ -282,6 +383,7 @@ export class ActiveWorkoutPageComponent {
       .subscribe({
         next: (response) => {
           this.workoutsStoreService.setActiveWorkoutLiftEntries(workoutId, response.items);
+          this.pruneEntryState(response.items.map((entry) => entry.id));
         },
         error: () => {
           this.workoutLiftsLoadError.set('Unable to load workout lifts right now.');
@@ -376,5 +478,40 @@ export class ActiveWorkoutPageComponent {
           this.activeLiftsLoadError.set('Unable to load active lifts.');
         },
       });
+  }
+
+  private updateAddSetDraft(entryId: string, patch: Partial<{ reps: string; weight: string }>): void {
+    this.addSetDraftByEntryId.update((current) => {
+      const existing = current[entryId] ?? { reps: '', weight: '' };
+      return {
+        ...current,
+        [entryId]: {
+          ...existing,
+          ...patch,
+        },
+      };
+    });
+  }
+
+  private setAddSetError(entryId: string, message: string | null): void {
+    this.addSetErrorByEntryId.update((current) => ({ ...current, [entryId]: message }));
+  }
+
+  private setIsAddingSet(entryId: string, isAdding: boolean): void {
+    this.isAddingSetByEntryId.update((current) => ({ ...current, [entryId]: isAdding }));
+  }
+
+  private pruneEntryState(entryIds: string[]): void {
+    const allowedIds = new Set(entryIds);
+
+    this.addSetDraftByEntryId.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
+    );
+    this.addSetErrorByEntryId.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
+    );
+    this.isAddingSetByEntryId.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
+    );
   }
 }

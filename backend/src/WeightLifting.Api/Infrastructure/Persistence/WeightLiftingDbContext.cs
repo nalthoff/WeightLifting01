@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Domain.Workouts;
+using WeightLifting.Api.Infrastructure.Persistence.Configurations;
+using WeightLifting.Api.Infrastructure.Persistence.Entities;
 using WeightLifting.Api.Infrastructure.Persistence.Lifts;
 using WeightLifting.Api.Infrastructure.Persistence.Workouts;
 
@@ -11,6 +13,7 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
     public DbSet<LiftEntity> Lifts => Set<LiftEntity>();
     public DbSet<WorkoutEntity> Workouts => Set<WorkoutEntity>();
     public DbSet<WorkoutLiftEntryEntity> WorkoutLiftEntries => Set<WorkoutLiftEntryEntity>();
+    public DbSet<WorkoutSetEntity> WorkoutSets => Set<WorkoutSetEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,5 +107,7 @@ public sealed class WeightLiftingDbContext(DbContextOptions<WeightLiftingDbConte
                 .HasForeignKey(workoutLiftEntry => workoutLiftEntry.LiftId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+        modelBuilder.ApplyConfiguration(new WorkoutSetEntityTypeConfiguration());
     }
 }

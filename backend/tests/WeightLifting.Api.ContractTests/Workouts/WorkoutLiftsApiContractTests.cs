@@ -91,6 +91,94 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
     }
 
     [Fact]
+    public async Task PostWorkoutSetReturnsCreatedContract()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set Contract Front Squat");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new
+            {
+                reps = 5,
+                weight = 225m,
+            });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<CreateWorkoutSetResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(workout.Id, payload.WorkoutId);
+        Assert.Equal(addLiftPayload.WorkoutLift.Id, payload.WorkoutLiftEntryId);
+        Assert.NotEqual(Guid.Empty, payload.Set.Id);
+        Assert.Equal(1, payload.Set.SetNumber);
+        Assert.Equal(5, payload.Set.Reps);
+        Assert.Equal(225m, payload.Set.Weight);
+    }
+
+    [Fact]
+    public async Task PostWorkoutSetAllowsDuplicateLiftEntriesWithIndependentSetNumbering()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set Duplicate Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set Duplicate Bench Press");
+        var firstEntryResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var secondEntryResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var firstEntry = await firstEntryResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        var secondEntry = await secondEntryResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(firstEntry);
+        Assert.NotNull(secondEntry);
+
+        var firstSet = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts/{firstEntry.WorkoutLift.Id}/sets", new { reps = 8, weight = 155m });
+        var secondSet = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts/{secondEntry.WorkoutLift.Id}/sets", new { reps = 10, weight = 135m });
+        var secondSetPayload = await secondSet.Content.ReadFromJsonAsync<CreateWorkoutSetResponse>(JsonOptions);
+        Assert.NotNull(secondSetPayload);
+
+        Assert.Equal(HttpStatusCode.Created, firstSet.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, secondSet.StatusCode);
+        Assert.Equal(1, secondSetPayload.Set.SetNumber);
+    }
+
+    [Fact]
+    public async Task GetWorkoutLiftsReturnsPersistedSetsAfterAddSet()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set List Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set List Back Squat");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        var firstSetResponse = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+        var secondSetResponse = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 3, weight = (decimal?)null });
+
+        Assert.Equal(HttpStatusCode.Created, firstSetResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, secondSetResponse.StatusCode);
+
+        var listResponse = await client.GetAsync($"/api/workouts/{workout.Id}/lifts");
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+
+        var listPayload = await listResponse.Content.ReadFromJsonAsync<WorkoutLiftListResponse>(JsonOptions);
+        Assert.NotNull(listPayload);
+        Assert.Single(listPayload.Items);
+
+        var sets = listPayload.Items[0].Sets;
+        Assert.NotNull(sets);
+        Assert.Equal(2, sets.Count);
+        Assert.Equal([1, 2], sets.Select(set => set.SetNumber).ToArray());
+        Assert.Equal([5, 3], sets.Select(set => set.Reps).ToArray());
+        Assert.Null(sets[1].Weight);
+    }
+
+    [Fact]
     public async Task DeleteWorkoutLiftReturnsSuccessContract()
     {
         var client = factory.CreateClient();
@@ -211,6 +299,44 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         Assert.Equal(firstAdded.WorkoutLift.Id, payload.Items[1].Id);
         Assert.Equal(1, payload.Items[0].Position);
         Assert.Equal(2, payload.Items[1].Position);
+    }
+
+    [Fact]
+    public async Task PutReorderWorkoutLiftsPreservesSetsOnResponseItems()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Reorder Sets Contract Workout");
+        var firstLift = await CreateLiftAsync(client, "Reorder Sets Bench");
+        var secondLift = await CreateLiftAsync(client, "Reorder Sets Deadlift");
+
+        var firstAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = firstLift.Id });
+        var secondAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = secondLift.Id });
+        var firstAdded = await firstAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        var secondAdded = await secondAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(firstAdded);
+        Assert.NotNull(secondAdded);
+
+        var addSetResponse = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{firstAdded.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+        Assert.Equal(HttpStatusCode.Created, addSetResponse.StatusCode);
+
+        var reorderResponse = await client.PutAsJsonAsync($"/api/workouts/{workout.Id}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { secondAdded.WorkoutLift.Id, firstAdded.WorkoutLift.Id },
+        });
+
+        Assert.Equal(HttpStatusCode.OK, reorderResponse.StatusCode);
+
+        var payload = await reorderResponse.Content.ReadFromJsonAsync<ReorderWorkoutLiftsResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(2, payload.Items.Count);
+        Assert.Equal(secondAdded.WorkoutLift.Id, payload.Items[0].Id);
+        Assert.Equal(firstAdded.WorkoutLift.Id, payload.Items[1].Id);
+        Assert.Empty(payload.Items[0].Sets);
+        Assert.Single(payload.Items[1].Sets);
+        Assert.Equal(1, payload.Items[1].Sets[0].SetNumber);
+        Assert.Equal(5, payload.Items[1].Sets[0].Reps);
     }
 
     [Fact]
@@ -370,6 +496,47 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         Assert.Contains("Lift must be active to add to the workout.", payload.Errors["liftId"]);
     }
 
+    [Fact]
+    public async Task PostWorkoutSetReturnsNotFoundConflictAndValidationContracts()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set Failure Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set Failure Deadlift");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        var missingWorkout = await client.PostAsJsonAsync(
+            $"/api/workouts/{Guid.NewGuid()}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+
+        var missingEntry = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{Guid.NewGuid()}/sets",
+            new { reps = 5, weight = 225m });
+
+        var invalidPayload = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 0, weight = -1m });
+
+        await MarkWorkoutCompletedAsync(workout.Id);
+        var conflictPayload = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+
+        Assert.Equal(HttpStatusCode.NotFound, missingWorkout.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missingEntry.StatusCode);
+        Assert.Equal((HttpStatusCode)422, invalidPayload.StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, conflictPayload.StatusCode);
+
+        var validation = await invalidPayload.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        var conflict = await conflictPayload.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(validation);
+        Assert.NotNull(conflict);
+        Assert.Contains("Reps must be greater than zero.", validation.Errors["reps"]);
+        Assert.Contains("Weight must be greater than or equal to zero when provided.", validation.Errors["weight"]);
+        Assert.Contains("Workout must be in progress to add sets.", conflict.Errors["workout"]);
+    }
+
     public async Task InitializeAsync()
     {
         using var scope = factory.Services.CreateScope();
@@ -447,6 +614,15 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required IReadOnlyList<WorkoutLiftEntryResponse> Items { get; init; }
     }
 
+    public sealed class CreateWorkoutSetResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required Guid WorkoutLiftEntryId { get; init; }
+
+        public required WorkoutSetEntryResponse Set { get; init; }
+    }
+
     public sealed class RemoveWorkoutLiftResponse
     {
         public required Guid WorkoutId { get; init; }
@@ -474,6 +650,23 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required DateTime AddedAtUtc { get; init; }
 
         public required int Position { get; init; }
+
+        public required IReadOnlyList<WorkoutSetEntryResponse> Sets { get; init; }
+    }
+
+    public sealed class WorkoutSetEntryResponse
+    {
+        public required Guid Id { get; init; }
+
+        public required Guid WorkoutLiftEntryId { get; init; }
+
+        public required int SetNumber { get; init; }
+
+        public required int Reps { get; init; }
+
+        public decimal? Weight { get; init; }
+
+        public required DateTime CreatedAtUtc { get; init; }
     }
 
     public sealed class ValidationErrorResponse

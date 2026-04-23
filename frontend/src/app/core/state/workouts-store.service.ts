@@ -2,13 +2,14 @@ import { Injectable, computed, signal } from '@angular/core';
 
 import type { WorkoutSessionSummary } from '../api/workouts-api.service';
 import type { WorkoutLiftEntry } from '../api/workout-lifts-api.service';
+import type { WorkoutLiftEntryState, WorkoutSetEntry } from './workouts-store.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WorkoutsStoreService {
   readonly activeWorkout = signal<WorkoutSessionSummary | null>(null);
-  readonly activeWorkoutLiftEntries = signal<WorkoutLiftEntry[]>([]);
+  readonly activeWorkoutLiftEntries = signal<WorkoutLiftEntryState[]>([]);
   readonly hasActiveWorkout = computed(() => this.activeWorkout() !== null);
 
   setActiveWorkout(workout: WorkoutSessionSummary): void {
@@ -39,7 +40,9 @@ export class WorkoutsStoreService {
       return;
     }
 
-    const sortedEntries = [...entries].sort((left, right) => left.position - right.position);
+    const sortedEntries = entries
+      .map((entry) => this.toWorkoutLiftEntryState(entry))
+      .sort((left, right) => left.position - right.position);
     this.activeWorkoutLiftEntries.set(sortedEntries);
   }
 
@@ -49,7 +52,7 @@ export class WorkoutsStoreService {
       return;
     }
 
-    const nextEntries = [...this.activeWorkoutLiftEntries(), entry].sort(
+    const nextEntries = [...this.activeWorkoutLiftEntries(), this.toWorkoutLiftEntryState(entry)].sort(
       (left, right) => left.position - right.position,
     );
     this.activeWorkoutLiftEntries.set(nextEntries);
@@ -71,7 +74,46 @@ export class WorkoutsStoreService {
       return;
     }
 
-    const normalizedEntries = [...entries].sort((left, right) => left.position - right.position);
+    const normalizedEntries = entries
+      .map((entry) => this.toWorkoutLiftEntryState(entry))
+      .sort((left, right) => left.position - right.position);
     this.activeWorkoutLiftEntries.set(normalizedEntries);
+  }
+
+  appendWorkoutSet(workoutId: string, workoutLiftEntryId: string, setEntry: WorkoutSetEntry): void {
+    const activeWorkout = this.activeWorkout();
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      return;
+    }
+
+    const nextEntries = this.activeWorkoutLiftEntries().map((entry) => {
+      if (entry.id !== workoutLiftEntryId) {
+        return entry;
+      }
+
+      const existingSet = entry.sets.find((set) => set.id === setEntry.id);
+      if (existingSet) {
+        return entry;
+      }
+
+      return {
+        ...entry,
+        sets: [...entry.sets, setEntry].sort((left, right) => left.setNumber - right.setNumber),
+      };
+    });
+
+    this.activeWorkoutLiftEntries.set(nextEntries);
+  }
+
+  private toWorkoutLiftEntryState(entry: WorkoutLiftEntry): WorkoutLiftEntryState {
+    return {
+      id: entry.id,
+      workoutId: entry.workoutId,
+      liftId: entry.liftId,
+      displayName: entry.displayName,
+      addedAtUtc: entry.addedAtUtc,
+      position: entry.position,
+      sets: [...(entry.sets ?? [])].sort((left, right) => left.setNumber - right.setNumber),
+    };
   }
 }

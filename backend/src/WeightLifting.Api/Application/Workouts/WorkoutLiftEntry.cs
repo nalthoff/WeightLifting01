@@ -13,4 +13,6 @@ public sealed class WorkoutLiftEntry
     public DateTime AddedAtUtc { get; init; }
 
     public int Position { get; init; }
+
+    public IReadOnlyList<WorkoutSetEntry> Sets { get; init; } = [];
 }

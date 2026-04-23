@@ -89,17 +89,42 @@ public sealed class ReorderWorkoutLiftsCommandHandler(WeightLiftingDbContext dbC
         }
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        var setsByEntryId = await dbContext.WorkoutSets
+            .AsNoTracking()
+            .Where(workoutSet => workoutSet.WorkoutId == command.WorkoutId)
+            .GroupBy(workoutSet => workoutSet.WorkoutLiftEntryId)
+            .ToDictionaryAsync(
+                group => group.Key,
+                group => (IReadOnlyList<WorkoutSetEntry>)group
+                    .OrderBy(workoutSet => workoutSet.SetNumber)
+                    .Select(workoutSet => new WorkoutSetEntry
+                    {
+                        Id = workoutSet.Id,
+                        WorkoutId = workoutSet.WorkoutId,
+                        WorkoutLiftEntryId = workoutSet.WorkoutLiftEntryId,
+                        SetNumber = workoutSet.SetNumber,
+                        Reps = workoutSet.Reps,
+                        Weight = workoutSet.Weight,
+                        CreatedAtUtc = workoutSet.CreatedAtUtc,
+                    })
+                    .ToList(),
+                cancellationToken);
+
         return new ReorderWorkoutLiftsResult
         {
             Outcome = ReorderWorkoutLiftsOutcome.Reordered,
             WorkoutId = command.WorkoutId,
             Items = orderedEntryIds
-                .Select(entryId => ToWorkoutLiftEntry(entitiesById[entryId]))
+                .Select(entryId => ToWorkoutLiftEntry(
+                    entitiesById[entryId],
+                    setsByEntryId.GetValueOrDefault(entryId, [])))
                 .ToList(),
         };
     }
 
-    private static WorkoutLiftEntry ToWorkoutLiftEntry(Infrastructure.Persistence.Workouts.WorkoutLiftEntryEntity workoutLiftEntryEntity) => new()
+    private static WorkoutLiftEntry ToWorkoutLiftEntry(
+        Infrastructure.Persistence.Workouts.WorkoutLiftEntryEntity workoutLiftEntryEntity,
+        IReadOnlyList<WorkoutSetEntry> sets) => new()
     {
         Id = workoutLiftEntryEntity.Id,
         WorkoutId = workoutLiftEntryEntity.WorkoutId,
@@ -107,5 +132,6 @@ public sealed class ReorderWorkoutLiftsCommandHandler(WeightLiftingDbContext dbC
         DisplayName = workoutLiftEntryEntity.DisplayName,
         AddedAtUtc = workoutLiftEntryEntity.AddedAtUtc,
         Position = workoutLiftEntryEntity.Position,
+        Sets = sets,
     };
 }

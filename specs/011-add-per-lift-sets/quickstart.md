@@ -49,3 +49,12 @@ Validate that a lifter can quickly add persisted set rows under each workout-lif
 
 1. Verify the primary add-set path can be completed in 3 interactions or fewer after focusing a lift entry.
 2. Verify controls and feedback remain clear on the smallest supported mobile viewport.
+
+## Verification Run (2026-04-23)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter AddWorkoutSet /p:UseSharedCompilation=false -m:1` (Passed: 5)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter AddWorkoutSet /p:UseSharedCompilation=false -m:1` (Passed: 2)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter "PostWorkoutSet|AddWorkoutSet" /p:UseSharedCompilation=false -m:1` (Passed: 3)
+- `npm run build` in `frontend` (Passed)
+- `npx playwright test tests/e2e/workouts/add-workout-set.spec.ts tests/e2e/workouts/add-workout-set-duplicates.spec.ts tests/e2e/workouts/add-workout-set-failures.spec.ts` in `frontend` (Passed: 5)
+- `npx playwright test tests/e2e/workouts/add-workout-lift.spec.ts tests/e2e/workouts/remove-workout-lift.spec.ts tests/e2e/workouts/reorder-workout-lifts.spec.ts` in `frontend` (Passed: 3)

@@ -30,44 +30,105 @@
           *ngFor="let entry of workoutLiftEntries(); let i = index; trackBy: trackWorkoutLiftEntry"
           class="active-workout__lift-list-item"
         >
-          <div class="active-workout__lift-details">
-            <span class="active-workout__lift-name">{{ entry.displayName }}</span>
-            <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
+          <div class="active-workout__lift-top-row">
+            <div class="active-workout__lift-details">
+              <span class="active-workout__lift-name">{{ entry.displayName }}</span>
+              <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
+            </div>
+            <div class="active-workout__lift-actions">
+              <button
+                type="button"
+                mat-icon-button
+                class="active-workout__lift-reorder"
+                [disabled]="!canMoveLiftUp(i)"
+                [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' up'"
+                (click)="moveLiftUp(entry.id, i)"
+              >
+                <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_upward' }}</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                class="active-workout__lift-reorder"
+                [disabled]="!canMoveLiftDown(i)"
+                [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' down'"
+                (click)="moveLiftDown(entry.id, i)"
+              >
+                <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_downward' }}</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                color="warn"
+                class="active-workout__lift-remove"
+                [disabled]="isRemovingLift() || isReorderingLift()"
+                [attr.aria-label]="'Remove ' + entry.displayName + ' entry #' + entry.position"
+                (click)="removeWorkoutLiftEntry(entry.id)"
+              >
+                <mat-icon>
+                  {{ isRemovingLift() && removingWorkoutLiftEntryId() === entry.id ? 'hourglass_empty' : 'delete' }}
+                </mat-icon>
+              </button>
+            </div>
           </div>
-          <div class="active-workout__lift-actions">
-            <button
-              type="button"
-              mat-icon-button
-              class="active-workout__lift-reorder"
-              [disabled]="!canMoveLiftUp(i)"
-              [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' up'"
-              (click)="moveLiftUp(entry.id, i)"
-            >
-              <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_upward' }}</mat-icon>
-            </button>
-            <button
-              type="button"
-              mat-icon-button
-              class="active-workout__lift-reorder"
-              [disabled]="!canMoveLiftDown(i)"
-              [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' down'"
-              (click)="moveLiftDown(entry.id, i)"
-            >
-              <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_downward' }}</mat-icon>
-            </button>
-            <button
-              type="button"
-              mat-icon-button
-              color="warn"
-              class="active-workout__lift-remove"
-              [disabled]="isRemovingLift() || isReorderingLift()"
-              [attr.aria-label]="'Remove ' + entry.displayName + ' entry #' + entry.position"
-              (click)="removeWorkoutLiftEntry(entry.id)"
-            >
-              <mat-icon>
-                {{ isRemovingLift() && removingWorkoutLiftEntryId() === entry.id ? 'hourglass_empty' : 'delete' }}
-              </mat-icon>
-            </button>
+
+          <div class="active-workout__set-section">
+            <p *ngIf="getSetsForEntry(entry).length === 0" class="active-workout__set-empty">
+              No sets yet.
+            </p>
+
+            <ul *ngIf="getSetsForEntry(entry).length > 0" class="active-workout__set-list">
+              <li *ngFor="let setEntry of getSetsForEntry(entry); trackBy: trackWorkoutSet" class="active-workout__set-list-item">
+                <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
+                <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
+              </li>
+            </ul>
+
+            <div class="active-workout__set-form">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Reps</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  required
+                  [value]="getAddSetDraft(entry.id).reps"
+                  [disabled]="isAddingSet(entry.id)"
+                  [attr.aria-label]="'Reps for ' + entry.displayName + ' entry #' + entry.position"
+                  (input)="updateAddSetReps(entry.id, $any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Weight (optional)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  inputmode="decimal"
+                  min="0"
+                  step="0.5"
+                  [value]="getAddSetDraft(entry.id).weight"
+                  [disabled]="isAddingSet(entry.id)"
+                  [attr.aria-label]="'Weight for ' + entry.displayName + ' entry #' + entry.position"
+                  (input)="updateAddSetWeight(entry.id, $any($event.target).value)"
+                />
+              </mat-form-field>
+              <button
+                type="button"
+                mat-flat-button
+                color="primary"
+                class="active-workout__set-submit"
+                [disabled]="isAddingSet(entry.id)"
+                [attr.aria-label]="'Add set for ' + entry.displayName + ' entry #' + entry.position"
+                (click)="addSet(entry.id)"
+              >
+                {{ isAddingSet(entry.id) ? 'Saving...' : 'Add Set' }}
+              </button>
+            </div>
+
+            <p *ngIf="getAddSetError(entry.id)" class="active-workout__feedback active-workout__feedback--error">
+              {{ getAddSetError(entry.id) }}
+            </p>
           </div>
         </li>
       </ul>

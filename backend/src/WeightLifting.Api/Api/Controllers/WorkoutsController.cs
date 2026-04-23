@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using WeightLifting.Api.Api.Contracts.Workouts;
 using WeightLifting.Api.Application.Workouts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
+using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
@@ -17,6 +18,7 @@ namespace WeightLifting.Api.Api.Controllers;
 [Route("api/workouts")]
 public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
+    AddWorkoutSetCommandHandler addWorkoutSetCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
     ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
@@ -244,6 +246,66 @@ public sealed class WorkoutsController(
         }
     }
 
+    [HttpPost("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}/sets")]
+    [ProducesResponseType(typeof(CreateWorkoutSetResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<CreateWorkoutSetResponse>> AddWorkoutSet(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        [FromBody] CreateWorkoutSetRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await addWorkoutSetCommandHandler.HandleAsync(
+            new AddWorkoutSetCommand
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+                Reps = request?.Reps ?? 0,
+                Weight = request?.Weight,
+            },
+            cancellationToken);
+
+        if (result.Outcome == AddWorkoutSetOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == AddWorkoutSetOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot accept sets",
+                status = StatusCodes.Status409Conflict,
+                errors = result.Errors,
+            });
+        }
+
+        if (result.Outcome == AddWorkoutSetOutcome.ValidationFailed)
+        {
+            return UnprocessableEntity(new
+            {
+                title = "Validation failed",
+                status = StatusCodes.Status422UnprocessableEntity,
+                errors = result.Errors,
+            });
+        }
+
+        return Created(
+            $"/api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{result.Set!.Id}",
+            new CreateWorkoutSetResponse
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+                Set = ToWorkoutSetEntryResponse(result.Set),
+            });
+    }
+
     [HttpDelete("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}")]
     [ProducesResponseType(typeof(RemoveWorkoutLiftResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -370,6 +432,17 @@ public sealed class WorkoutsController(
         DisplayName = workoutLiftEntry.DisplayName,
         AddedAtUtc = workoutLiftEntry.AddedAtUtc,
         Position = workoutLiftEntry.Position,
+        Sets = workoutLiftEntry.Sets.Select(ToWorkoutSetEntryResponse).ToList(),
+    };
+
+    private static WorkoutSetEntryResponse ToWorkoutSetEntryResponse(WorkoutSetEntry workoutSetEntry) => new()
+    {
+        Id = workoutSetEntry.Id,
+        WorkoutLiftEntryId = workoutSetEntry.WorkoutLiftEntryId,
+        SetNumber = workoutSetEntry.SetNumber,
+        Reps = workoutSetEntry.Reps,
+        Weight = workoutSetEntry.Weight,
+        CreatedAtUtc = workoutSetEntry.CreatedAtUtc,
     };
 
     private static object CreateLabelValidationResponse() => new

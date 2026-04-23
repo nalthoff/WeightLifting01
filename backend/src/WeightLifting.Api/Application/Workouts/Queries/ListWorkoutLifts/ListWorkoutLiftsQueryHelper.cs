@@ -36,6 +36,20 @@ public sealed class ListWorkoutLiftsQueryHelper(WeightLiftingDbContext dbContext
                 DisplayName = workoutLiftEntry.DisplayName,
                 AddedAtUtc = workoutLiftEntry.AddedAtUtc,
                 Position = workoutLiftEntry.Position,
+                Sets = dbContext.WorkoutSets
+                    .Where(workoutSet => workoutSet.WorkoutLiftEntryId == workoutLiftEntry.Id)
+                    .OrderBy(workoutSet => workoutSet.SetNumber)
+                    .Select(workoutSet => new WorkoutSetEntry
+                    {
+                        Id = workoutSet.Id,
+                        WorkoutId = workoutSet.WorkoutId,
+                        WorkoutLiftEntryId = workoutSet.WorkoutLiftEntryId,
+                        SetNumber = workoutSet.SetNumber,
+                        Reps = workoutSet.Reps,
+                        Weight = workoutSet.Weight,
+                        CreatedAtUtc = workoutSet.CreatedAtUtc,
+                    })
+                    .ToList(),
             })
             .ToListAsync(cancellationToken);
     }
