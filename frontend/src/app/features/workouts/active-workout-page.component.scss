@@ -227,7 +227,10 @@
   gap: 0.625rem;
   align-items: center;
   width: 100%;
-  max-width: 21rem;
+  background: var(--app-info-bg);
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.5rem;
 }
 
 .active-workout__set-form-field {
@@ -255,7 +258,6 @@
   .active-workout__set-form {
     grid-template-columns: auto auto auto;
     gap: 0.5rem;
-    max-width: 100%;
   }
 
   .active-workout__set-form-field--reps {
