@@ -164,9 +164,8 @@
 }
 
 .active-workout__set-list-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   border: 1px solid var(--app-surface-outline);
   border-radius: 0.5rem;
@@ -175,12 +174,36 @@
 
 .active-workout__set-value {
   color: var(--app-text-muted);
-  text-align: right;
   font-weight: 500;
 }
 
-.active-workout__set-list-item .active-workout__set-value:first-child {
-  text-align: left;
+.active-workout__set-value--label {
+  color: var(--app-text-default);
+  font-weight: 600;
+}
+
+.active-workout__set-readonly {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.active-workout__set-edit {
+  justify-self: end;
+  flex-shrink: 0;
+}
+
+.active-workout__set-edit-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.active-workout__set-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .active-workout__set-form {

@@ -48,6 +48,7 @@ public sealed class ListWorkoutLiftsQueryHelper(WeightLiftingDbContext dbContext
                         Reps = workoutSet.Reps,
                         Weight = workoutSet.Weight,
                         CreatedAtUtc = workoutSet.CreatedAtUtc,
+                        UpdatedAtUtc = workoutSet.UpdatedAtUtc,
                     })
                     .ToList(),
             })

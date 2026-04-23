@@ -53,6 +53,17 @@ export interface CreateWorkoutSetResponse {
   set: WorkoutSetEntry;
 }
 
+export interface UpdateWorkoutSetRequest {
+  reps: number;
+  weight: number | null;
+}
+
+export interface UpdateWorkoutSetResponse {
+  workoutId: string;
+  workoutLiftEntryId: string;
+  set: WorkoutSetEntry;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -87,6 +98,18 @@ export class WorkoutLiftsApiService {
   ): Observable<CreateWorkoutSetResponse> {
     return this.httpClient.post<CreateWorkoutSetResponse>(
       `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets`,
+      request,
+    );
+  }
+
+  updateWorkoutSet(
+    workoutId: string,
+    workoutLiftEntryId: string,
+    setId: string,
+    request: UpdateWorkoutSetRequest,
+  ): Observable<UpdateWorkoutSetResponse> {
+    return this.httpClient.put<UpdateWorkoutSetResponse>(
+      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets/${setId}`,
       request,
     );
   }

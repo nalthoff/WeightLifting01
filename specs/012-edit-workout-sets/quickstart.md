@@ -42,3 +42,12 @@ Validate that lifters can correct existing set rows inline during an in-progress
 1. Confirm existing add-set behavior still works for the same workout.
 2. Confirm existing remove-lift and reorder-lift flows remain functional.
 3. Confirm active workout loading and refresh behaviors remain stable.
+
+## Verification Run (2026-04-23)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter "FullyQualifiedName~UpdateWorkoutSetCommandHandlerTests" /p:UseSharedCompilation=false -m:1` (Passed: 5)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter "FullyQualifiedName~UpdateWorkoutSetIntegrationTests" /p:UseSharedCompilation=false -m:1` (Passed: 2)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter "FullyQualifiedName~WorkoutLiftsApiContractTests.PutWorkoutSet" /p:UseSharedCompilation=false -m:1` (Passed: 2)
+- `npm run build` in `frontend` (Passed)
+- `npx playwright test tests/e2e/workouts/edit-workout-set.spec.ts tests/e2e/workouts/edit-workout-set-failures.spec.ts tests/e2e/workouts/edit-workout-set-constraints.spec.ts tests/e2e/workouts/add-workout-set.spec.ts tests/e2e/workouts/remove-workout-lift.spec.ts tests/e2e/workouts/reorder-workout-lifts.spec.ts` in `frontend` (Passed: 7)
+- Mobile viewport inline edit/save/retry usability validated via Playwright Mobile Chrome coverage in edit-set and regression suites.

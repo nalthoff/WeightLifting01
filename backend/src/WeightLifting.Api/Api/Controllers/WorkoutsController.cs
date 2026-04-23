@@ -6,6 +6,7 @@ using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
+using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
@@ -19,6 +20,7 @@ namespace WeightLifting.Api.Api.Controllers;
 public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
     AddWorkoutSetCommandHandler addWorkoutSetCommandHandler,
+    UpdateWorkoutSetCommandHandler updateWorkoutSetCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
     ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
@@ -306,6 +308,66 @@ public sealed class WorkoutsController(
             });
     }
 
+    [HttpPut("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}/sets/{setId:guid}")]
+    [ProducesResponseType(typeof(UpdateWorkoutSetResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<UpdateWorkoutSetResponse>> UpdateWorkoutSet(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        Guid setId,
+        [FromBody] UpdateWorkoutSetRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await updateWorkoutSetCommandHandler.HandleAsync(
+            new UpdateWorkoutSetCommand
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+                SetId = setId,
+                Reps = request?.Reps ?? 0,
+                Weight = request?.Weight,
+            },
+            cancellationToken);
+
+        if (result.Outcome == UpdateWorkoutSetOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == UpdateWorkoutSetOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot update sets",
+                status = StatusCodes.Status409Conflict,
+                errors = result.Errors,
+            });
+        }
+
+        if (result.Outcome == UpdateWorkoutSetOutcome.ValidationFailed)
+        {
+            return UnprocessableEntity(new
+            {
+                title = "Validation failed",
+                status = StatusCodes.Status422UnprocessableEntity,
+                errors = result.Errors,
+            });
+        }
+
+        return Ok(new UpdateWorkoutSetResponse
+        {
+            WorkoutId = workoutId,
+            WorkoutLiftEntryId = workoutLiftEntryId,
+            Set = ToWorkoutSetEntryResponse(result.Set!),
+        });
+    }
+
     [HttpDelete("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}")]
     [ProducesResponseType(typeof(RemoveWorkoutLiftResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -443,6 +505,7 @@ public sealed class WorkoutsController(
         Reps = workoutSetEntry.Reps,
         Weight = workoutSetEntry.Weight,
         CreatedAtUtc = workoutSetEntry.CreatedAtUtc,
+        UpdatedAtUtc = workoutSetEntry.UpdatedAtUtc,
     };
 
     private static object CreateLabelValidationResponse() => new

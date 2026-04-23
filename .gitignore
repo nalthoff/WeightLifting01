@@ -7,9 +7,11 @@ packages/
 frontend/node_modules/
 frontend/.angular/
 frontend/dist/
+frontend/build/
 frontend/coverage/
 frontend/test-results/
 frontend/playwright-report/
+*.log
 
 backend/src/WeightLifting.Api/*.db*
 

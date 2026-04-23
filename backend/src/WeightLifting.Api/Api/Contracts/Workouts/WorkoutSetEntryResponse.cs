@@ -13,4 +13,6 @@ public sealed class WorkoutSetEntryResponse
     public decimal? Weight { get; init; }
 
     public DateTime CreatedAtUtc { get; init; }
+
+    public DateTime UpdatedAtUtc { get; init; }
 }

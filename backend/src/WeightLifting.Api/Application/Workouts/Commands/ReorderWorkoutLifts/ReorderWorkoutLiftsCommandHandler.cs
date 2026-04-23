@@ -106,6 +106,7 @@ public sealed class ReorderWorkoutLiftsCommandHandler(WeightLiftingDbContext dbC
                         Reps = workoutSet.Reps,
                         Weight = workoutSet.Weight,
                         CreatedAtUtc = workoutSet.CreatedAtUtc,
+                        UpdatedAtUtc = workoutSet.UpdatedAtUtc,
                     })
                     .ToList(),
                 cancellationToken);

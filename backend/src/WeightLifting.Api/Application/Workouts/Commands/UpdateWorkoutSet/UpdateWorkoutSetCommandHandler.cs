@@ -1,25 +1,24 @@
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
-using WeightLifting.Api.Infrastructure.Persistence.Entities;
 
-namespace WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
+namespace WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 
-public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext)
+public sealed class UpdateWorkoutSetCommandHandler(WeightLiftingDbContext dbContext)
 {
     // Placeholder identity until auth context is wired.
     private const string DefaultUserId = "default-user";
 
-    public async Task<AddWorkoutSetResult> HandleAsync(
-        AddWorkoutSetCommand command,
+    public async Task<UpdateWorkoutSetResult> HandleAsync(
+        UpdateWorkoutSetCommand command,
         CancellationToken cancellationToken)
     {
         var validationErrors = Validate(command);
         if (validationErrors.Count > 0)
         {
-            return new AddWorkoutSetResult
+            return new UpdateWorkoutSetResult
             {
-                Outcome = AddWorkoutSetOutcome.ValidationFailed,
+                Outcome = UpdateWorkoutSetOutcome.ValidationFailed,
                 Errors = validationErrors,
             };
         }
@@ -31,66 +30,68 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
 
         if (workoutEntity is null)
         {
-            return new AddWorkoutSetResult
+            return new UpdateWorkoutSetResult
             {
-                Outcome = AddWorkoutSetOutcome.NotFound,
+                Outcome = UpdateWorkoutSetOutcome.NotFound,
             };
         }
 
         if (workoutEntity.Status != WorkoutStatus.InProgress)
         {
-            return new AddWorkoutSetResult
+            return new UpdateWorkoutSetResult
             {
-                Outcome = AddWorkoutSetOutcome.Conflict,
+                Outcome = UpdateWorkoutSetOutcome.Conflict,
                 Errors = new Dictionary<string, string[]>
                 {
-                    ["workout"] = ["Workout must be in progress to add sets."],
+                    ["workout"] = ["Workout must be in progress to update sets."],
                 },
             };
         }
 
         var workoutLiftEntryExists = await dbContext.WorkoutLiftEntries
             .AnyAsync(workoutLiftEntry =>
-                workoutLiftEntry.WorkoutId == command.WorkoutId
-                && workoutLiftEntry.Id == command.WorkoutLiftEntryId,
+                    workoutLiftEntry.WorkoutId == command.WorkoutId
+                    && workoutLiftEntry.Id == command.WorkoutLiftEntryId,
                 cancellationToken);
 
         if (!workoutLiftEntryExists)
         {
-            return new AddWorkoutSetResult
+            return new UpdateWorkoutSetResult
             {
-                Outcome = AddWorkoutSetOutcome.NotFound,
+                Outcome = UpdateWorkoutSetOutcome.NotFound,
             };
         }
 
-        var nextSetNumber = await dbContext.WorkoutSets
-            .Where(workoutSet => workoutSet.WorkoutLiftEntryId == command.WorkoutLiftEntryId)
-            .MaxAsync(workoutSet => (int?)workoutSet.SetNumber, cancellationToken) ?? 0;
+        var workoutSetEntity = await dbContext.WorkoutSets
+            .SingleOrDefaultAsync(
+                workoutSet =>
+                    workoutSet.Id == command.SetId
+                    && workoutSet.WorkoutId == command.WorkoutId
+                    && workoutSet.WorkoutLiftEntryId == command.WorkoutLiftEntryId,
+                cancellationToken);
 
-        var nowUtc = DateTime.UtcNow;
-        var workoutSetEntity = new WorkoutSetEntity
+        if (workoutSetEntity is null)
         {
-            Id = Guid.NewGuid(),
-            WorkoutId = command.WorkoutId,
-            WorkoutLiftEntryId = command.WorkoutLiftEntryId,
-            SetNumber = nextSetNumber + 1,
-            Reps = command.Reps,
-            Weight = command.Weight,
-            CreatedAtUtc = nowUtc,
-            UpdatedAtUtc = nowUtc,
-        };
+            return new UpdateWorkoutSetResult
+            {
+                Outcome = UpdateWorkoutSetOutcome.NotFound,
+            };
+        }
 
-        dbContext.WorkoutSets.Add(workoutSetEntity);
+        workoutSetEntity.Reps = command.Reps;
+        workoutSetEntity.Weight = command.Weight;
+        workoutSetEntity.UpdatedAtUtc = DateTime.UtcNow;
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new AddWorkoutSetResult
+        return new UpdateWorkoutSetResult
         {
-            Outcome = AddWorkoutSetOutcome.Created,
+            Outcome = UpdateWorkoutSetOutcome.Updated,
             Set = ToWorkoutSetEntry(workoutSetEntity),
         };
     }
 
-    private static Dictionary<string, string[]> Validate(AddWorkoutSetCommand command)
+    private static Dictionary<string, string[]> Validate(UpdateWorkoutSetCommand command)
     {
         var errors = new Dictionary<string, string[]>();
 
@@ -102,6 +103,11 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
         if (command.WorkoutLiftEntryId == Guid.Empty)
         {
             errors["workoutLiftEntryId"] = ["Workout lift entry id is required."];
+        }
+
+        if (command.SetId == Guid.Empty)
+        {
+            errors["setId"] = ["Set id is required."];
         }
 
         if (command.Reps <= 0)
@@ -117,7 +123,7 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
         return errors;
     }
 
-    private static WorkoutSetEntry ToWorkoutSetEntry(WorkoutSetEntity workoutSetEntity) => new()
+    private static WorkoutSetEntry ToWorkoutSetEntry(Infrastructure.Persistence.Entities.WorkoutSetEntity workoutSetEntity) => new()
     {
         Id = workoutSetEntity.Id,
         WorkoutId = workoutSetEntity.WorkoutId,

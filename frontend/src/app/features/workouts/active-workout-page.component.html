@@ -33,7 +33,6 @@
           <div class="active-workout__lift-top-row">
             <div class="active-workout__lift-details">
               <span class="active-workout__lift-name">{{ entry.displayName }}</span>
-              <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
             </div>
             <div class="active-workout__lift-actions">
               <button
@@ -79,8 +78,82 @@
 
             <ul *ngIf="getSetsForEntry(entry).length > 0" class="active-workout__set-list">
               <li *ngFor="let setEntry of getSetsForEntry(entry); trackBy: trackWorkoutSet" class="active-workout__set-list-item">
-                <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
-                <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
+                <div class="active-workout__set-readonly" *ngIf="!isEditingSetRow(entry.id, setEntry.id); else editSetRowTemplate">
+                  <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
+                  <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
+                  <button
+                    *ngIf="canEditWorkoutSetRows()"
+                    type="button"
+                    mat-icon-button
+                    class="active-workout__set-edit"
+                    [attr.aria-label]="'Edit set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
+                    (click)="beginSetEdit(entry.id, setEntry)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </div>
+                <ng-template #editSetRowTemplate>
+                  <div class="active-workout__set-edit-row">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <mat-label>Reps</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        required
+                        [value]="getSetEditSession(entry.id, setEntry.id)?.draftReps ?? ''"
+                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
+                        [attr.aria-label]="'Edit reps for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                        (input)="updateSetEditReps(entry.id, setEntry, $any($event.target).value)"
+                      />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <mat-label>Weight</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="0.5"
+                        [value]="getSetEditSession(entry.id, setEntry.id)?.draftWeight ?? ''"
+                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
+                        [attr.aria-label]="'Edit weight for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                        (input)="updateSetEditWeight(entry.id, setEntry, $any($event.target).value)"
+                      />
+                    </mat-form-field>
+                    <div class="active-workout__set-edit-actions">
+                      <button
+                        type="button"
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
+                        [attr.aria-label]="'Save set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
+                        (click)="saveSetEdit(entry.id, setEntry)"
+                      >
+                        {{ getSetEditSession(entry.id, setEntry.id)?.isSaving ? 'Saving...' : (getSetEditSession(entry.id, setEntry.id)?.errorMessage ? 'Retry Save' : 'Save') }}
+                      </button>
+                      <button
+                        type="button"
+                        mat-button
+                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
+                        [attr.aria-label]="'Cancel edit for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                        (click)="cancelSetEdit(entry.id, setEntry.id)"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <p
+                      *ngIf="getSetEditSession(entry.id, setEntry.id)?.isDirty && !getSetEditSession(entry.id, setEntry.id)?.errorMessage"
+                      class="active-workout__feedback active-workout__feedback--info"
+                    >
+                      Unsaved row changes.
+                    </p>
+                    <p *ngIf="getSetEditSession(entry.id, setEntry.id)?.errorMessage" class="active-workout__feedback active-workout__feedback--error">
+                      {{ getSetEditSession(entry.id, setEntry.id)?.errorMessage }}
+                    </p>
+                  </div>
+                </ng-template>
               </li>
             </ul>
 

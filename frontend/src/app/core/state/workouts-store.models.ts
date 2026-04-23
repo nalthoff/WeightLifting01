@@ -5,6 +5,7 @@ export interface WorkoutSetEntry {
   reps: number;
   weight: number | null;
   createdAtUtc: string;
+  updatedAtUtc?: string;
 }
 
 export interface WorkoutLiftEntryState {
@@ -15,4 +16,13 @@ export interface WorkoutLiftEntryState {
   addedAtUtc: string;
   position: number;
   sets: WorkoutSetEntry[];
+}
+
+export interface SetRowEditSession {
+  setId: string;
+  draftReps: string;
+  draftWeight: string;
+  isSaving: boolean;
+  errorMessage: string | null;
+  isDirty: boolean;
 }

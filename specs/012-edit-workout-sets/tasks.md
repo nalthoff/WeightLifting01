@@ -17,9 +17,9 @@
 
 **Purpose**: Confirm existing workout-set creation patterns and identify extension points for set updates.
 
-- [ ] T001 Review active workout set rendering/edit touchpoints in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T002 [P] Review workout set DTO and API client conventions in `frontend/src/app/core/api/workout-lifts-api.service.ts` and `frontend/src/app/core/state/workouts-store.models.ts`
-- [ ] T003 [P] Review backend add-set command/endpoint patterns in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutSet/AddWorkoutSetCommandHandler.cs` and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T001 Review active workout set rendering/edit touchpoints in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T002 [P] Review workout set DTO and API client conventions in `frontend/src/app/core/api/workout-lifts-api.service.ts` and `frontend/src/app/core/state/workouts-store.models.ts`
+- [X] T003 [P] Review backend add-set command/endpoint patterns in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutSet/AddWorkoutSetCommandHandler.cs` and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
 
 ---
 
@@ -29,11 +29,11 @@
 
 **⚠️ CRITICAL**: No user story work starts until this phase is complete.
 
-- [ ] T004 Create update-set API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/UpdateWorkoutSetRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Workouts/UpdateWorkoutSetResponse.cs`
-- [ ] T005 Create update-set application command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetResult.cs`
-- [ ] T006 [P] Add update-set API DTOs and client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T007 [P] Extend workout store models for row edit session state in `frontend/src/app/core/state/workouts-store.models.ts`
-- [ ] T008 Register update-set command handler dependencies in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T004 Create update-set API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/UpdateWorkoutSetRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Workouts/UpdateWorkoutSetResponse.cs`
+- [X] T005 Create update-set application command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetResult.cs`
+- [X] T006 [P] Add update-set API DTOs and client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T007 [P] Extend workout store models for row edit session state in `frontend/src/app/core/state/workouts-store.models.ts`
+- [X] T008 Register update-set command handler dependencies in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
 
 **Checkpoint**: Foundation complete; user-story implementation can begin.
 
@@ -47,18 +47,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add unit tests for update validation, immutable set number, and in-progress requirement in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
-- [ ] T010 [P] [US1] Add integration tests for persisted set updates and lift-entry scoped row targeting in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/UpdateWorkoutSetIntegrationTests.cs`
-- [ ] T011 [P] [US1] Add contract tests for `PUT /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}` success shape in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T012 [P] [US1] Add e2e happy-path inline-edit flow in `frontend/tests/e2e/workouts/edit-workout-set.spec.ts`
+- [X] T009 [P] [US1] Add unit tests for update validation, immutable set number, and in-progress requirement in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
+- [X] T010 [P] [US1] Add integration tests for persisted set updates and lift-entry scoped row targeting in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/UpdateWorkoutSetIntegrationTests.cs`
+- [X] T011 [P] [US1] Add contract tests for `PUT /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}` success shape in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T012 [P] [US1] Add e2e happy-path inline-edit flow in `frontend/tests/e2e/workouts/edit-workout-set.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement update-set command handler for reps/weight persistence and last-write-wins updates in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`
-- [ ] T014 [US1] Add update-set endpoint mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T015 [US1] Add store support for applying updated set rows in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T016 [US1] Implement inline edit mode, row draft tracking, and save action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T017 [US1] Render row-level inline edit controls and save affordances in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T013 [US1] Implement update-set command handler for reps/weight persistence and last-write-wins updates in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`
+- [X] T014 [US1] Add update-set endpoint mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T015 [US1] Add store support for applying updated set rows in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T016 [US1] Implement inline edit mode, row draft tracking, and save action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T017 [US1] Render row-level inline edit controls and save affordances in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -72,15 +72,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Extend unit tests for update failure outcomes (`NotFound`, `Conflict`, `ValidationFailed`) in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
-- [ ] T019 [P] [US2] Add contract tests for update-set endpoint 404/409/422 responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T020 [P] [US2] Add e2e failure-retry scenarios for inline edit rows in `frontend/tests/e2e/workouts/edit-workout-set-failures.spec.ts`
+- [X] T018 [P] [US2] Extend unit tests for update failure outcomes (`NotFound`, `Conflict`, `ValidationFailed`) in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
+- [X] T019 [P] [US2] Add contract tests for update-set endpoint 404/409/422 responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T020 [P] [US2] Add e2e failure-retry scenarios for inline edit rows in `frontend/tests/e2e/workouts/edit-workout-set-failures.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Map update-set failure outcomes to problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T022 [US2] Implement frontend row-level unsaved/error state handling and retry orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T023 [US2] Render explicit row-level unsaved/failure messaging and retry UI in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T021 [US2] Map update-set failure outcomes to problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T022 [US2] Implement frontend row-level unsaved/error state handling and retry orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T023 [US2] Render explicit row-level unsaved/failure messaging and retry UI in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -94,15 +94,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T024 [P] [US3] Add unit tests for non-in-progress workout gating and lift-entry ownership checks in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
-- [ ] T025 [P] [US3] Add integration tests for duplicate-lift-entry isolation during set updates in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/UpdateWorkoutSetIntegrationTests.cs`
-- [ ] T026 [P] [US3] Add e2e tests for in-progress-only edit controls and duplicate-entry isolation in `frontend/tests/e2e/workouts/edit-workout-set-constraints.spec.ts`
+- [X] T024 [P] [US3] Add unit tests for non-in-progress workout gating and lift-entry ownership checks in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/UpdateWorkoutSet/UpdateWorkoutSetCommandHandlerTests.cs`
+- [X] T025 [P] [US3] Add integration tests for duplicate-lift-entry isolation during set updates in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/UpdateWorkoutSetIntegrationTests.cs`
+- [X] T026 [P] [US3] Add e2e tests for in-progress-only edit controls and duplicate-entry isolation in `frontend/tests/e2e/workouts/edit-workout-set-constraints.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Enforce in-progress-only update-set rule and scoped row ownership checks in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`
-- [ ] T028 [US3] Gate row edit controls by workout status in active workout UI in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T029 [US3] Ensure set-row updates are applied only to the targeted workout-lift entry in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T027 [US3] Enforce in-progress-only update-set rule and scoped row ownership checks in `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`
+- [X] T028 [US3] Gate row edit controls by workout status in active workout UI in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T029 [US3] Ensure set-row updates are applied only to the targeted workout-lift entry in `frontend/src/app/core/state/workouts-store.service.ts`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -112,11 +112,11 @@
 
 **Purpose**: Final cross-story validation and regression checks.
 
-- [ ] T030 [P] Update quickstart verification notes in `specs/012-edit-workout-sets/quickstart.md`
-- [ ] T031 [P] Run backend unit/integration/contract suites for update-set behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T032 [P] Run frontend edit-set e2e suite and build in `frontend/package.json`
-- [ ] T033 Validate mobile viewport usability for inline edit/save/retry controls in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T034 Confirm regressions for add-set/remove-lift/reorder-lift flows in `frontend/tests/e2e/workouts/add-workout-set.spec.ts`, `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`, and `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
+- [X] T030 [P] Update quickstart verification notes in `specs/012-edit-workout-sets/quickstart.md`
+- [X] T031 [P] Run backend unit/integration/contract suites for update-set behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T032 [P] Run frontend edit-set e2e suite and build in `frontend/package.json`
+- [X] T033 Validate mobile viewport usability for inline edit/save/retry controls in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T034 Confirm regressions for add-set/remove-lift/reorder-lift flows in `frontend/tests/e2e/workouts/add-workout-set.spec.ts`, `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`, and `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
 
 ---
 

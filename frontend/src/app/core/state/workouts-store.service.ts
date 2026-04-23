@@ -105,6 +105,27 @@ export class WorkoutsStoreService {
     this.activeWorkoutLiftEntries.set(nextEntries);
   }
 
+  applyWorkoutSetUpdate(workoutId: string, workoutLiftEntryId: string, setEntry: WorkoutSetEntry): void {
+    const activeWorkout = this.activeWorkout();
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      return;
+    }
+
+    const nextEntries = this.activeWorkoutLiftEntries().map((entry) => {
+      if (entry.id !== workoutLiftEntryId) {
+        return entry;
+      }
+
+      const nextSets = entry.sets.map((existingSet) => (existingSet.id === setEntry.id ? { ...setEntry } : existingSet));
+      return {
+        ...entry,
+        sets: nextSets.sort((left, right) => left.setNumber - right.setNumber),
+      };
+    });
+
+    this.activeWorkoutLiftEntries.set(nextEntries);
+  }
+
   private toWorkoutLiftEntryState(entry: WorkoutLiftEntry): WorkoutLiftEntryState {
     return {
       id: entry.id,

@@ -13,7 +13,7 @@ import { finalize, map } from 'rxjs';
 import { LiftsApiService } from '../../core/api/lifts-api.service';
 import { WorkoutLiftsApiService } from '../../core/api/workout-lifts-api.service';
 import { WorkoutsApiService } from '../../core/api/workouts-api.service';
-import type { WorkoutLiftEntryState, WorkoutSetEntry } from '../../core/state/workouts-store.models';
+import type { SetRowEditSession, WorkoutLiftEntryState, WorkoutSetEntry } from '../../core/state/workouts-store.models';
 import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
 
 @Component({
@@ -56,6 +56,7 @@ export class ActiveWorkoutPageComponent {
   readonly addSetErrorByEntryId = signal<Record<string, string | null>>({});
   readonly isAddingSetByEntryId = signal<Record<string, boolean>>({});
   readonly addSetDraftByEntryId = signal<Record<string, { reps: string; weight: string }>>({});
+  readonly setEditSessionByKey = signal<Record<string, SetRowEditSession>>({});
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly workoutId = this.routeWorkoutId.asReadonly();
   readonly workout = computed(() => {
@@ -330,6 +331,147 @@ export class ActiveWorkoutPageComponent {
     return entry.sets;
   }
 
+  canEditWorkoutSetRows(): boolean {
+    return this.workout()?.status === 'InProgress';
+  }
+
+  isEditingSetRow(entryId: string, setId: string): boolean {
+    return this.getSetEditSession(entryId, setId) !== null;
+  }
+
+  beginSetEdit(entryId: string, setEntry: WorkoutSetEntry): void {
+    if (!this.canEditWorkoutSetRows()) {
+      return;
+    }
+
+    const rowKey = this.buildSetRowKey(entryId, setEntry.id);
+    this.setEditSessionByKey.update((current) => ({
+      ...current,
+      [rowKey]: {
+        setId: setEntry.id,
+        draftReps: String(setEntry.reps),
+        draftWeight: setEntry.weight === null ? '' : String(setEntry.weight),
+        isSaving: false,
+        errorMessage: null,
+        isDirty: false,
+      },
+    }));
+  }
+
+  cancelSetEdit(entryId: string, setId: string): void {
+    const rowKey = this.buildSetRowKey(entryId, setId);
+    this.setEditSessionByKey.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => key !== rowKey)),
+    );
+  }
+
+  getSetEditSession(entryId: string, setId: string): SetRowEditSession | null {
+    return this.setEditSessionByKey()[this.buildSetRowKey(entryId, setId)] ?? null;
+  }
+
+  updateSetEditReps(entryId: string, setEntry: WorkoutSetEntry, repsValue: string): void {
+    const session = this.getSetEditSession(entryId, setEntry.id);
+    if (!session || session.isSaving) {
+      return;
+    }
+
+    this.patchSetEditSession(entryId, setEntry, {
+      draftReps: repsValue,
+      errorMessage: null,
+      isDirty: this.isSetDraftDirty(setEntry, repsValue, session.draftWeight),
+    });
+  }
+
+  updateSetEditWeight(entryId: string, setEntry: WorkoutSetEntry, weightValue: string): void {
+    const session = this.getSetEditSession(entryId, setEntry.id);
+    if (!session || session.isSaving) {
+      return;
+    }
+
+    this.patchSetEditSession(entryId, setEntry, {
+      draftWeight: weightValue,
+      errorMessage: null,
+      isDirty: this.isSetDraftDirty(setEntry, session.draftReps, weightValue),
+    });
+  }
+
+  saveSetEdit(entryId: string, setEntry: WorkoutSetEntry): void {
+    const session = this.getSetEditSession(entryId, setEntry.id);
+    if (!session || session.isSaving) {
+      return;
+    }
+
+    if (!this.canEditWorkoutSetRows()) {
+      this.patchSetEditSession(entryId, setEntry, {
+        errorMessage: 'Only in-progress workouts can be edited.',
+      });
+      return;
+    }
+
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.patchSetEditSession(entryId, setEntry, {
+        errorMessage: 'Workout ID is missing.',
+      });
+      return;
+    }
+
+    const reps = Number(session.draftReps);
+    if (!Number.isInteger(reps) || reps < 1) {
+      this.patchSetEditSession(entryId, setEntry, {
+        errorMessage: 'Reps are required and must be at least 1.',
+      });
+      return;
+    }
+
+    let weight: number | null = null;
+    if (session.draftWeight.trim().length > 0) {
+      const parsedWeight = Number(session.draftWeight);
+      if (!Number.isFinite(parsedWeight) || parsedWeight < 0) {
+        this.patchSetEditSession(entryId, setEntry, {
+          errorMessage: 'Weight must be 0 or greater when provided.',
+        });
+        return;
+      }
+
+      weight = parsedWeight;
+    }
+
+    this.patchSetEditSession(entryId, setEntry, {
+      isSaving: true,
+      errorMessage: null,
+    });
+
+    this.workoutLiftsApiService
+      .updateWorkoutSet(workoutId, entryId, setEntry.id, { reps, weight })
+      .pipe(finalize(() => this.patchSetEditSession(entryId, setEntry, { isSaving: false })))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.applyWorkoutSetUpdate(response.workoutId, response.workoutLiftEntryId, response.set);
+          this.cancelSetEdit(entryId, setEntry.id);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.patchSetEditSession(entryId, setEntry, {
+              errorMessage: 'This set no longer exists in this workout entry. Refresh and try again.',
+            });
+            return;
+          }
+
+          if (error.status === 409 || error.status === 422) {
+            this.patchSetEditSession(entryId, setEntry, {
+              errorMessage: error.error?.title ?? 'This set could not be updated in the workout\'s current state.',
+            });
+            return;
+          }
+
+          this.patchSetEditSession(entryId, setEntry, {
+            errorMessage: 'Set changes were not saved. Check your connection and retry.',
+          });
+        },
+      });
+  }
+
   formatSetWeight(setEntry: WorkoutSetEntry): string {
     if (setEntry.weight === null) {
       return '-';
@@ -513,5 +655,51 @@ export class ActiveWorkoutPageComponent {
     this.isAddingSetByEntryId.update((current) =>
       Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
     );
+    this.setEditSessionByKey.update((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([key]) => allowedIds.has(this.extractEntryIdFromSetRowKey(key))),
+      ),
+    );
+  }
+
+  private patchSetEditSession(
+    entryId: string,
+    setEntry: WorkoutSetEntry,
+    patch: Partial<SetRowEditSession>,
+  ): void {
+    const rowKey = this.buildSetRowKey(entryId, setEntry.id);
+    this.setEditSessionByKey.update((current) => {
+      const existing = current[rowKey];
+      if (!existing) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [rowKey]: {
+          ...existing,
+          ...patch,
+        },
+      };
+    });
+  }
+
+  private isSetDraftDirty(setEntry: WorkoutSetEntry, repsValue: string, weightValue: string): boolean {
+    const normalizedWeight = weightValue.trim();
+    const persistedWeight = setEntry.weight === null ? '' : String(setEntry.weight);
+    return repsValue !== String(setEntry.reps) || normalizedWeight !== persistedWeight;
+  }
+
+  private buildSetRowKey(entryId: string, setId: string): string {
+    return `${entryId}:${setId}`;
+  }
+
+  private extractEntryIdFromSetRowKey(key: string): string {
+    const separatorIndex = key.indexOf(':');
+    if (separatorIndex === -1) {
+      return key;
+    }
+
+    return key.slice(0, separatorIndex);
   }
 }
