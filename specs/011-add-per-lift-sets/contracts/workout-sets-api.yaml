@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Workout Set Logging API
+  version: 0.1.0
+  description: Contract for adding persisted set rows under a specific workout-lift entry in an in-progress workout.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets:
+    post:
+      summary: Create a persisted set row for one workout-lift entry
+      operationId: createWorkoutSet
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: workoutLiftEntryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkoutSetRequest'
+      responses:
+        '201':
+          description: Set row persisted for the targeted workout-lift entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateWorkoutSetResponse'
+        '404':
+          description: Workout or workout-lift entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in an add-set state (for example, no longer in progress)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '422':
+          description: Invalid add-set request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  schemas:
+    CreateWorkoutSetRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - reps
+      properties:
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+          minimum: 0
+    CreateWorkoutSetResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+        - workoutLiftEntryId
+        - set
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        set:
+          $ref: '#/components/schemas/WorkoutSetEntry'
+    WorkoutSetEntry:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - workoutLiftEntryId
+        - setNumber
+        - reps
+        - createdAtUtc
+      properties:
+        id:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        setNumber:
+          type: integer
+          minimum: 1
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+          minimum: 0
+        createdAtUtc:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

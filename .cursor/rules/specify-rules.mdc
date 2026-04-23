@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # WeightLifting01 Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-22
+Auto-generated from all feature plans. Last updated: 2026-04-23
 
 ## Active Technologies
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core (001-create-lift)
@@ -40,9 +40,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 011-add-per-lift-sets: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 010-reorder-workout-lifts: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 009-remove-workout-lift: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
-- 008-home-active-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->
