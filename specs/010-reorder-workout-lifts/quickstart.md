@@ -47,3 +47,11 @@ Validate that a lifter can reorder lift entries in an active in-progress workout
 
 1. Verify primary reorder flow completes in 3 interactions or fewer.
 2. Confirm feedback and interaction affordances remain clear on smallest supported mobile viewport.
+
+## Verification Run (2026-04-22)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter FullyQualifiedName~ReorderWorkoutLifts` (Passed: 7)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter FullyQualifiedName~ReorderWorkoutLifts` (Passed: 4)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter FullyQualifiedName~WorkoutLiftsApiContractTests.PutReorderWorkoutLifts` (Passed: 3)
+- `npm run build` in `frontend` (Passed)
+- `npx playwright test tests/e2e/workouts/reorder-workout-lifts.spec.ts tests/e2e/workouts/reorder-workout-lifts-duplicates.spec.ts tests/e2e/workouts/reorder-workout-lifts-failures.spec.ts --workers=1` in `frontend` with `PW_E2E_REUSE=1` (Passed: 4)

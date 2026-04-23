@@ -50,6 +50,8 @@ export class ActiveWorkoutPageComponent {
   readonly isRemovingLift = signal(false);
   readonly removingWorkoutLiftEntryId = signal<string | null>(null);
   readonly removeLiftError = signal<string | null>(null);
+  readonly isReorderingLift = signal(false);
+  readonly reorderLiftError = signal<string | null>(null);
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly workoutId = this.routeWorkoutId.asReadonly();
   readonly workout = computed(() => {
@@ -166,6 +168,7 @@ export class ActiveWorkoutPageComponent {
     this.isRemovingLift.set(true);
     this.removingWorkoutLiftEntryId.set(workoutLiftEntryId);
     this.removeLiftError.set(null);
+    this.reorderLiftError.set(null);
 
     this.workoutLiftsApiService
       .removeWorkoutLift(workoutId, workoutLiftEntryId)
@@ -204,6 +207,34 @@ export class ActiveWorkoutPageComponent {
           this.removeLiftError.set('Lift was not removed. Check your connection and try again.');
         },
       });
+  }
+
+  canMoveLiftUp(index: number): boolean {
+    return index > 0 && !this.isReorderingLift();
+  }
+
+  canMoveLiftDown(index: number): boolean {
+    return index < this.workoutLiftEntries().length - 1 && !this.isReorderingLift();
+  }
+
+  moveLiftUp(workoutLiftEntryId: string, currentIndex: number): void {
+    if (!this.canMoveLiftUp(currentIndex)) {
+      return;
+    }
+
+    this.reorderLift(workoutLiftEntryId, currentIndex - 1);
+  }
+
+  moveLiftDown(workoutLiftEntryId: string, currentIndex: number): void {
+    if (!this.canMoveLiftDown(currentIndex)) {
+      return;
+    }
+
+    this.reorderLift(workoutLiftEntryId, currentIndex + 1);
+  }
+
+  trackWorkoutLiftEntry(_index: number, entry: { id: string }): string {
+    return entry.id;
   }
 
   private ensureWorkoutLoaded(workoutId: string | null): void {
@@ -254,6 +285,64 @@ export class ActiveWorkoutPageComponent {
         },
         error: () => {
           this.workoutLiftsLoadError.set('Unable to load workout lifts right now.');
+        },
+      });
+  }
+
+  private reorderLift(workoutLiftEntryId: string, targetIndex: number): void {
+    if (this.isReorderingLift()) {
+      return;
+    }
+
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.reorderLiftError.set('Workout ID is missing.');
+      return;
+    }
+
+    const currentEntries = this.workoutLiftEntries();
+    const sourceIndex = currentEntries.findIndex((entry) => entry.id === workoutLiftEntryId);
+    if (sourceIndex === -1 || sourceIndex === targetIndex) {
+      return;
+    }
+
+    const reorderedEntries = [...currentEntries];
+    const [movedEntry] = reorderedEntries.splice(sourceIndex, 1);
+    reorderedEntries.splice(targetIndex, 0, movedEntry);
+
+    const orderedWorkoutLiftEntryIds = reorderedEntries.map((entry) => entry.id);
+    this.isReorderingLift.set(true);
+    this.reorderLiftError.set(null);
+    this.removeLiftError.set(null);
+
+    this.workoutLiftsApiService
+      .reorderWorkoutLifts(workoutId, { orderedWorkoutLiftEntryIds })
+      .pipe(finalize(() => this.isReorderingLift.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.replaceActiveWorkoutLiftEntries(response.workoutId, response.items);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.reorderLiftError.set('Workout state changed. Reloaded the latest saved order.');
+            this.loadWorkoutLifts(workoutId);
+            return;
+          }
+
+          if (error.status === 409) {
+            this.reorderLiftError.set(error.error?.title ?? 'This workout cannot be reordered right now.');
+            this.loadWorkoutLifts(workoutId);
+            return;
+          }
+
+          if (error.status === 422) {
+            this.reorderLiftError.set(error.error?.title ?? 'Unable to save that order. The latest saved order was restored.');
+            this.loadWorkoutLifts(workoutId);
+            return;
+          }
+
+          this.reorderLiftError.set('Order was not saved. Check your connection and try again.');
+          this.loadWorkoutLifts(workoutId);
         },
       });
   }

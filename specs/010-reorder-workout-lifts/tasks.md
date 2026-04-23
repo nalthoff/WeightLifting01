@@ -17,8 +17,8 @@
 
 **Purpose**: Confirm reuse points for reorder behavior before implementation.
 
-- [ ] T001 Review workout-lift list/add/remove API patterns in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
-- [ ] T002 Review active-workout state and list rendering integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts`, `frontend/src/app/features/workouts/active-workout-page.component.html`, and `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T001 Review workout-lift list/add/remove API patterns in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs` and `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutLift/AddWorkoutLiftCommandHandler.cs`
+- [X] T002 Review active-workout state and list rendering integration points in `frontend/src/app/features/workouts/active-workout-page.component.ts`, `frontend/src/app/features/workouts/active-workout-page.component.html`, and `frontend/src/app/core/state/workouts-store.service.ts`
 
 ---
 
@@ -26,11 +26,11 @@
 
 **Purpose**: Add shared reorder API and command scaffolding required by all user stories.
 
-- [ ] T003 Create reorder request/response API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/ReorderWorkoutLiftsRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Workouts/ReorderWorkoutLiftsResponse.cs`
-- [ ] T004 Create reorder command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsResult.cs`
-- [ ] T005 [P] Add reorder endpoint client method and DTOs in `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T006 [P] Add store helper for replacing ordered workout-lift entries in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T007 Register reorder command handler in DI composition root at `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T003 Create reorder request/response API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/ReorderWorkoutLiftsRequest.cs` and `backend/src/WeightLifting.Api/Api/Contracts/Workouts/ReorderWorkoutLiftsResponse.cs`
+- [X] T004 Create reorder command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsResult.cs`
+- [X] T005 [P] Add reorder endpoint client method and DTOs in `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T006 [P] Add store helper for replacing ordered workout-lift entries in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T007 Register reorder command handler in DI composition root at `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
 
 **Checkpoint**: Foundation complete; user-story implementation can begin.
 
@@ -44,18 +44,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Add unit tests for reorder happy path and in-progress rule in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
-- [ ] T009 [P] [US1] Add integration tests for persisted position updates and contiguous resequencing in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
-- [ ] T010 [P] [US1] Add contract tests for `PUT /api/workouts/{workoutId}/lifts/reorder` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T011 [P] [US1] Add e2e test for active-workout reorder happy path in `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
+- [X] T008 [P] [US1] Add unit tests for reorder happy path and in-progress rule in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
+- [X] T009 [P] [US1] Add integration tests for persisted position updates and contiguous resequencing in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
+- [X] T010 [P] [US1] Add contract tests for `PUT /api/workouts/{workoutId}/lifts/reorder` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T011 [P] [US1] Add e2e test for active-workout reorder happy path in `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Implement reorder command handler core logic in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandler.cs`
-- [ ] T013 [US1] Add reorder endpoint and request validation mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T014 [US1] Implement reorder interaction and save orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T015 [US1] Add reorder UI affordance for workout-lift rows in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T016 [US1] Apply successful reorder response to active-workout state in `frontend/src/app/core/state/workouts-store.service.ts` and `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T012 [P] [US1] Implement reorder command handler core logic in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandler.cs`
+- [X] T013 [US1] Add reorder endpoint and request validation mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T014 [US1] Implement reorder interaction and save orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T015 [US1] Add reorder UI affordance for workout-lift rows in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T016 [US1] Apply successful reorder response to active-workout state in `frontend/src/app/core/state/workouts-store.service.ts` and `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -69,14 +69,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Extend backend unit tests for duplicate-entry instance precision and identity preservation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
-- [ ] T018 [P] [US2] Add integration test for duplicate-entry reorder persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
-- [ ] T019 [P] [US2] Add e2e test for duplicate-instance reorder behavior in `frontend/tests/e2e/workouts/reorder-workout-lifts-duplicates.spec.ts`
+- [X] T017 [P] [US2] Extend backend unit tests for duplicate-entry instance precision and identity preservation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
+- [X] T018 [P] [US2] Add integration test for duplicate-entry reorder persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
+- [X] T019 [P] [US2] Add e2e test for duplicate-instance reorder behavior in `frontend/tests/e2e/workouts/reorder-workout-lifts-duplicates.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Enforce complete non-duplicated entry-id set validation in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandler.cs`
-- [ ] T021 [US2] Ensure reorder request/response uses entry ids and stable row identity in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T020 [US2] Enforce complete non-duplicated entry-id set validation in `backend/src/WeightLifting.Api/Application/Workouts/Commands/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandler.cs`
+- [X] T021 [US2] Ensure reorder request/response uses entry ids and stable row identity in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -90,15 +90,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Add backend unit tests for `NotFound`, `Conflict`, and `ValidationFailed` reorder outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
-- [ ] T023 [P] [US3] Add contract tests for reorder endpoint 404/409/422 responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T024 [P] [US3] Add e2e tests for reorder failure feedback and reconciliation in `frontend/tests/e2e/workouts/reorder-workout-lifts-failures.spec.ts`
+- [X] T022 [P] [US3] Add backend unit tests for `NotFound`, `Conflict`, and `ValidationFailed` reorder outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/ReorderWorkoutLifts/ReorderWorkoutLiftsCommandHandlerTests.cs`
+- [X] T023 [P] [US3] Add contract tests for reorder endpoint 404/409/422 responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T024 [P] [US3] Add e2e tests for reorder failure feedback and reconciliation in `frontend/tests/e2e/workouts/reorder-workout-lifts-failures.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Map reorder failure outcomes to API problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T026 [US3] Implement frontend reorder error feedback and no-ghost handling in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T027 [US3] Add in-flight reorder guard and stale-state reload/reconcile path in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T025 [US3] Map reorder failure outcomes to API problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T026 [US3] Implement frontend reorder error feedback and no-ghost handling in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T027 [US3] Add in-flight reorder guard and stale-state reload/reconcile path in `frontend/src/app/features/workouts/active-workout-page.component.ts`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -108,11 +108,11 @@
 
 **Purpose**: Final verification and cross-story cleanup.
 
-- [ ] T028 [P] Update reorder verification notes in `specs/010-reorder-workout-lifts/quickstart.md`
-- [ ] T029 [P] Run targeted backend reorder unit/integration/contract suites in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T030 [P] Run frontend build and reorder e2e suites via scripts in `frontend/package.json`
-- [ ] T031 Validate mobile viewport usability of reorder flow in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T032 Confirm regression coverage for unaffected historical workouts in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
+- [X] T028 [P] Update reorder verification notes in `specs/010-reorder-workout-lifts/quickstart.md`
+- [X] T029 [P] Run targeted backend reorder unit/integration/contract suites in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T030 [P] Run frontend build and reorder e2e suites via scripts in `frontend/package.json`
+- [X] T031 Validate mobile viewport usability of reorder flow in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T032 Confirm regression coverage for unaffected historical workouts in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/ReorderWorkoutLiftsIntegrationTests.cs`
 
 ---
 

@@ -26,26 +26,55 @@
       </p>
 
       <ul *ngIf="workoutLiftEntries().length > 0" class="active-workout__lift-list">
-        <li *ngFor="let entry of workoutLiftEntries()" class="active-workout__lift-list-item">
+        <li
+          *ngFor="let entry of workoutLiftEntries(); let i = index; trackBy: trackWorkoutLiftEntry"
+          class="active-workout__lift-list-item"
+        >
           <div class="active-workout__lift-details">
             <span class="active-workout__lift-name">{{ entry.displayName }}</span>
             <span class="active-workout__lift-meta">#{{ entry.position }} added {{ entry.addedAtUtc | date: 'shortTime' }}</span>
           </div>
-          <button
-            type="button"
-            mat-icon-button
-            color="warn"
-            class="active-workout__lift-remove"
-            [disabled]="isRemovingLift()"
-            [attr.aria-label]="'Remove ' + entry.displayName + ' entry #' + entry.position"
-            (click)="removeWorkoutLiftEntry(entry.id)"
-          >
-            <mat-icon>
-              {{ isRemovingLift() && removingWorkoutLiftEntryId() === entry.id ? 'hourglass_empty' : 'delete' }}
-            </mat-icon>
-          </button>
+          <div class="active-workout__lift-actions">
+            <button
+              type="button"
+              mat-icon-button
+              class="active-workout__lift-reorder"
+              [disabled]="!canMoveLiftUp(i)"
+              [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' up'"
+              (click)="moveLiftUp(entry.id, i)"
+            >
+              <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_upward' }}</mat-icon>
+            </button>
+            <button
+              type="button"
+              mat-icon-button
+              class="active-workout__lift-reorder"
+              [disabled]="!canMoveLiftDown(i)"
+              [attr.aria-label]="'Move ' + entry.displayName + ' entry #' + entry.position + ' down'"
+              (click)="moveLiftDown(entry.id, i)"
+            >
+              <mat-icon>{{ isReorderingLift() ? 'hourglass_empty' : 'arrow_downward' }}</mat-icon>
+            </button>
+            <button
+              type="button"
+              mat-icon-button
+              color="warn"
+              class="active-workout__lift-remove"
+              [disabled]="isRemovingLift() || isReorderingLift()"
+              [attr.aria-label]="'Remove ' + entry.displayName + ' entry #' + entry.position"
+              (click)="removeWorkoutLiftEntry(entry.id)"
+            >
+              <mat-icon>
+                {{ isRemovingLift() && removingWorkoutLiftEntryId() === entry.id ? 'hourglass_empty' : 'delete' }}
+              </mat-icon>
+            </button>
+          </div>
         </li>
       </ul>
+
+      <p *ngIf="reorderLiftError()" class="active-workout__feedback active-workout__feedback--error">
+        {{ reorderLiftError() }}
+      </p>
 
       <p *ngIf="removeLiftError()" class="active-workout__feedback active-workout__feedback--error">
         {{ removeLiftError() }}

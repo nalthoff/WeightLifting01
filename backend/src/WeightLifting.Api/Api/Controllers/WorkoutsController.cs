@@ -3,6 +3,7 @@ using WeightLifting.Api.Api.Contracts.Workouts;
 using WeightLifting.Api.Application.Workouts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
@@ -17,6 +18,7 @@ namespace WeightLifting.Api.Api.Controllers;
 public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
+    ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
     GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
@@ -294,6 +296,63 @@ public sealed class WorkoutsController(
         });
     }
 
+    [HttpPut("{workoutId:guid}/lifts/reorder")]
+    [ProducesResponseType(typeof(ReorderWorkoutLiftsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<ReorderWorkoutLiftsResponse>> ReorderWorkoutLifts(
+        Guid workoutId,
+        [FromBody] ReorderWorkoutLiftsRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        if (workoutId == Guid.Empty || request is null || request.OrderedWorkoutLiftEntryIds.Count == 0)
+        {
+            return UnprocessableEntity(CreateReorderWorkoutLiftsValidationResponse(workoutId));
+        }
+
+        var result = await reorderWorkoutLiftsCommandHandler.HandleAsync(
+            new ReorderWorkoutLiftsCommand
+            {
+                WorkoutId = workoutId,
+                OrderedWorkoutLiftEntryIds = request.OrderedWorkoutLiftEntryIds,
+            },
+            cancellationToken);
+
+        if (result.Outcome == ReorderWorkoutLiftsOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == ReorderWorkoutLiftsOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot reorder lifts",
+                status = StatusCodes.Status409Conflict,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["workout"] = ["Workout must be in progress to reorder lifts."],
+                },
+            });
+        }
+
+        if (result.Outcome == ReorderWorkoutLiftsOutcome.ValidationFailed)
+        {
+            return UnprocessableEntity(CreateReorderWorkoutLiftsValidationResponse(workoutId));
+        }
+
+        return Ok(new ReorderWorkoutLiftsResponse
+        {
+            WorkoutId = result.WorkoutId,
+            Items = result.Items.Select(ToWorkoutLiftEntryResponse).ToList(),
+        });
+    }
+
     private static WorkoutSessionSummaryResponse ToWorkoutSummary(Workout workout) => new()
     {
         Id = workout.Id,
@@ -347,6 +406,24 @@ public sealed class WorkoutsController(
         {
             errors["workoutLiftEntryId"] = ["Workout lift entry id is required."];
         }
+
+        return new
+        {
+            title = "Validation failed",
+            status = StatusCodes.Status422UnprocessableEntity,
+            errors,
+        };
+    }
+
+    private static object CreateReorderWorkoutLiftsValidationResponse(Guid workoutId)
+    {
+        var errors = new Dictionary<string, string[]>();
+        if (workoutId == Guid.Empty)
+        {
+            errors["workoutId"] = ["Workout id is required."];
+        }
+
+        errors["orderedWorkoutLiftEntryIds"] = ["A complete ordered set of workout lift entry ids is required."];
 
         return new
         {

@@ -30,6 +30,15 @@ export interface RemoveWorkoutLiftResponse {
   removedWorkoutLiftEntryId?: string;
 }
 
+export interface ReorderWorkoutLiftsRequest {
+  orderedWorkoutLiftEntryIds: string[];
+}
+
+export interface ReorderWorkoutLiftsResponse {
+  workoutId: string;
+  items: WorkoutLiftEntry[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -48,5 +57,12 @@ export class WorkoutLiftsApiService {
     return this.httpClient.delete<RemoveWorkoutLiftResponse>(
       `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}`,
     );
+  }
+
+  reorderWorkoutLifts(
+    workoutId: string,
+    request: ReorderWorkoutLiftsRequest,
+  ): Observable<ReorderWorkoutLiftsResponse> {
+    return this.httpClient.put<ReorderWorkoutLiftsResponse>(`/api/workouts/${workoutId}/lifts/reorder`, request);
   }
 }

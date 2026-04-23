@@ -121,3 +121,15 @@
 .active-workout__lift-remove {
   flex-shrink: 0;
 }
+
+.active-workout__lift-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.active-workout__lift-reorder,
+.active-workout__lift-remove {
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+}

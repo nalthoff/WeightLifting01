@@ -64,4 +64,14 @@ export class WorkoutsStoreService {
     const remainingEntries = this.activeWorkoutLiftEntries().filter((entry) => entry.id !== workoutLiftEntryId);
     this.activeWorkoutLiftEntries.set(remainingEntries);
   }
+
+  replaceActiveWorkoutLiftEntries(workoutId: string, entries: WorkoutLiftEntry[]): void {
+    const activeWorkout = this.activeWorkout();
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      return;
+    }
+
+    const normalizedEntries = [...entries].sort((left, right) => left.position - right.position);
+    this.activeWorkoutLiftEntries.set(normalizedEntries);
+  }
 }

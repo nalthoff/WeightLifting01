@@ -175,6 +175,111 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
     }
 
     [Fact]
+    public async Task PutReorderWorkoutLiftsReturnsSuccessContract()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Reorder Contract Workout");
+        var firstLift = await CreateLiftAsync(client, "Reorder Contract Front Squat");
+        var secondLift = await CreateLiftAsync(client, "Reorder Contract Deadlift");
+
+        var firstAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new
+        {
+            liftId = firstLift.Id,
+        });
+        var secondAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new
+        {
+            liftId = secondLift.Id,
+        });
+
+        var firstAdded = await firstAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        var secondAdded = await secondAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(firstAdded);
+        Assert.NotNull(secondAdded);
+
+        var response = await client.PutAsJsonAsync($"/api/workouts/{workout.Id}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { secondAdded.WorkoutLift.Id, firstAdded.WorkoutLift.Id },
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ReorderWorkoutLiftsResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(workout.Id, payload.WorkoutId);
+        Assert.Equal(2, payload.Items.Count);
+        Assert.Equal(secondAdded.WorkoutLift.Id, payload.Items[0].Id);
+        Assert.Equal(firstAdded.WorkoutLift.Id, payload.Items[1].Id);
+        Assert.Equal(1, payload.Items[0].Position);
+        Assert.Equal(2, payload.Items[1].Position);
+    }
+
+    [Fact]
+    public async Task PutReorderWorkoutLiftsReturnsNotFoundForMissingWorkoutOrEntry()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Reorder Not Found Workout");
+        var firstLift = await CreateLiftAsync(client, "Reorder Not Found Lift 1");
+        var secondLift = await CreateLiftAsync(client, "Reorder Not Found Lift 2");
+
+        var firstAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = firstLift.Id });
+        var secondAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = secondLift.Id });
+        var firstAdded = await firstAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        var secondAdded = await secondAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(firstAdded);
+        Assert.NotNull(secondAdded);
+
+        var missingWorkoutResponse = await client.PutAsJsonAsync($"/api/workouts/{Guid.NewGuid()}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { firstAdded.WorkoutLift.Id, secondAdded.WorkoutLift.Id },
+        });
+        var missingEntryResponse = await client.PutAsJsonAsync($"/api/workouts/{workout.Id}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { firstAdded.WorkoutLift.Id, Guid.NewGuid() },
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, missingWorkoutResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missingEntryResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task PutReorderWorkoutLiftsReturnsConflictAndValidationContracts()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Reorder Failure Workout");
+        var firstLift = await CreateLiftAsync(client, "Reorder Failure Lift 1");
+        var secondLift = await CreateLiftAsync(client, "Reorder Failure Lift 2");
+
+        var firstAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = firstLift.Id });
+        var secondAddResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = secondLift.Id });
+        var firstAdded = await firstAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        var secondAdded = await secondAddResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(firstAdded);
+        Assert.NotNull(secondAdded);
+
+        var validationResponse = await client.PutAsJsonAsync($"/api/workouts/{workout.Id}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { firstAdded.WorkoutLift.Id, firstAdded.WorkoutLift.Id },
+        });
+
+        Assert.Equal((HttpStatusCode)422, validationResponse.StatusCode);
+        var validationPayload = await validationResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(validationPayload);
+        Assert.Contains("A complete ordered set of workout lift entry ids is required.", validationPayload.Errors["orderedWorkoutLiftEntryIds"]);
+
+        await MarkWorkoutCompletedAsync(workout.Id);
+
+        var conflictResponse = await client.PutAsJsonAsync($"/api/workouts/{workout.Id}/lifts/reorder", new
+        {
+            orderedWorkoutLiftEntryIds = new[] { secondAdded.WorkoutLift.Id, firstAdded.WorkoutLift.Id },
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, conflictResponse.StatusCode);
+        var conflictPayload = await conflictResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(conflictPayload);
+        Assert.Contains("Workout must be in progress to reorder lifts.", conflictPayload.Errors["workout"]);
+    }
+
+    [Fact]
     public async Task PostWorkoutLiftWithMissingLiftIdReturnsValidationPayload()
     {
         var client = factory.CreateClient();
@@ -347,6 +452,13 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required Guid WorkoutId { get; init; }
 
         public required Guid WorkoutLiftEntryId { get; init; }
+    }
+
+    public sealed class ReorderWorkoutLiftsResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required IReadOnlyList<WorkoutLiftEntryResponse> Items { get; init; }
     }
 
     public sealed class WorkoutLiftEntryResponse
