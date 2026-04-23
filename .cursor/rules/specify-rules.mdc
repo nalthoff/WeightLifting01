@@ -20,6 +20,7 @@ Auto-generated from all feature plans. Last updated: 2026-04-23
 - SQL Server / Azure SQL-compatible relational database via EF Core migrations (006-start-blank-workout)
 - SQL Server / Azure SQL-compatible relational database via existing workout persistence (008-home-active-workout)
 - Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10 (010-reorder-workout-lifts)
+- SQL Server / Azure SQL-compatible relational database (existing workout set persistence) (012-edit-workout-sets)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -40,9 +41,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 012-edit-workout-sets: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 011-add-per-lift-sets: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 010-reorder-workout-lifts: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
-- 009-remove-workout-lift: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router + Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->

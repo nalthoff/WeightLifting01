@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  title: Workout Set Update API
+  version: 0.1.0
+  description: Contract for editing persisted workout set rows during an in-progress workout.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}:
+    put:
+      summary: Update reps and weight for an existing workout set row
+      operationId: updateWorkoutSet
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: workoutLiftEntryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: setId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkoutSetRequest'
+      responses:
+        '200':
+          description: Set row updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateWorkoutSetResponse'
+        '404':
+          description: Workout, workout-lift entry, or set row not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in an editable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '422':
+          description: Invalid update payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  schemas:
+    UpdateWorkoutSetRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - reps
+      properties:
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+          minimum: 0
+    UpdateWorkoutSetResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+        - workoutLiftEntryId
+        - set
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        set:
+          $ref: '#/components/schemas/WorkoutSetEntry'
+    WorkoutSetEntry:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - workoutLiftEntryId
+        - setNumber
+        - reps
+        - updatedAtUtc
+      properties:
+        id:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        setNumber:
+          type: integer
+          minimum: 1
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+          minimum: 0
+        updatedAtUtc:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
