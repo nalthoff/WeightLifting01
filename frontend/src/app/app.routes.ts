@@ -16,4 +16,9 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/workouts/workouts.routes').then((module) => module.WORKOUTS_ROUTES),
   },
+  {
+    path: 'history',
+    loadChildren: () =>
+      import('./features/history/history.routes').then((module) => module.HISTORY_ROUTES),
+  },
 ];

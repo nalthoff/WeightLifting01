@@ -1,0 +1,47 @@
+.history-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.history-page__panel {
+  width: min(100%, 42rem);
+  margin: 0 auto;
+}
+
+.history-page__content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.history-page__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.history-page__list-item {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.history-page__item-label {
+  font-weight: 600;
+}
+
+.history-page__item-date {
+  color: var(--app-text-muted);
+  font-size: 0.95rem;
+}
+
+.history-page__feedback {
+  margin: 0;
+}
+
+.history-page__feedback--error {
+  color: #ffb4ab;
+}

@@ -15,6 +15,11 @@ class HomeTestComponent {}
 })
 class LiftsTestComponent {}
 
+@Component({
+  template: `<h1>History</h1>`,
+})
+class HistoryTestComponent {}
+
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,6 +27,7 @@ describe('App', () => {
       providers: [
         provideRouter([
           { path: '', component: HomeTestComponent },
+          { path: 'history', component: HistoryTestComponent },
           { path: 'settings/lifts', component: LiftsTestComponent },
         ]),
         provideNoopAnimations(),
@@ -57,5 +63,18 @@ describe('App', () => {
     expect(settingsLink).withContext('Settings nav link should be visible').not.toBeNull();
     expect(settingsLink?.textContent).toContain('Settings');
     expect(settingsLink?.getAttribute('href')).toContain('/settings/lifts');
+  });
+
+  it('should show History navigation and route to /history', async () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const historyLink = compiled.querySelector('[data-testid="history-nav-link"]');
+
+    expect(historyLink).withContext('History nav link should be visible').not.toBeNull();
+    expect(historyLink?.textContent).toContain('History');
+    expect(historyLink?.getAttribute('href')).toContain('/history');
   });
 });

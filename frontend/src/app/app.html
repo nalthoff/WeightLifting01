@@ -8,6 +8,15 @@
 
       <span class="app-shell__spacer"></span>
 
+      <button
+        mat-icon-button
+        class="app-shell__menu-trigger"
+        aria-label="Open navigation menu"
+        [matMenuTriggerFor]="primaryNavigationMenu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
       <nav class="app-shell__nav" aria-label="Primary navigation">
         <a
           mat-button
@@ -23,6 +32,16 @@
         <a
           mat-button
           class="app-shell__nav-link"
+          data-testid="history-nav-link"
+          routerLink="/history"
+          routerLinkActive="app-shell__nav-link--active"
+        >
+          History
+        </a>
+
+        <a
+          mat-button
+          class="app-shell__nav-link"
           data-testid="settings-nav-link"
           routerLink="/settings/lifts"
           routerLinkActive="app-shell__nav-link--active"
@@ -31,6 +50,30 @@
           Settings
         </a>
       </nav>
+
+      <mat-menu #primaryNavigationMenu="matMenu" xPosition="before">
+        <a
+          mat-menu-item
+          data-testid="home-nav-link-mobile"
+          routerLink="/"
+        >
+          Home
+        </a>
+        <a
+          mat-menu-item
+          data-testid="history-nav-link-mobile"
+          routerLink="/history"
+        >
+          History
+        </a>
+        <a
+          mat-menu-item
+          data-testid="settings-nav-link-mobile"
+          routerLink="/settings/lifts"
+        >
+          Settings
+        </a>
+      </mat-menu>
     </mat-toolbar>
   </header>
 

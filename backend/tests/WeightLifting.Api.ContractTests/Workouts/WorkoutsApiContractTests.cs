@@ -215,7 +215,48 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
 
         var payload = await secondComplete.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
         Assert.NotNull(payload);
+        Assert.Equal("Workout cannot be completed", payload.Title);
+        Assert.Equal((int)HttpStatusCode.Conflict, payload.Status);
         Assert.Contains("Workout must be in progress to complete.", payload.Errors["workout"]);
+    }
+
+    [Fact]
+    public async Task GetWorkoutHistoryReturnsCompletedWorkoutsInNewestFirstOrder()
+    {
+        var client = factory.CreateClient();
+        var firstCreate = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "First complete",
+        });
+        Assert.Equal(HttpStatusCode.Created, firstCreate.StatusCode);
+        var firstPayload = await firstCreate.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(firstPayload);
+
+        var firstComplete = await client.PostAsync($"/api/workouts/{firstPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.OK, firstComplete.StatusCode);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "",
+        });
+        Assert.Equal(HttpStatusCode.Created, secondCreate.StatusCode);
+        var secondPayload = await secondCreate.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(secondPayload);
+
+        var secondComplete = await client.PostAsync($"/api/workouts/{secondPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.OK, secondComplete.StatusCode);
+
+        var response = await client.GetAsync("/api/workouts/history");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<WorkoutHistoryResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(2, payload.Items.Count);
+        Assert.Equal(secondPayload.Workout.Id, payload.Items[0].WorkoutId);
+        Assert.Equal("Workout", payload.Items[0].Label);
+        Assert.Equal(firstPayload.Workout.Id, payload.Items[1].WorkoutId);
+        Assert.Equal("First complete", payload.Items[1].Label);
+        Assert.True(payload.Items[0].CompletedAtUtc >= payload.Items[1].CompletedAtUtc);
     }
 
     public async Task InitializeAsync()
@@ -273,6 +314,10 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
 
     public sealed class ValidationErrorResponse
     {
+        public required string Title { get; init; }
+
+        public required int Status { get; init; }
+
         public required Dictionary<string, string[]> Errors { get; init; }
     }
 
@@ -281,5 +326,19 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         public required string Title { get; init; }
 
         public required int Status { get; init; }
+    }
+
+    public sealed class WorkoutHistoryResponse
+    {
+        public required IReadOnlyList<WorkoutHistoryItemResponse> Items { get; init; }
+    }
+
+    public sealed class WorkoutHistoryItemResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required string Label { get; init; }
+
+        public required DateTime CompletedAtUtc { get; init; }
     }
 }

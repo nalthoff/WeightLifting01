@@ -30,6 +30,16 @@ export interface CompleteWorkoutResponse {
   workout: WorkoutSessionSummary;
 }
 
+export interface WorkoutHistorySummary {
+  id: string;
+  label?: string | null;
+  completedAtUtc: string;
+}
+
+export interface GetWorkoutHistoryResponse {
+  items: WorkoutHistorySummary[];
+}
+
 export interface ExistingInProgressWorkoutResponse {
   title: string;
   status: 409;
@@ -56,5 +66,9 @@ export class WorkoutsApiService {
 
   completeWorkout(workoutId: string): Observable<CompleteWorkoutResponse> {
     return this.httpClient.post<CompleteWorkoutResponse>(`/api/workouts/${workoutId}/complete`, {});
+  }
+
+  getWorkoutHistory(): Observable<GetWorkoutHistoryResponse> {
+    return this.httpClient.get<GetWorkoutHistoryResponse>('/api/workouts/history');
   }
 }

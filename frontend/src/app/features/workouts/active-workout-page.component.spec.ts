@@ -1,0 +1,2 @@
+import '../../../../tests/unit/workouts/active-workout-page.component.spec';
+import '../../../../tests/unit/workouts/active-workout-completion.spec';

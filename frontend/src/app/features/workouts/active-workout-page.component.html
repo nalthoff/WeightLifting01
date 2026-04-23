@@ -9,6 +9,13 @@
       <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
       <p><strong>Started:</strong> {{ activeWorkout.startedAtUtc | date: 'medium' }}</p>
 
+      <p *ngIf="completeSuccessMessage()" class="active-workout__feedback active-workout__feedback--success">
+        {{ completeSuccessMessage() }}
+      </p>
+      <p *ngIf="completeErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
+        {{ completeErrorMessage() }}
+      </p>
+
       <p *ngIf="isLoadingWorkoutLifts()" class="active-workout__info">Loading workout lifts...</p>
       <p *ngIf="workoutLiftsLoadError()" class="active-workout__feedback active-workout__feedback--error">
         {{ workoutLiftsLoadError() }}
@@ -79,7 +86,6 @@
             <ul *ngIf="getSetsForEntry(entry).length > 0" class="active-workout__set-list">
               <li *ngFor="let setEntry of getSetsForEntry(entry); trackBy: trackWorkoutSet" class="active-workout__set-list-item">
                 <div class="active-workout__set-readonly" *ngIf="!isEditingSetRow(entry.id, setEntry.id); else editSetRowTemplate">
-                  <span class="active-workout__set-value active-workout__set-value--label">Set {{ setEntry.setNumber }}</span>
                   <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
                   <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
                   <div class="active-workout__set-actions" *ngIf="canEditWorkoutSetRows()">
@@ -266,10 +272,12 @@
       </p>
 
       <div class="active-workout__lift-header">
-        <button type="button" mat-flat-button color="primary" (click)="openAddLiftPicker()">
-          <mat-icon>add</mat-icon>
-          Add Lift
-        </button>
+        <div class="active-workout__header-actions">
+          <button type="button" mat-flat-button color="primary" (click)="openAddLiftPicker()">
+            <mat-icon>add</mat-icon>
+            Add Lift
+          </button>
+        </div>
       </div>
 
       <div *ngIf="isPickerOpen()" class="active-workout__picker">
@@ -321,10 +329,34 @@
           {{ addLiftError() }}
         </div>
       </div>
+
+      <section class="active-workout__complete-section" aria-label="End workout section">
+        <h2 class="active-workout__complete-title">Done for today?</h2>
+        <p class="active-workout__complete-copy">
+          Complete this workout to save it to your history.
+        </p>
+        <button
+          type="button"
+          mat-flat-button
+          color="accent"
+          data-testid="active-workout-complete"
+          [disabled]="isCompletingWorkout() || isRefreshingActiveWorkout() || activeWorkout.status !== 'InProgress'"
+          (click)="completeWorkout()"
+        >
+          <mat-icon>{{ isCompletingWorkout() || isRefreshingActiveWorkout() ? 'hourglass_empty' : 'check_circle' }}</mat-icon>
+          {{ isCompletingWorkout() || isRefreshingActiveWorkout() ? 'Completing...' : 'Complete Workout' }}
+        </button>
+      </section>
     </mat-card-content>
 
     <ng-template #unavailableContent>
       <mat-card-content class="active-workout__content">
+        <p *ngIf="completeSuccessMessage()" class="active-workout__feedback active-workout__feedback--success">
+          {{ completeSuccessMessage() }}
+        </p>
+        <p *ngIf="completeErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
+          {{ completeErrorMessage() }}
+        </p>
         <p *ngIf="isLoadingWorkout(); else unavailableMessage">Loading workout details...</p>
         <ng-template #unavailableMessage>
           <p>{{ loadError() ?? 'Return home and start or continue a workout.' }}</p>

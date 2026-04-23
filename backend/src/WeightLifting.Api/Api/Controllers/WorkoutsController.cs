@@ -11,6 +11,7 @@ using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
+using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
 using WeightLifting.Api.Domain.Workouts;
 
@@ -28,6 +29,7 @@ public sealed class WorkoutsController(
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
     GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
+    ListCompletedWorkoutsQueryHelper listCompletedWorkoutsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
     GetWorkoutByIdQueryHelper getWorkoutByIdQueryHelper) : ControllerBase
 {
@@ -155,6 +157,18 @@ public sealed class WorkoutsController(
         return Ok(new CompleteWorkoutResponse
         {
             Workout = ToWorkoutSummary(result.Workout!),
+        });
+    }
+
+    [HttpGet("history")]
+    [ProducesResponseType(typeof(WorkoutHistoryResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<WorkoutHistoryResponse>> GetWorkoutHistory(
+        CancellationToken cancellationToken = default)
+    {
+        var items = await listCompletedWorkoutsQueryHelper.GetAsync(cancellationToken);
+        return Ok(new WorkoutHistoryResponse
+        {
+            Items = items.Select(ToWorkoutHistoryItemResponse).ToList(),
         });
     }
 
@@ -563,6 +577,13 @@ public sealed class WorkoutsController(
         Weight = workoutSetEntry.Weight,
         CreatedAtUtc = workoutSetEntry.CreatedAtUtc,
         UpdatedAtUtc = workoutSetEntry.UpdatedAtUtc,
+    };
+
+    private static WorkoutHistoryItemResponse ToWorkoutHistoryItemResponse(CompletedWorkoutHistoryItem item) => new()
+    {
+        WorkoutId = item.WorkoutId,
+        Label = string.IsNullOrWhiteSpace(item.Label) ? "Workout" : item.Label,
+        CompletedAtUtc = item.CompletedAtUtc,
     };
 
     private static object CreateLabelValidationResponse() => new

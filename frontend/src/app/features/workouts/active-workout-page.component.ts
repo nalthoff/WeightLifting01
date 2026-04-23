@@ -43,7 +43,11 @@ export class ActiveWorkoutPageComponent {
   private readonly workoutsStoreService = inject(WorkoutsStoreService);
 
   readonly isLoadingWorkout = signal(false);
+  readonly isRefreshingActiveWorkout = signal(false);
+  readonly isCompletingWorkout = signal(false);
   readonly loadError = signal<string | null>(null);
+  readonly completeErrorMessage = signal<string | null>(null);
+  readonly completeSuccessMessage = signal<string | null>(null);
   readonly isLoadingWorkoutLifts = signal(false);
   readonly workoutLiftsLoadError = signal<string | null>(null);
   readonly isPickerOpen = signal(false);
@@ -109,6 +113,39 @@ export class ActiveWorkoutPageComponent {
     if (this.activeLiftOptions().length === 0) {
       this.loadActiveLifts();
     }
+  }
+
+  completeWorkout(): void {
+    const workout = this.workout();
+    if (!workout || workout.status !== 'InProgress' || this.isCompletingWorkout()) {
+      return;
+    }
+
+    this.isCompletingWorkout.set(true);
+    this.completeErrorMessage.set(null);
+    this.completeSuccessMessage.set(null);
+
+    this.workoutsApiService
+      .completeWorkout(workout.id)
+      .pipe(finalize(() => this.isCompletingWorkout.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.reconcileActiveWorkout(response.workout);
+          this.completeSuccessMessage.set('Workout completed. Great work.');
+          this.completeErrorMessage.set(null);
+          this.refreshActiveWorkoutState();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404 || error.status === 409) {
+            this.completeErrorMessage.set(error.error?.title ?? 'Workout state changed. View refreshed.');
+            this.refreshActiveWorkoutState();
+            return;
+          }
+
+          this.completeErrorMessage.set('Unable to complete workout. Check your connection and try again.');
+          this.refreshActiveWorkoutState();
+        },
+      });
   }
 
   closeAddLiftPicker(): void {
@@ -589,6 +626,7 @@ export class ActiveWorkoutPageComponent {
 
     this.isLoadingWorkout.set(true);
     this.loadError.set(null);
+    this.completeErrorMessage.set(null);
 
     this.workoutsApiService
       .getWorkout(workoutId)
@@ -605,6 +643,40 @@ export class ActiveWorkoutPageComponent {
             error.status === 404
               ? 'This workout could not be found. Start or continue a workout from home.'
               : 'Unable to load workout details. Check your connection and try again.',
+          );
+        },
+      });
+  }
+
+  private refreshActiveWorkoutState(): void {
+    this.isRefreshingActiveWorkout.set(true);
+    this.workoutsApiService
+      .getActiveWorkoutSummary()
+      .pipe(finalize(() => this.isRefreshingActiveWorkout.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (!response?.workout) {
+            this.workoutsStoreService.clearActiveWorkout();
+            this.loadError.set('This workout is no longer active. Return home to start another session.');
+            return;
+          }
+
+          this.workoutsStoreService.reconcileActiveWorkout(response.workout);
+          if (response.workout.id !== this.workoutId()) {
+            this.loadError.set('Another workout is active now. Return home to continue it.');
+          } else {
+            this.loadError.set(null);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404 || error.status === 204) {
+            this.workoutsStoreService.clearActiveWorkout();
+            this.loadError.set('This workout is no longer active. Return home to start another session.');
+            return;
+          }
+
+          this.completeErrorMessage.set(
+            'Could not refresh active workout state. Pull to refresh or try again.',
           );
         },
       });

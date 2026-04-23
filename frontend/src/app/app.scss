@@ -45,6 +45,10 @@
   gap: 0.25rem;
 }
 
+.app-shell__menu-trigger {
+  display: none;
+}
+
 .app-shell__nav-link {
   color: var(--app-text-strong);
   border-radius: 999px;
@@ -78,8 +82,11 @@
     font-size: 0.95rem;
   }
 
-  .app-shell__nav-link {
-    min-height: 2.5rem;
-    padding-inline: 0.75rem;
+  .app-shell__nav {
+    display: none;
+  }
+
+  .app-shell__menu-trigger {
+    display: inline-flex;
   }
 }
