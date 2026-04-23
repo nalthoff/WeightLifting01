@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Workout Set Delete API
+  version: 0.1.0
+  description: Contract for deleting persisted workout set rows during an in-progress workout.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}:
+    delete:
+      summary: Delete an existing workout set row
+      operationId: deleteWorkoutSet
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: workoutLiftEntryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: setId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Set row deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteWorkoutSetResponse'
+        '404':
+          description: Workout, workout-lift entry, or set row not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in an editable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  schemas:
+    DeleteWorkoutSetResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+        - workoutLiftEntryId
+        - setId
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        setId:
+          type: string
+          format: uuid
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
