@@ -79,18 +79,59 @@
             <ul *ngIf="getSetsForEntry(entry).length > 0" class="active-workout__set-list">
               <li *ngFor="let setEntry of getSetsForEntry(entry); trackBy: trackWorkoutSet" class="active-workout__set-list-item">
                 <div class="active-workout__set-readonly" *ngIf="!isEditingSetRow(entry.id, setEntry.id); else editSetRowTemplate">
+                  <span class="active-workout__set-value active-workout__set-value--label">Set {{ setEntry.setNumber }}</span>
                   <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
                   <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
-                  <button
-                    *ngIf="canEditWorkoutSetRows()"
-                    type="button"
-                    mat-icon-button
-                    class="active-workout__set-edit"
-                    [attr.aria-label]="'Edit set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
-                    (click)="beginSetEdit(entry.id, setEntry)"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
+                  <div class="active-workout__set-actions" *ngIf="canEditWorkoutSetRows()">
+                    <button
+                      type="button"
+                      mat-icon-button
+                      class="active-workout__set-edit"
+                      [disabled]="getSetDeleteSession(entry.id, setEntry.id)?.isDeleting"
+                      [attr.aria-label]="'Edit set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
+                      (click)="beginSetEdit(entry.id, setEntry)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      mat-icon-button
+                      color="warn"
+                      class="active-workout__set-delete"
+                      [disabled]="getSetDeleteSession(entry.id, setEntry.id)?.isDeleting"
+                      [attr.aria-label]="'Delete set ' + setEntry.setNumber + ' for ' + entry.displayName + ' entry #' + entry.position"
+                      (click)="beginSetDelete(entry.id, setEntry)"
+                    >
+                      <mat-icon>{{ getSetDeleteSession(entry.id, setEntry.id)?.isDeleting ? 'hourglass_empty' : 'delete' }}</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="active-workout__set-delete-confirm" *ngIf="isConfirmingSetDelete(entry.id, setEntry.id)">
+                  <p class="active-workout__set-delete-copy">Delete this set row?</p>
+                  <div class="active-workout__set-delete-actions">
+                    <button
+                      type="button"
+                      mat-button
+                      color="warn"
+                      [disabled]="getSetDeleteSession(entry.id, setEntry.id)?.isDeleting"
+                      [attr.aria-label]="'Confirm delete for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                      (click)="confirmSetDelete(entry.id, setEntry)"
+                    >
+                      {{ getSetDeleteSession(entry.id, setEntry.id)?.isDeleting ? 'Deleting...' : 'Confirm delete' }}
+                    </button>
+                    <button
+                      type="button"
+                      mat-button
+                      [disabled]="getSetDeleteSession(entry.id, setEntry.id)?.isDeleting"
+                      [attr.aria-label]="'Cancel delete for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                      (click)="cancelSetDelete(entry.id, setEntry.id)"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <p *ngIf="getSetDeleteSession(entry.id, setEntry.id)?.errorMessage" class="active-workout__feedback active-workout__feedback--error">
+                    {{ getSetDeleteSession(entry.id, setEntry.id)?.errorMessage }}
+                  </p>
                 </div>
                 <ng-template #editSetRowTemplate>
                   <div class="active-workout__set-edit-row">

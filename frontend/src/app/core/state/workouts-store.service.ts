@@ -126,6 +126,26 @@ export class WorkoutsStoreService {
     this.activeWorkoutLiftEntries.set(nextEntries);
   }
 
+  removeWorkoutSet(workoutId: string, workoutLiftEntryId: string, setId: string): void {
+    const activeWorkout = this.activeWorkout();
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      return;
+    }
+
+    const nextEntries = this.activeWorkoutLiftEntries().map((entry) => {
+      if (entry.id !== workoutLiftEntryId) {
+        return entry;
+      }
+
+      return {
+        ...entry,
+        sets: entry.sets.filter((setEntry) => setEntry.id !== setId),
+      };
+    });
+
+    this.activeWorkoutLiftEntries.set(nextEntries);
+  }
+
   private toWorkoutLiftEntryState(entry: WorkoutLiftEntry): WorkoutLiftEntryState {
     return {
       id: entry.id,

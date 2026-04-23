@@ -4,6 +4,7 @@ using WeightLifting.Api.Application.Workouts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
@@ -21,6 +22,7 @@ public sealed class WorkoutsController(
     AddWorkoutLiftCommandHandler addWorkoutLiftCommandHandler,
     AddWorkoutSetCommandHandler addWorkoutSetCommandHandler,
     UpdateWorkoutSetCommandHandler updateWorkoutSetCommandHandler,
+    DeleteWorkoutSetCommandHandler deleteWorkoutSetCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
     ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
@@ -368,6 +370,61 @@ public sealed class WorkoutsController(
         });
     }
 
+    [HttpDelete("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}/sets/{setId:guid}")]
+    [ProducesResponseType(typeof(DeleteWorkoutSetResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<DeleteWorkoutSetResponse>> DeleteWorkoutSet(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        Guid setId,
+        CancellationToken cancellationToken = default)
+    {
+        if (workoutId == Guid.Empty || workoutLiftEntryId == Guid.Empty || setId == Guid.Empty)
+        {
+            return UnprocessableEntity(CreateDeleteWorkoutSetValidationResponse(workoutId, workoutLiftEntryId, setId));
+        }
+
+        var result = await deleteWorkoutSetCommandHandler.HandleAsync(
+            new DeleteWorkoutSetCommand
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+                SetId = setId,
+            },
+            cancellationToken);
+
+        if (result.Outcome == DeleteWorkoutSetOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Resource not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == DeleteWorkoutSetOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot remove sets",
+                status = StatusCodes.Status409Conflict,
+                errors = new Dictionary<string, string[]>
+                {
+                    ["workout"] = ["Workout must be in progress to remove sets."],
+                },
+            });
+        }
+
+        return Ok(new DeleteWorkoutSetResponse
+        {
+            WorkoutId = result.WorkoutId,
+            WorkoutLiftEntryId = result.WorkoutLiftEntryId,
+            SetId = result.SetId,
+        });
+    }
+
     [HttpDelete("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}")]
     [ProducesResponseType(typeof(RemoveWorkoutLiftResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -541,6 +598,35 @@ public sealed class WorkoutsController(
         if (workoutLiftEntryId == Guid.Empty)
         {
             errors["workoutLiftEntryId"] = ["Workout lift entry id is required."];
+        }
+
+        return new
+        {
+            title = "Validation failed",
+            status = StatusCodes.Status422UnprocessableEntity,
+            errors,
+        };
+    }
+
+    private static object CreateDeleteWorkoutSetValidationResponse(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        Guid setId)
+    {
+        var errors = new Dictionary<string, string[]>();
+        if (workoutId == Guid.Empty)
+        {
+            errors["workoutId"] = ["Workout id is required."];
+        }
+
+        if (workoutLiftEntryId == Guid.Empty)
+        {
+            errors["workoutLiftEntryId"] = ["Workout lift entry id is required."];
+        }
+
+        if (setId == Guid.Empty)
+        {
+            errors["setId"] = ["Set id is required."];
         }
 
         return new

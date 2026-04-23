@@ -64,6 +64,12 @@ export interface UpdateWorkoutSetResponse {
   set: WorkoutSetEntry;
 }
 
+export interface DeleteWorkoutSetResponse {
+  workoutId: string;
+  workoutLiftEntryId: string;
+  setId: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -111,6 +117,16 @@ export class WorkoutLiftsApiService {
     return this.httpClient.put<UpdateWorkoutSetResponse>(
       `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets/${setId}`,
       request,
+    );
+  }
+
+  deleteWorkoutSet(
+    workoutId: string,
+    workoutLiftEntryId: string,
+    setId: string,
+  ): Observable<DeleteWorkoutSetResponse> {
+    return this.httpClient.delete<DeleteWorkoutSetResponse>(
+      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets/${setId}`,
     );
   }
 }

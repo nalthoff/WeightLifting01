@@ -26,3 +26,10 @@ export interface SetRowEditSession {
   errorMessage: string | null;
   isDirty: boolean;
 }
+
+export interface SetRowDeleteSession {
+  setId: string;
+  isConfirmingDelete: boolean;
+  isDeleting: boolean;
+  errorMessage: string | null;
+}

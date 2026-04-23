@@ -49,3 +49,12 @@ Validate that lifters can delete mistakenly logged set rows from an in-progress 
 2. Confirm edit-set behavior still works for remaining set rows.
 3. Confirm remove-lift and reorder-lift flows remain functional.
 4. Confirm active workout load/refresh behavior remains stable after deletion.
+
+## Verification Run (2026-04-23)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter "FullyQualifiedName~DeleteWorkoutSetCommandHandlerTests" /p:UseSharedCompilation=false -m:1` (Passed: 4)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter "FullyQualifiedName~DeleteWorkoutSetIntegrationTests" /p:UseSharedCompilation=false -m:1` (Passed: 2)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter "FullyQualifiedName~DeleteWorkoutSet" /p:UseSharedCompilation=false -m:1` (Passed: 2)
+- `npm run build` in `frontend` (Passed; existing warning: `active-workout-page.component.scss` exceeds style budget by 707 bytes)
+- `npx ng test --watch=false --browsers=ChromeHeadless` in `frontend` (Passed: 16)
+- `npx playwright test tests/e2e/workouts/delete-workout-set.spec.ts tests/e2e/workouts/delete-workout-set-cancel.spec.ts tests/e2e/workouts/delete-workout-set-failures.spec.ts tests/e2e/workouts/add-workout-set.spec.ts tests/e2e/workouts/remove-workout-lift.spec.ts tests/e2e/workouts/reorder-workout-lifts.spec.ts` in `frontend` (Passed: 6)

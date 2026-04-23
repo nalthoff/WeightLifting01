@@ -616,6 +616,67 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         Assert.Contains("Workout must be in progress to update sets.", conflict.Errors["workout"]);
     }
 
+    [Fact]
+    public async Task DeleteWorkoutSetReturnsSuccessContract()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set Delete Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set Delete Contract Bench");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        var createSetResponse = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+        var createSetPayload = await createSetResponse.Content.ReadFromJsonAsync<CreateWorkoutSetResponse>(JsonOptions);
+        Assert.NotNull(createSetPayload);
+
+        var response = await client.DeleteAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets/{createSetPayload.Set.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<DeleteWorkoutSetResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(workout.Id, payload.WorkoutId);
+        Assert.Equal(addLiftPayload.WorkoutLift.Id, payload.WorkoutLiftEntryId);
+        Assert.Equal(createSetPayload.Set.Id, payload.SetId);
+    }
+
+    [Fact]
+    public async Task DeleteWorkoutSetReturnsNotFoundAndConflictContracts()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Set Delete Failure Contract Workout");
+        var lift = await CreateLiftAsync(client, "Set Delete Failure Deadlift");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        var createSetResponse = await client.PostAsJsonAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets",
+            new { reps = 5, weight = 225m });
+        var createSetPayload = await createSetResponse.Content.ReadFromJsonAsync<CreateWorkoutSetResponse>(JsonOptions);
+        Assert.NotNull(createSetPayload);
+
+        var missingWorkout = await client.DeleteAsync(
+            $"/api/workouts/{Guid.NewGuid()}/lifts/{addLiftPayload.WorkoutLift.Id}/sets/{createSetPayload.Set.Id}");
+        var missingEntry = await client.DeleteAsync(
+            $"/api/workouts/{workout.Id}/lifts/{Guid.NewGuid()}/sets/{createSetPayload.Set.Id}");
+
+        await MarkWorkoutCompletedAsync(workout.Id);
+        var conflictResponse = await client.DeleteAsync(
+            $"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/sets/{createSetPayload.Set.Id}");
+
+        Assert.Equal(HttpStatusCode.NotFound, missingWorkout.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missingEntry.StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, conflictResponse.StatusCode);
+
+        var conflictPayload = await conflictResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(conflictPayload);
+        Assert.Contains("Workout must be in progress to remove sets.", conflictPayload.Errors["workout"]);
+    }
+
     public async Task InitializeAsync()
     {
         using var scope = factory.Services.CreateScope();
@@ -716,6 +777,15 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required Guid WorkoutId { get; init; }
 
         public required Guid WorkoutLiftEntryId { get; init; }
+    }
+
+    public sealed class DeleteWorkoutSetResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required Guid WorkoutLiftEntryId { get; init; }
+
+        public required Guid SetId { get; init; }
     }
 
     public sealed class ReorderWorkoutLiftsResponse

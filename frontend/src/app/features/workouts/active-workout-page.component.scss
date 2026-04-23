@@ -191,14 +191,40 @@
 
 .active-workout__set-readonly {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 0.5rem;
   align-items: center;
 }
 
-.active-workout__set-edit {
+.active-workout__set-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
   justify-self: end;
+}
+
+.active-workout__set-edit,
+.active-workout__set-delete {
   flex-shrink: 0;
+}
+
+.active-workout__set-delete-confirm {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.active-workout__set-delete-copy {
+  color: var(--app-text-muted);
+}
+
+.active-workout__set-delete-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
 }
 
 .active-workout__set-edit-row {

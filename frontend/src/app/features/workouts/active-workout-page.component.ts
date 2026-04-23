@@ -13,7 +13,12 @@ import { finalize, map } from 'rxjs';
 import { LiftsApiService } from '../../core/api/lifts-api.service';
 import { WorkoutLiftsApiService } from '../../core/api/workout-lifts-api.service';
 import { WorkoutsApiService } from '../../core/api/workouts-api.service';
-import type { SetRowEditSession, WorkoutLiftEntryState, WorkoutSetEntry } from '../../core/state/workouts-store.models';
+import type {
+  SetRowDeleteSession,
+  SetRowEditSession,
+  WorkoutLiftEntryState,
+  WorkoutSetEntry,
+} from '../../core/state/workouts-store.models';
 import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
 
 @Component({
@@ -57,6 +62,7 @@ export class ActiveWorkoutPageComponent {
   readonly isAddingSetByEntryId = signal<Record<string, boolean>>({});
   readonly addSetDraftByEntryId = signal<Record<string, { reps: string; weight: string }>>({});
   readonly setEditSessionByKey = signal<Record<string, SetRowEditSession>>({});
+  readonly setDeleteSessionByKey = signal<Record<string, SetRowDeleteSession>>({});
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly workoutId = this.routeWorkoutId.asReadonly();
   readonly workout = computed(() => {
@@ -472,6 +478,95 @@ export class ActiveWorkoutPageComponent {
       });
   }
 
+  isConfirmingSetDelete(entryId: string, setId: string): boolean {
+    const session = this.getSetDeleteSession(entryId, setId);
+    return session?.isConfirmingDelete === true;
+  }
+
+  beginSetDelete(entryId: string, setEntry: WorkoutSetEntry): void {
+    if (!this.canEditWorkoutSetRows()) {
+      return;
+    }
+
+    const rowKey = this.buildSetRowKey(entryId, setEntry.id);
+    this.setDeleteSessionByKey.update((current) => ({
+      ...current,
+      [rowKey]: {
+        setId: setEntry.id,
+        isConfirmingDelete: true,
+        isDeleting: false,
+        errorMessage: null,
+      },
+    }));
+  }
+
+  cancelSetDelete(entryId: string, setId: string): void {
+    const rowKey = this.buildSetRowKey(entryId, setId);
+    this.setDeleteSessionByKey.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => key !== rowKey)),
+    );
+  }
+
+  getSetDeleteSession(entryId: string, setId: string): SetRowDeleteSession | null {
+    return this.setDeleteSessionByKey()[this.buildSetRowKey(entryId, setId)] ?? null;
+  }
+
+  confirmSetDelete(entryId: string, setEntry: WorkoutSetEntry): void {
+    const session = this.getSetDeleteSession(entryId, setEntry.id);
+    if (!session || session.isDeleting) {
+      return;
+    }
+
+    if (!this.canEditWorkoutSetRows()) {
+      this.patchSetDeleteSession(entryId, setEntry.id, {
+        errorMessage: 'Only in-progress workouts can remove sets.',
+      });
+      return;
+    }
+
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.patchSetDeleteSession(entryId, setEntry.id, {
+        errorMessage: 'Workout ID is missing.',
+      });
+      return;
+    }
+
+    this.patchSetDeleteSession(entryId, setEntry.id, {
+      isDeleting: true,
+      errorMessage: null,
+    });
+
+    this.workoutLiftsApiService
+      .deleteWorkoutSet(workoutId, entryId, setEntry.id)
+      .pipe(finalize(() => this.patchSetDeleteSession(entryId, setEntry.id, { isDeleting: false })))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.removeWorkoutSet(response.workoutId, response.workoutLiftEntryId, response.setId);
+          this.cancelSetDelete(entryId, setEntry.id);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.patchSetDeleteSession(entryId, setEntry.id, {
+              errorMessage: 'This set no longer exists in this workout entry. Refresh and try again.',
+            });
+            return;
+          }
+
+          if (error.status === 409) {
+            this.patchSetDeleteSession(entryId, setEntry.id, {
+              errorMessage: error.error?.title ?? 'This workout is not in a removable state right now.',
+            });
+            return;
+          }
+
+          this.patchSetDeleteSession(entryId, setEntry.id, {
+            errorMessage: 'Set was not removed. Check your connection and retry.',
+          });
+        },
+      });
+  }
+
   formatSetWeight(setEntry: WorkoutSetEntry): string {
     if (setEntry.weight === null) {
       return '-';
@@ -660,6 +755,11 @@ export class ActiveWorkoutPageComponent {
         Object.entries(current).filter(([key]) => allowedIds.has(this.extractEntryIdFromSetRowKey(key))),
       ),
     );
+    this.setDeleteSessionByKey.update((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([key]) => allowedIds.has(this.extractEntryIdFromSetRowKey(key))),
+      ),
+    );
   }
 
   private patchSetEditSession(
@@ -669,6 +769,24 @@ export class ActiveWorkoutPageComponent {
   ): void {
     const rowKey = this.buildSetRowKey(entryId, setEntry.id);
     this.setEditSessionByKey.update((current) => {
+      const existing = current[rowKey];
+      if (!existing) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [rowKey]: {
+          ...existing,
+          ...patch,
+        },
+      };
+    });
+  }
+
+  private patchSetDeleteSession(entryId: string, setId: string, patch: Partial<SetRowDeleteSession>): void {
+    const rowKey = this.buildSetRowKey(entryId, setId);
+    this.setDeleteSessionByKey.update((current) => {
       const existing = current[rowKey];
       if (!existing) {
         return current;

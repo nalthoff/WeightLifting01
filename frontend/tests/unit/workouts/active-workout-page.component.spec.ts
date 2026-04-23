@@ -1,0 +1,101 @@
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { of } from 'rxjs';
+
+import { LiftsApiService } from '../../../src/app/core/api/lifts-api.service';
+import { WorkoutLiftsApiService } from '../../../src/app/core/api/workout-lifts-api.service';
+import { WorkoutsApiService } from '../../../src/app/core/api/workouts-api.service';
+import { WorkoutsStoreService } from '../../../src/app/core/state/workouts-store.service';
+import type { WorkoutLiftEntryState, WorkoutSetEntry } from '../../../src/app/core/state/workouts-store.models';
+import { ActiveWorkoutPageComponent } from '../../../src/app/features/workouts/active-workout-page.component';
+
+describe('ActiveWorkoutPageComponent delete confirmation', () => {
+  let fixture: ComponentFixture<ActiveWorkoutPageComponent>;
+  let component: ActiveWorkoutPageComponent;
+
+  const workoutId = 'workout-1';
+  const entryId = 'entry-1';
+  const setId = 'set-1';
+  const setEntry: WorkoutSetEntry = {
+    id: setId,
+    workoutLiftEntryId: entryId,
+    setNumber: 1,
+    reps: 8,
+    weight: 135,
+    createdAtUtc: '2026-04-23T17:05:00Z',
+  };
+  const liftEntry: WorkoutLiftEntryState = {
+    id: entryId,
+    workoutId,
+    liftId: 'lift-1',
+    displayName: 'Bench Press',
+    addedAtUtc: '2026-04-23T17:01:00Z',
+    position: 1,
+    sets: [setEntry],
+  };
+
+  const workoutsStoreService = {
+    activeWorkout: signal({
+      id: workoutId,
+      status: 'InProgress' as const,
+      label: 'Delete Day',
+      startedAtUtc: '2026-04-23T17:00:00Z',
+    }),
+    activeWorkoutLiftEntries: signal([liftEntry]),
+    setActiveWorkout: jasmine.createSpy('setActiveWorkout'),
+    setActiveWorkoutLiftEntries: jasmine.createSpy('setActiveWorkoutLiftEntries'),
+    appendActiveWorkoutLiftEntry: jasmine.createSpy('appendActiveWorkoutLiftEntry'),
+    removeActiveWorkoutLiftEntryById: jasmine.createSpy('removeActiveWorkoutLiftEntryById'),
+    replaceActiveWorkoutLiftEntries: jasmine.createSpy('replaceActiveWorkoutLiftEntries'),
+    appendWorkoutSet: jasmine.createSpy('appendWorkoutSet'),
+    applyWorkoutSetUpdate: jasmine.createSpy('applyWorkoutSetUpdate'),
+    removeWorkoutSet: jasmine.createSpy('removeWorkoutSet'),
+  };
+
+  const workoutsApiService = {
+    getWorkout: jasmine
+      .createSpy('getWorkout')
+      .and.returnValue(of({ workout: { id: workoutId, status: 'InProgress', label: 'Delete Day', startedAtUtc: '2026-04-23T17:00:00Z' } })),
+  };
+
+  const workoutLiftsApiService = {
+    listWorkoutLifts: jasmine.createSpy('listWorkoutLifts').and.returnValue(of({ items: [] })),
+    deleteWorkoutSet: jasmine.createSpy('deleteWorkoutSet').and.returnValue(of({ workoutId, workoutLiftEntryId: entryId, setId })),
+  };
+
+  const route: Partial<ActivatedRoute> = {
+    snapshot: { paramMap: convertToParamMap({ workoutId }) } as ActivatedRoute['snapshot'],
+    paramMap: of(convertToParamMap({ workoutId })),
+  };
+
+  beforeEach(async () => {
+    workoutLiftsApiService.deleteWorkoutSet.calls.reset();
+
+    await TestBed.configureTestingModule({
+      imports: [ActiveWorkoutPageComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: route },
+        { provide: LiftsApiService, useValue: { listLifts: () => of({ items: [] }) } },
+        { provide: WorkoutLiftsApiService, useValue: workoutLiftsApiService },
+        { provide: WorkoutsApiService, useValue: workoutsApiService },
+        { provide: WorkoutsStoreService, useValue: workoutsStoreService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ActiveWorkoutPageComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('cancels pending set delete without mutating data', () => {
+    component.beginSetDelete(entryId, setEntry);
+
+    expect(component.isConfirmingSetDelete(entryId, setId)).toBeTrue();
+
+    component.cancelSetDelete(entryId, setId);
+
+    expect(component.isConfirmingSetDelete(entryId, setId)).toBeFalse();
+    expect(workoutLiftsApiService.deleteWorkoutSet).not.toHaveBeenCalled();
+    expect(workoutsStoreService.removeWorkoutSet).not.toHaveBeenCalled();
+  });
+});

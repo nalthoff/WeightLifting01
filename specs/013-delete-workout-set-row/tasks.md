@@ -17,9 +17,9 @@
 
 **Purpose**: Confirm existing set/edit flow extension points for introducing row deletion with confirmation.
 
-- [ ] T001 Review active workout set row UI/state touchpoints in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T002 [P] Review workout set API/store conventions in `frontend/src/app/core/api/workout-lifts-api.service.ts`, `frontend/src/app/core/state/workouts-store.models.ts`, and `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T003 [P] Review backend add/update set command and endpoint patterns in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutSet/AddWorkoutSetCommandHandler.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`, and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T001 Review active workout set row UI/state touchpoints in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T002 [P] Review workout set API/store conventions in `frontend/src/app/core/api/workout-lifts-api.service.ts`, `frontend/src/app/core/state/workouts-store.models.ts`, and `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T003 [P] Review backend add/update set command and endpoint patterns in `backend/src/WeightLifting.Api/Application/Workouts/Commands/AddWorkoutSet/AddWorkoutSetCommandHandler.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/UpdateWorkoutSet/UpdateWorkoutSetCommandHandler.cs`, and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
 
 ---
 
@@ -29,12 +29,12 @@
 
 **⚠️ CRITICAL**: No user story work starts until this phase is complete.
 
-- [ ] T004 Create delete-set API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/DeleteWorkoutSetResponse.cs`
-- [ ] T005 Create delete-set command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetResult.cs`
-- [ ] T006 [P] Add delete-set API DTO and client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T007 [P] Extend workout store models for row delete session state in `frontend/src/app/core/state/workouts-store.models.ts`
-- [ ] T008 [P] Add store support for targeted set-row removal in `frontend/src/app/core/state/workouts-store.service.ts`
-- [ ] T009 Register delete-set command handler in DI in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T004 Create delete-set API contracts in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/DeleteWorkoutSetResponse.cs`
+- [X] T005 Create delete-set command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetResult.cs`
+- [X] T006 [P] Add delete-set API DTO and client method in `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T007 [P] Extend workout store models for row delete session state in `frontend/src/app/core/state/workouts-store.models.ts`
+- [X] T008 [P] Add store support for targeted set-row removal in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T009 Register delete-set command handler in DI in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
 
 **Checkpoint**: Foundation complete; user-story implementation can begin.
 
@@ -48,17 +48,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add unit tests for delete success path, in-progress enforcement, and row scope checks in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkoutSet/DeleteWorkoutSetCommandHandlerTests.cs`
-- [ ] T011 [P] [US1] Add integration test for targeted set-row deletion persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutSetIntegrationTests.cs`
-- [ ] T012 [P] [US1] Add contract test for `DELETE /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T013 [P] [US1] Add e2e happy-path confirmation and delete scenario in `frontend/tests/e2e/workouts/delete-workout-set.spec.ts`
+- [X] T010 [P] [US1] Add unit tests for delete success path, in-progress enforcement, and row scope checks in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkoutSet/DeleteWorkoutSetCommandHandlerTests.cs`
+- [X] T011 [P] [US1] Add integration test for targeted set-row deletion persistence in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutSetIntegrationTests.cs`
+- [X] T012 [P] [US1] Add contract test for `DELETE /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets/{setId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T013 [P] [US1] Add e2e happy-path confirmation and delete scenario in `frontend/tests/e2e/workouts/delete-workout-set.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Implement delete-set command handler for row lookup, in-progress gating, and deletion in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetCommandHandler.cs`
-- [ ] T015 [US1] Add delete-set endpoint and success response mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T016 [US1] Implement set-row delete confirmation and confirm action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T017 [US1] Render set-row delete trigger and confirmation UI in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T014 [US1] Implement delete-set command handler for row lookup, in-progress gating, and deletion in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkoutSet/DeleteWorkoutSetCommandHandler.cs`
+- [X] T015 [US1] Add delete-set endpoint and success response mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T016 [US1] Implement set-row delete confirmation and confirm action orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T017 [US1] Render set-row delete trigger and confirmation UI in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -72,13 +72,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Add frontend unit tests for cancel-confirmation behavior and no-mutation state handling in `frontend/tests/unit/workouts/active-workout-page.component.spec.ts`
-- [ ] T019 [P] [US2] Add e2e cancel-delete scenario in `frontend/tests/e2e/workouts/delete-workout-set-cancel.spec.ts`
+- [X] T018 [P] [US2] Add frontend unit tests for cancel-confirmation behavior and no-mutation state handling in `frontend/tests/unit/workouts/active-workout-page.component.spec.ts`
+- [X] T019 [P] [US2] Add e2e cancel-delete scenario in `frontend/tests/e2e/workouts/delete-workout-set-cancel.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement explicit cancel-delete state transitions and cleanup in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T021 [US2] Add cancel-path UI behavior and accessibility labeling in `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T020 [US2] Implement explicit cancel-delete state transitions and cleanup in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T021 [US2] Add cancel-path UI behavior and accessibility labeling in `frontend/src/app/features/workouts/active-workout-page.component.html`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -92,16 +92,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Extend unit tests for delete failure outcomes (`NotFound`, `Conflict`, `Failed`) in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkoutSet/DeleteWorkoutSetCommandHandlerTests.cs`
-- [ ] T023 [P] [US3] Add contract tests for delete endpoint `404` and `409` responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
-- [ ] T024 [P] [US3] Add integration test for duplicate-entry isolation during set delete in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutSetIntegrationTests.cs`
-- [ ] T025 [P] [US3] Add e2e failure-and-retry delete scenario in `frontend/tests/e2e/workouts/delete-workout-set-failures.spec.ts`
+- [X] T022 [P] [US3] Extend unit tests for delete failure outcomes (`NotFound`, `Conflict`, `Failed`) in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkoutSet/DeleteWorkoutSetCommandHandlerTests.cs`
+- [X] T023 [P] [US3] Add contract tests for delete endpoint `404` and `409` responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutLiftsApiContractTests.cs`
+- [X] T024 [P] [US3] Add integration test for duplicate-entry isolation during set delete in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutSetIntegrationTests.cs`
+- [X] T025 [P] [US3] Add e2e failure-and-retry delete scenario in `frontend/tests/e2e/workouts/delete-workout-set-failures.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Map delete failure outcomes to problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T027 [US3] Implement row-level delete error and retry orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T028 [US3] Render delete failure feedback and retry affordance in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T026 [US3] Map delete failure outcomes to problem responses in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T027 [US3] Implement row-level delete error and retry orchestration in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T028 [US3] Render delete failure feedback and retry affordance in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -111,11 +111,11 @@
 
 **Purpose**: Final cross-story validation, regression checks, and docs updates.
 
-- [ ] T029 [P] Update quickstart verification run notes in `specs/013-delete-workout-set-row/quickstart.md`
-- [ ] T030 [P] Run backend unit/integration/contract suites for delete-set behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T031 [P] Run frontend delete-set e2e suite and build in `frontend/package.json`
-- [ ] T032 Validate mobile viewport usability for delete confirmation/error states in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T033 Confirm regressions for add-set/edit-set/remove-lift/reorder-lift flows in `frontend/tests/e2e/workouts/add-workout-set.spec.ts`, `frontend/tests/e2e/workouts/edit-workout-set.spec.ts`, `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`, and `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
+- [X] T029 [P] Update quickstart verification run notes in `specs/013-delete-workout-set-row/quickstart.md`
+- [X] T030 [P] Run backend unit/integration/contract suites for delete-set behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T031 [P] Run frontend delete-set e2e suite and build in `frontend/package.json`
+- [X] T032 Validate mobile viewport usability for delete confirmation/error states in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T033 Confirm regressions for add-set/edit-set/remove-lift/reorder-lift flows in `frontend/tests/e2e/workouts/add-workout-set.spec.ts`, `frontend/tests/e2e/workouts/edit-workout-set.spec.ts`, `frontend/tests/e2e/workouts/remove-workout-lift.spec.ts`, and `frontend/tests/e2e/workouts/reorder-workout-lifts.spec.ts`
 
 ---
 
