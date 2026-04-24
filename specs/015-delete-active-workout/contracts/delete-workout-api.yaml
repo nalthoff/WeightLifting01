@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: Delete In-Progress Workout API
+  version: 0.1.0
+  description: Contract for permanently deleting a user-owned in-progress workout from the active workout flow.
+paths:
+  /api/workouts/{workoutId}:
+    delete:
+      summary: Permanently delete an in-progress workout
+      operationId: deleteWorkout
+      parameters:
+        - name: workoutId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteWorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in a deletable state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  schemas:
+    DeleteWorkoutResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

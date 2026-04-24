@@ -1,4 +1,4 @@
-﻿---
+---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
@@ -24,6 +24,7 @@ Auto-generated from all feature plans. Last updated: 2026-04-23
 - SQL Server / Azure SQL-compatible relational database (reuse existing workout set persistence) (013-delete-workout-set-row)
 - Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router and Angular Material, ASP.NET Core Web API, Entity Framework Core 10 (014-workout-history-page)
 - SQL Server / Azure SQL-compatible relational database using existing workouts tables (014-workout-history-page)
+- SQL Server / Azure SQL-compatible relational database using existing workout tables (015-delete-active-workout)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -44,9 +45,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 015-delete-active-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 014-workout-history-page: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Router and Angular Material, ASP.NET Core Web API, Entity Framework Core 10
 - 013-delete-workout-set-row: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
-- 012-edit-workout-sets: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->
