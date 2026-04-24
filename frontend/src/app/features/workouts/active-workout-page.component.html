@@ -1,9 +1,41 @@
 <section class="active-workout">
   <mat-card class="active-workout__panel" appearance="outlined">
     <mat-card-header>
-      <mat-card-title>{{ workout()?.label || 'Workout' }}</mat-card-title>
-      <mat-card-subtitle *ngIf="!workout()">No in-progress workout is loaded in this session.</mat-card-subtitle>
+      <div class="active-workout__header-row">
+        <div class="active-workout__header-text">
+          <mat-card-title>{{ workout()?.label || 'Workout' }}</mat-card-title>
+          <mat-card-subtitle *ngIf="!workout()">No in-progress workout is loaded in this session.</mat-card-subtitle>
+        </div>
+        <button
+          *ngIf="workout() as headerWorkout"
+          type="button"
+          mat-icon-button
+          data-testid="active-workout-menu"
+          [matMenuTriggerFor]="workoutMenu"
+          [disabled]="
+            isCompletingWorkout() ||
+            isRefreshingActiveWorkout() ||
+            deleteWorkoutSession()?.isDeleting ||
+            headerWorkout.status !== 'InProgress'
+          "
+          aria-label="Open workout actions menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
     </mat-card-header>
+    <mat-menu #workoutMenu="matMenu">
+      <button
+        type="button"
+        mat-menu-item
+        color="warn"
+        data-testid="active-workout-delete"
+        (click)="beginDeleteWorkout()"
+      >
+        <mat-icon color="warn">delete</mat-icon>
+        <span>Delete Workout</span>
+      </button>
+    </mat-menu>
 
     <mat-card-content *ngIf="workout() as activeWorkout; else unavailableContent" class="active-workout__content">
       <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
@@ -14,6 +46,12 @@
       </p>
       <p *ngIf="completeErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
         {{ completeErrorMessage() }}
+      </p>
+      <p *ngIf="deleteSuccessMessage()" class="active-workout__feedback active-workout__feedback--success">
+        {{ deleteSuccessMessage() }}
+      </p>
+      <p *ngIf="deleteErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
+        {{ deleteErrorMessage() }}
       </p>
 
       <p *ngIf="isLoadingWorkoutLifts()" class="active-workout__info">Loading workout lifts...</p>
@@ -347,6 +385,7 @@
           {{ isCompletingWorkout() || isRefreshingActiveWorkout() ? 'Completing...' : 'Complete Workout' }}
         </button>
       </section>
+
     </mat-card-content>
 
     <ng-template #unavailableContent>
@@ -356,6 +395,12 @@
         </p>
         <p *ngIf="completeErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
           {{ completeErrorMessage() }}
+        </p>
+        <p *ngIf="deleteSuccessMessage()" class="active-workout__feedback active-workout__feedback--success">
+          {{ deleteSuccessMessage() }}
+        </p>
+        <p *ngIf="deleteErrorMessage()" class="active-workout__feedback active-workout__feedback--error">
+          {{ deleteErrorMessage() }}
         </p>
         <p *ngIf="isLoadingWorkout(); else unavailableMessage">Loading workout details...</p>
         <ng-template #unavailableMessage>

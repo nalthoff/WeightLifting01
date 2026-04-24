@@ -17,9 +17,9 @@
 
 **Purpose**: Confirm current active-workout lifecycle touchpoints before introducing destructive workout deletion.
 
-- [ ] T001 Review active workout completion/state handling in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T002 [P] Review workout session API contracts and client usage in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`, `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`, and `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T003 [P] Review active workout persistence and query patterns in `backend/src/WeightLifting.Api/Infrastructure/Persistence/`, `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetActiveWorkoutSummary/`, and `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutById/`
+- [X] T001 Review active workout completion/state handling in `frontend/src/app/features/workouts/active-workout-page.component.ts` and `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T002 [P] Review workout session API contracts and client usage in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`, `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`, and `frontend/src/app/core/api/workouts-api.service.ts`
+- [X] T003 [P] Review active workout persistence and query patterns in `backend/src/WeightLifting.Api/Infrastructure/Persistence/`, `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetActiveWorkoutSummary/`, and `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutById/`
 
 ---
 
@@ -29,11 +29,11 @@
 
 **⚠️ CRITICAL**: No user story work starts until this phase is complete.
 
-- [ ] T004 Create delete-workout API response contract in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/DeleteWorkoutResponse.cs`
-- [ ] T005 Create delete-workout command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutResult.cs`
-- [ ] T006 [P] Register delete-workout command handler dependency in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
-- [ ] T007 [P] Add delete-workout API client method in `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T008 [P] Extend active workout store for post-delete clear/reconcile flow in `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T004 Create delete-workout API response contract in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/DeleteWorkoutResponse.cs`
+- [X] T005 Create delete-workout command models in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutCommand.cs`, `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutOutcome.cs`, and `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutResult.cs`
+- [X] T006 [P] Register delete-workout command handler dependency in `backend/src/WeightLifting.Api/Api/DependencyInjection/ServiceCollectionExtensions.cs`
+- [X] T007 [P] Add delete-workout API client method in `frontend/src/app/core/api/workouts-api.service.ts`
+- [X] T008 [P] Extend active workout store for post-delete clear/reconcile flow in `frontend/src/app/core/state/workouts-store.service.ts`
 
 **Checkpoint**: Foundation complete; user-story implementation can begin.
 
@@ -47,15 +47,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add frontend unit tests for delete confirmation open/cancel behavior in `frontend/src/app/features/workouts/active-workout-page.component.spec.ts`
-- [ ] T010 [P] [US1] Add e2e confirmation-cancel scenario in `frontend/tests/e2e/workouts/delete-workout-cancel.spec.ts`
+- [X] T009 [P] [US1] Add frontend unit tests for delete confirmation open/cancel behavior in `frontend/src/app/features/workouts/active-workout-page.component.spec.ts`
+- [X] T010 [P] [US1] Add e2e confirmation-cancel scenario in `frontend/tests/e2e/workouts/delete-workout-cancel.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Add active workout delete confirmation UI state model in `frontend/src/app/core/state/workouts-store.models.ts`
-- [ ] T012 [US1] Implement delete confirmation state transitions in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T013 [US1] Render Delete Workout trigger and confirmation actions in `frontend/src/app/features/workouts/active-workout-page.component.html`
-- [ ] T014 [US1] Add delete confirmation visual treatment and mobile layout support in `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T011 [US1] Add active workout delete confirmation UI state model in `frontend/src/app/core/state/workouts-store.models.ts`
+- [X] T012 [US1] Implement delete confirmation state transitions in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T013 [US1] Render Delete Workout trigger and confirmation actions in `frontend/src/app/features/workouts/active-workout-page.component.html`
+- [X] T014 [US1] Add delete confirmation visual treatment and mobile layout support in `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -69,17 +69,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Add unit tests for delete-workout success and in-progress enforcement in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkout/DeleteWorkoutCommandHandlerTests.cs`
-- [ ] T016 [P] [US2] Add integration test for hard-delete of workout aggregate and child rows in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutIntegrationTests.cs`
-- [ ] T017 [P] [US2] Add contract test for `DELETE /api/workouts/{workoutId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T018 [P] [US2] Add e2e happy-path delete workout scenario in `frontend/tests/e2e/workouts/delete-workout.spec.ts`
+- [X] T015 [P] [US2] Add unit tests for delete-workout success and in-progress enforcement in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkout/DeleteWorkoutCommandHandlerTests.cs`
+- [X] T016 [P] [US2] Add integration test for hard-delete of workout aggregate and child rows in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutIntegrationTests.cs`
+- [X] T017 [P] [US2] Add contract test for `DELETE /api/workouts/{workoutId}` success response in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [X] T018 [P] [US2] Add e2e happy-path delete workout scenario in `frontend/tests/e2e/workouts/delete-workout.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Implement delete-workout command handler with in-progress gating and aggregate removal in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutCommandHandler.cs`
-- [ ] T020 [US2] Add delete-workout endpoint and success mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T021 [US2] Implement confirmed delete orchestration and success messaging in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T022 [US2] Wire post-delete active-state refresh behavior in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/core/state/workouts-store.service.ts`
+- [X] T019 [US2] Implement delete-workout command handler with in-progress gating and aggregate removal in `backend/src/WeightLifting.Api/Application/Workouts/Commands/DeleteWorkout/DeleteWorkoutCommandHandler.cs`
+- [X] T020 [US2] Add delete-workout endpoint and success mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T021 [US2] Implement confirmed delete orchestration and success messaging in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T022 [US2] Wire post-delete active-state refresh behavior in `frontend/src/app/features/home/home-page.component.ts` and `frontend/src/app/core/state/workouts-store.service.ts`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -93,16 +93,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T023 [P] [US3] Extend backend unit tests for `NotFound`, `Conflict`, and failure outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkout/DeleteWorkoutCommandHandlerTests.cs`
-- [ ] T024 [P] [US3] Add contract tests for delete-workout `404` and `409` responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T025 [P] [US3] Add integration test for stale-state delete behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutIntegrationTests.cs`
-- [ ] T026 [P] [US3] Add e2e failure-and-retry delete workout scenario in `frontend/tests/e2e/workouts/delete-workout-failures.spec.ts`
+- [X] T023 [P] [US3] Extend backend unit tests for `NotFound`, `Conflict`, and failure outcomes in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/DeleteWorkout/DeleteWorkoutCommandHandlerTests.cs`
+- [X] T024 [P] [US3] Add contract tests for delete-workout `404` and `409` responses in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [X] T025 [P] [US3] Add integration test for stale-state delete behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/DeleteWorkoutIntegrationTests.cs`
+- [X] T026 [P] [US3] Add e2e failure-and-retry delete workout scenario in `frontend/tests/e2e/workouts/delete-workout-failures.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Map delete-workout conflict/not-found/problem outcomes in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T028 [US3] Implement delete failure feedback and race-state reconciliation in `frontend/src/app/features/workouts/active-workout-page.component.ts`
-- [ ] T029 [US3] Render delete error states and retry affordance in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T027 [US3] Map delete-workout conflict/not-found/problem outcomes in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T028 [US3] Implement delete failure feedback and race-state reconciliation in `frontend/src/app/features/workouts/active-workout-page.component.ts`
+- [X] T029 [US3] Render delete error states and retry affordance in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -112,11 +112,11 @@
 
 **Purpose**: Final cross-story validation, regression checks, and documentation updates.
 
-- [ ] T030 [P] Update verification instructions and run log in `specs/015-delete-active-workout/quickstart.md`
-- [ ] T031 [P] Run backend unit/integration/contract suites for delete-workout behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T032 [P] Run frontend unit/e2e suites for delete workout flows in `frontend/tests/unit/` and `frontend/tests/e2e/workouts/`
-- [ ] T033 Validate mobile viewport behavior for delete confirmation/success/failure in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
-- [ ] T034 Verify completed workout history remains unchanged after deletions in `frontend/src/app/features/history/history-page.component.ts` and `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
+- [X] T030 [P] Update verification instructions and run log in `specs/015-delete-active-workout/quickstart.md`
+- [X] T031 [P] Run backend unit/integration/contract suites for delete-workout behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [X] T032 [P] Run frontend unit/e2e suites for delete workout flows in `frontend/tests/unit/` and `frontend/tests/e2e/workouts/`
+- [X] T033 Validate mobile viewport behavior for delete confirmation/success/failure in `frontend/src/app/features/workouts/active-workout-page.component.html` and `frontend/src/app/features/workouts/active-workout-page.component.scss`
+- [X] T034 Verify completed workout history remains unchanged after deletions in `frontend/src/app/features/history/history-page.component.ts` and `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
 
 ---
 

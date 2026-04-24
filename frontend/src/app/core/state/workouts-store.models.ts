@@ -33,3 +33,10 @@ export interface SetRowDeleteSession {
   isDeleting: boolean;
   errorMessage: string | null;
 }
+
+export interface WorkoutDeleteSession {
+  workoutId: string;
+  isConfirmingDelete: boolean;
+  isDeleting: boolean;
+  errorMessage: string | null;
+}

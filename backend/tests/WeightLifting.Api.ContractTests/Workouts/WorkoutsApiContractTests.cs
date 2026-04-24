@@ -221,6 +221,65 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     }
 
     [Fact]
+    public async Task DeleteWorkoutReturnsSuccessContract()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "Delete Me",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(createdPayload);
+
+        var deleteResponse = await client.DeleteAsync($"/api/workouts/{createdPayload.Workout.Id}");
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+        var payload = await deleteResponse.Content.ReadFromJsonAsync<DeleteWorkoutResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(createdPayload.Workout.Id, payload.WorkoutId);
+    }
+
+    [Fact]
+    public async Task DeleteWorkoutWhenMissingReturnsNotFoundPayload()
+    {
+        var client = factory.CreateClient();
+
+        var response = await client.DeleteAsync($"/api/workouts/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("Workout not found", payload.Title);
+        Assert.Equal((int)HttpStatusCode.NotFound, payload.Status);
+    }
+
+    [Fact]
+    public async Task DeleteWorkoutWhenAlreadyCompletedReturnsConflictPayload()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "Already Completed",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(createdPayload);
+
+        var completeResponse = await client.PostAsync($"/api/workouts/{createdPayload.Workout.Id}/complete", null);
+        Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
+
+        var deleteResponse = await client.DeleteAsync($"/api/workouts/{createdPayload.Workout.Id}");
+        Assert.Equal(HttpStatusCode.Conflict, deleteResponse.StatusCode);
+
+        var payload = await deleteResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("Workout cannot be deleted", payload.Title);
+        Assert.Equal((int)HttpStatusCode.Conflict, payload.Status);
+        Assert.Contains("Workout must be in progress to delete.", payload.Errors["workout"]);
+    }
+
+    [Fact]
     public async Task GetWorkoutHistoryReturnsCompletedWorkoutsInNewestFirstOrder()
     {
         var client = factory.CreateClient();
@@ -310,6 +369,11 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     public sealed class CompleteWorkoutResponse
     {
         public required WorkoutSessionSummaryResponse Workout { get; init; }
+    }
+
+    public sealed class DeleteWorkoutResponse
+    {
+        public required Guid WorkoutId { get; init; }
     }
 
     public sealed class ValidationErrorResponse

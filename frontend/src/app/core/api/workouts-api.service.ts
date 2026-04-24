@@ -30,6 +30,10 @@ export interface CompleteWorkoutResponse {
   workout: WorkoutSessionSummary;
 }
 
+export interface DeleteWorkoutResponse {
+  workoutId: string;
+}
+
 export interface WorkoutHistorySummary {
   id: string;
   label?: string | null;
@@ -66,6 +70,10 @@ export class WorkoutsApiService {
 
   completeWorkout(workoutId: string): Observable<CompleteWorkoutResponse> {
     return this.httpClient.post<CompleteWorkoutResponse>(`/api/workouts/${workoutId}/complete`, {});
+  }
+
+  deleteWorkout(workoutId: string): Observable<DeleteWorkoutResponse> {
+    return this.httpClient.delete<DeleteWorkoutResponse>(`/api/workouts/${workoutId}`);
   }
 
   getWorkoutHistory(): Observable<GetWorkoutHistoryResponse> {

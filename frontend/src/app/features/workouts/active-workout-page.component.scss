@@ -12,6 +12,18 @@
   @include surface.card-heading;
 }
 
+.active-workout__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.active-workout__header-text {
+  min-width: 0;
+}
+
 .active-workout__panel mat-card-subtitle {
   @include surface.supporting-copy;
 }
@@ -58,6 +70,28 @@
 .active-workout__complete-copy {
   margin: 0;
   color: var(--app-text-muted);
+}
+
+.active-workout__delete-confirmation {
+  margin-top: 0.25rem;
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--app-danger-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.active-workout__delete-confirm-copy {
+  margin: 0;
+  color: var(--app-text-muted);
+}
+
+.active-workout__delete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .active-workout__lift-header h2 {

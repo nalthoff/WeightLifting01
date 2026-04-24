@@ -47,3 +47,11 @@ Validate that a user can permanently delete an in-progress workout from the acti
 1. Verify completed workout history remains visible and ordered as before.
 2. Verify deleted in-progress workout is absent from active workout summary and history reads.
 3. Verify existing complete-workout flow still works for a newly started workout.
+
+## Verification Run (2026-04-24)
+
+- `dotnet test backend/tests/WeightLifting.Api.UnitTests/WeightLifting.Api.UnitTests.csproj --filter "FullyQualifiedName~DeleteWorkoutCommandHandlerTests"` (Passed: 3)
+- `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter "FullyQualifiedName~DeleteWorkoutIntegrationTests"` (Passed: 3)
+- `dotnet test backend/tests/WeightLifting.Api.ContractTests/WeightLifting.Api.ContractTests.csproj --filter "FullyQualifiedName~DeleteWorkout"` (Passed: 8)
+- `npx ng test --watch=false --browsers=ChromeHeadless --include "src/app/features/workouts/active-workout-page.component.spec.ts"` in `frontend` (Passed: 9)
+- `npx playwright test tests/e2e/workouts/delete-workout-cancel.spec.ts tests/e2e/workouts/delete-workout.spec.ts tests/e2e/workouts/delete-workout-failures.spec.ts` in `frontend` (Passed: 5)

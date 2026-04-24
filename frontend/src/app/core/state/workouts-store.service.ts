@@ -35,6 +35,14 @@ export class WorkoutsStoreService {
     this.activeWorkoutLiftEntries.set([]);
   }
 
+  clearActiveWorkoutIfMatches(workoutId: string): void {
+    if (this.activeWorkout()?.id !== workoutId) {
+      return;
+    }
+
+    this.clearActiveWorkout();
+  }
+
   setActiveWorkoutLiftEntries(workoutId: string, entries: WorkoutLiftEntry[]): void {
     if (this.activeWorkout()?.id !== workoutId) {
       return;

@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
 import { LiftsApiService } from '../../../src/app/core/api/lifts-api.service';
@@ -68,6 +69,17 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
     snapshot: { paramMap: convertToParamMap({ workoutId }) } as ActivatedRoute['snapshot'],
     paramMap: of(convertToParamMap({ workoutId })),
   };
+  const dialog = {
+    open: jasmine.createSpy('open').and.returnValue({
+      afterClosed: () => of(false),
+    }),
+  };
+  const router = {
+    events: of({}),
+    createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+    serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue('/'),
+    navigate: jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true)),
+  };
 
   beforeEach(async () => {
     workoutLiftsApiService.deleteWorkoutSet.calls.reset();
@@ -76,6 +88,8 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
       imports: [ActiveWorkoutPageComponent],
       providers: [
         { provide: ActivatedRoute, useValue: route },
+        { provide: Router, useValue: router },
+        { provide: MatDialog, useValue: dialog },
         { provide: LiftsApiService, useValue: { listLifts: () => of({ items: [] }) } },
         { provide: WorkoutLiftsApiService, useValue: workoutLiftsApiService },
         { provide: WorkoutsApiService, useValue: workoutsApiService },

@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { finalize, map } from 'rxjs';
 
 import { LiftsApiService } from '../../core/api/lifts-api.service';
@@ -16,10 +18,12 @@ import { WorkoutsApiService } from '../../core/api/workouts-api.service';
 import type {
   SetRowDeleteSession,
   SetRowEditSession,
+  WorkoutDeleteSession,
   WorkoutLiftEntryState,
   WorkoutSetEntry,
 } from '../../core/state/workouts-store.models';
 import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
+import { WorkoutDeleteConfirmDialogComponent } from './workout-delete-confirm-dialog.component';
 
 @Component({
   selector: 'app-active-workout-page',
@@ -31,12 +35,15 @@ import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatMenuModule,
   ],
   templateUrl: './active-workout-page.component.html',
   styleUrl: './active-workout-page.component.scss',
 })
 export class ActiveWorkoutPageComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
   private readonly liftsApiService = inject(LiftsApiService);
   private readonly workoutLiftsApiService = inject(WorkoutLiftsApiService);
   private readonly workoutsApiService = inject(WorkoutsApiService);
@@ -48,6 +55,9 @@ export class ActiveWorkoutPageComponent {
   readonly loadError = signal<string | null>(null);
   readonly completeErrorMessage = signal<string | null>(null);
   readonly completeSuccessMessage = signal<string | null>(null);
+  readonly deleteWorkoutSession = signal<WorkoutDeleteSession | null>(null);
+  readonly deleteErrorMessage = signal<string | null>(null);
+  readonly deleteSuccessMessage = signal<string | null>(null);
   readonly isLoadingWorkoutLifts = signal(false);
   readonly workoutLiftsLoadError = signal<string | null>(null);
   readonly isPickerOpen = signal(false);
@@ -144,6 +154,104 @@ export class ActiveWorkoutPageComponent {
 
           this.completeErrorMessage.set('Unable to complete workout. Check your connection and try again.');
           this.refreshActiveWorkoutState();
+        },
+      });
+  }
+
+  beginDeleteWorkout(): void {
+    const workout = this.workout();
+    if (!workout || workout.status !== 'InProgress') {
+      return;
+    }
+
+    const session = this.deleteWorkoutSession();
+    if (session?.isDeleting) {
+      return;
+    }
+
+    this.deleteErrorMessage.set(null);
+    this.deleteSuccessMessage.set(null);
+
+    this.dialog
+      .open(WorkoutDeleteConfirmDialogComponent, {
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((confirmed: boolean | undefined) => {
+        if (confirmed !== true) {
+          return;
+        }
+
+        this.confirmDeleteWorkout();
+      });
+  }
+
+  cancelDeleteWorkout(): void {
+    const session = this.deleteWorkoutSession();
+    if (session?.isDeleting) {
+      return;
+    }
+
+    this.deleteWorkoutSession.set(null);
+    this.deleteErrorMessage.set(null);
+  }
+
+  confirmDeleteWorkout(): void {
+    const workout = this.workout();
+    const session = this.deleteWorkoutSession();
+    if (!workout || workout.status !== 'InProgress' || session?.isDeleting) {
+      return;
+    }
+
+    this.deleteWorkoutSession.set({
+      workoutId: workout.id,
+      isConfirmingDelete: false,
+      isDeleting: true,
+      errorMessage: null,
+    });
+    this.deleteErrorMessage.set(null);
+    this.deleteSuccessMessage.set(null);
+
+    this.workoutsApiService
+      .deleteWorkout(workout.id)
+      .pipe(
+        finalize(() => {
+          const latestSession = this.deleteWorkoutSession();
+          if (latestSession?.workoutId === workout.id) {
+            this.deleteWorkoutSession.set({
+              ...latestSession,
+              isDeleting: false,
+            });
+          }
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.clearActiveWorkoutIfMatches(response.workoutId);
+          this.deleteWorkoutSession.set(null);
+          this.deleteErrorMessage.set(null);
+          this.deleteSuccessMessage.set(null);
+          this.completeErrorMessage.set(null);
+          this.completeSuccessMessage.set(null);
+          void this.router.navigate(['/']);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            const message = error.error?.title ?? 'This workout no longer exists. View refreshed.';
+            this.deleteErrorMessage.set(message);
+            this.refreshActiveWorkoutState();
+            return;
+          }
+
+          if (error.status === 409) {
+            const message = error.error?.title ?? 'This workout cannot be deleted in its current state.';
+            this.deleteErrorMessage.set(message);
+            this.refreshActiveWorkoutState();
+            return;
+          }
+
+          const message = 'Unable to delete workout. Check your connection and try again.';
+          this.deleteErrorMessage.set(message);
         },
       });
   }
@@ -627,6 +735,8 @@ export class ActiveWorkoutPageComponent {
     this.isLoadingWorkout.set(true);
     this.loadError.set(null);
     this.completeErrorMessage.set(null);
+    this.deleteWorkoutSession.set(null);
+    this.deleteErrorMessage.set(null);
 
     this.workoutsApiService
       .getWorkout(workoutId)
@@ -662,6 +772,11 @@ export class ActiveWorkoutPageComponent {
           }
 
           this.workoutsStoreService.reconcileActiveWorkout(response.workout);
+          if (!this.workoutsStoreService.activeWorkout()) {
+            this.loadError.set('This workout is no longer active. Return home to start another session.');
+            return;
+          }
+
           if (response.workout.id !== this.workoutId()) {
             this.loadError.set('Another workout is active now. Return home to continue it.');
           } else {
@@ -671,13 +786,17 @@ export class ActiveWorkoutPageComponent {
         error: (error: HttpErrorResponse) => {
           if (error.status === 404 || error.status === 204) {
             this.workoutsStoreService.clearActiveWorkout();
+            this.deleteWorkoutSession.set(null);
             this.loadError.set('This workout is no longer active. Return home to start another session.');
             return;
           }
 
-          this.completeErrorMessage.set(
-            'Could not refresh active workout state. Pull to refresh or try again.',
-          );
+          const refreshMessage = 'Could not refresh active workout state. Pull to refresh or try again.';
+          if (this.deleteWorkoutSession()) {
+            this.deleteErrorMessage.set(refreshMessage);
+          } else {
+            this.completeErrorMessage.set(refreshMessage);
+          }
         },
       });
   }
