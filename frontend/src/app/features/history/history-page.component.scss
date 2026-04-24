@@ -22,11 +22,22 @@
 }
 
 .history-page__list-item {
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.history-page__item-link {
   display: grid;
   gap: 0.25rem;
   padding: 0.75rem;
+  color: inherit;
+  text-decoration: none;
   border-radius: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.history-page__item-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
 }
 
 .history-page__item-label {
@@ -52,4 +63,15 @@
 
 .history-page__feedback--error {
   color: #ffb4ab;
+}
+
+@media (max-width: 480px) {
+  .history-page__item-link {
+    padding: 0.6rem;
+  }
+
+  .history-page__item-date,
+  .history-page__item-summary {
+    font-size: 0.85rem;
+  }
 }

@@ -6,4 +6,9 @@ export const HISTORY_ROUTES: Routes = [
     loadComponent: () =>
       import('./history-page.component').then((module) => module.HistoryPageComponent),
   },
+  {
+    path: ':workoutId',
+    loadComponent: () =>
+      import('./history-workout-detail-page.component').then((module) => module.HistoryWorkoutDetailPageComponent),
+  },
 ];

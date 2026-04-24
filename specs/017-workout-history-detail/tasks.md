@@ -17,9 +17,9 @@
 
 **Purpose**: Prepare shared route/component scaffolding and test baselines.
 
-- [ ] T001 Add feature route placeholder for completed workout detail in `frontend/src/app/features/history/history.routes.ts`
-- [ ] T002 [P] Create completed workout detail component files in `frontend/src/app/features/history/history-workout-detail-page.component.ts`, `frontend/src/app/features/history/history-workout-detail-page.component.html`, and `frontend/src/app/features/history/history-workout-detail-page.component.scss`
-- [ ] T003 [P] Add reusable display helpers for completed detail formatting in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
+- [X] T001 Add feature route placeholder for completed workout detail in `frontend/src/app/features/history/history.routes.ts`
+- [X] T002 [P] Create completed workout detail component files in `frontend/src/app/features/history/history-workout-detail-page.component.ts`, `frontend/src/app/features/history/history-workout-detail-page.component.html`, and `frontend/src/app/features/history/history-workout-detail-page.component.scss`
+- [X] T003 [P] Add reusable display helpers for completed detail formatting in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
 
 ---
 
@@ -29,11 +29,11 @@
 
 **CRITICAL**: User story work starts after this phase.
 
-- [ ] T004 Add completed-workout read guard for workout detail retrieval in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutById/GetWorkoutByIdQueryHelper.cs`
-- [ ] T005 Add completed-workout read guard for lift/set retrieval in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListWorkoutLifts/ListWorkoutLiftsQueryHelper.cs`
-- [ ] T006 Update workout detail endpoint error handling for unavailable/non-completed history workout access in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T007 [P] Extend frontend API service typing for completed detail load and not-found handling in `frontend/src/app/core/api/workouts-api.service.ts` and `frontend/src/app/core/api/workout-lifts-api.service.ts`
-- [ ] T008 [P] Add backend integration coverage for completed-only detail retrieval behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
+- [X] T004 Add completed-workout read guard for workout detail retrieval in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutById/GetWorkoutByIdQueryHelper.cs`
+- [X] T005 Add completed-workout read guard for lift/set retrieval in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListWorkoutLifts/ListWorkoutLiftsQueryHelper.cs`
+- [X] T006 Update workout detail endpoint error handling for unavailable/non-completed history workout access in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T007 [P] Extend frontend API service typing for completed detail load and not-found handling in `frontend/src/app/core/api/workouts-api.service.ts` and `frontend/src/app/core/api/workout-lifts-api.service.ts`
+- [X] T008 [P] Add backend integration coverage for completed-only detail retrieval behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
 
 **Checkpoint**: Detail foundations are ready; user stories can be implemented.
 
@@ -47,15 +47,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add history-row navigation unit coverage in `frontend/src/app/features/history/history-page.component.spec.ts`
-- [ ] T010 [P] [US1] Add open-from-history e2e flow coverage in `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [X] T009 [P] [US1] Add history-row navigation unit coverage in `frontend/src/app/features/history/history-page.component.spec.ts`
+- [X] T010 [P] [US1] Add open-from-history e2e flow coverage in `frontend/tests/e2e/workouts/workout-history.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Convert history list rows into detail navigation targets in `frontend/src/app/features/history/history-page.component.html`
-- [ ] T012 [US1] Add route parameter mapping and navigation wiring for completed detail in `frontend/src/app/features/history/history.routes.ts`
-- [ ] T013 [US1] Implement completed workout bootstrap load by workout id in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
-- [ ] T014 [US1] Render completed workout detail shell with back-to-history navigation in `frontend/src/app/features/history/history-workout-detail-page.component.html`
+- [X] T011 [US1] Convert history list rows into detail navigation targets in `frontend/src/app/features/history/history-page.component.html`
+- [X] T012 [US1] Add route parameter mapping and navigation wiring for completed detail in `frontend/src/app/features/history/history.routes.ts`
+- [X] T013 [US1] Implement completed workout bootstrap load by workout id in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
+- [X] T014 [US1] Render completed workout detail shell with back-to-history navigation in `frontend/src/app/features/history/history-workout-detail-page.component.html`
 
 **Checkpoint**: US1 is independently functional and testable.
 
@@ -69,16 +69,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Add completed detail summary-and-values unit tests in `frontend/tests/unit/history/history-workout-detail-page.component.spec.ts`
-- [ ] T016 [P] [US2] Add backend contract assertions for workout and lift payload compatibility in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutHistoryContractTests.cs`
-- [ ] T017 [P] [US2] Extend e2e assertions for lift/set row rendering in `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [X] T015 [P] [US2] Add completed detail summary-and-values unit tests in `frontend/tests/unit/history/history-workout-detail-page.component.spec.ts`
+- [X] T016 [P] [US2] Add backend contract assertions for workout and lift payload compatibility in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutHistoryContractTests.cs`
+- [X] T017 [P] [US2] Extend e2e assertions for lift/set row rendering in `frontend/tests/e2e/workouts/workout-history.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Implement summary section rendering (date/duration/name-type fallback) in `frontend/src/app/features/history/history-workout-detail-page.component.html`
-- [ ] T019 [US2] Implement read-only lift and set row rendering with position ordering in `frontend/src/app/features/history/history-workout-detail-page.component.ts` and `frontend/src/app/features/history/history-workout-detail-page.component.html`
-- [ ] T020 [US2] Implement safe optional weight fallback display formatting in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
-- [ ] T021 [US2] Remove or disable editing affordances for completed workout detail context in `frontend/src/app/features/history/history-workout-detail-page.component.html`
+- [X] T018 [US2] Implement summary section rendering (date/duration/name-type fallback) in `frontend/src/app/features/history/history-workout-detail-page.component.html`
+- [X] T019 [US2] Implement read-only lift and set row rendering with position ordering in `frontend/src/app/features/history/history-workout-detail-page.component.ts` and `frontend/src/app/features/history/history-workout-detail-page.component.html`
+- [X] T020 [US2] Implement safe optional weight fallback display formatting in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
+- [X] T021 [US2] Remove or disable editing affordances for completed workout detail context in `frontend/src/app/features/history/history-workout-detail-page.component.html`
 
 **Checkpoint**: US2 is independently functional and testable.
 
@@ -92,16 +92,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Add unit tests for completed detail loading/error/retry state transitions in `frontend/tests/unit/history/history-workout-detail-page.component.spec.ts`
-- [ ] T023 [P] [US3] Add e2e coverage for not-found and connectivity failure recovery in `frontend/tests/e2e/workouts/workout-history.spec.ts`
-- [ ] T024 [P] [US3] Add backend integration assertions for unavailable workout responses in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
+- [X] T022 [P] [US3] Add unit tests for completed detail loading/error/retry state transitions in `frontend/tests/unit/history/history-workout-detail-page.component.spec.ts`
+- [X] T023 [P] [US3] Add e2e coverage for not-found and connectivity failure recovery in `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [X] T024 [P] [US3] Add backend integration assertions for unavailable workout responses in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Preserve existing completed-only newest-first history list behavior while adding row click affordance in `frontend/src/app/features/history/history-page.component.ts` and `frontend/src/app/features/history/history-page.component.html`
-- [ ] T026 [US3] Implement explicit loading, not-found, and retry-capable error states in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
-- [ ] T027 [US3] Implement resilient error-state UI with actionable return path in `frontend/src/app/features/history/history-workout-detail-page.component.html`
-- [ ] T028 [US3] Align API controller problem responses with detail recovery UX expectations in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T025 [US3] Preserve existing completed-only newest-first history list behavior while adding row click affordance in `frontend/src/app/features/history/history-page.component.ts` and `frontend/src/app/features/history/history-page.component.html`
+- [X] T026 [US3] Implement explicit loading, not-found, and retry-capable error states in `frontend/src/app/features/history/history-workout-detail-page.component.ts`
+- [X] T027 [US3] Implement resilient error-state UI with actionable return path in `frontend/src/app/features/history/history-workout-detail-page.component.html`
+- [X] T028 [US3] Align API controller problem responses with detail recovery UX expectations in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
 
 **Checkpoint**: US3 is independently functional and testable.
 
@@ -111,9 +111,9 @@
 
 **Purpose**: Final quality checks and documentation alignment across all stories.
 
-- [ ] T029 [P] Update or add quick-reference API contract notes for implementation deltas in `specs/017-workout-history-detail/contracts/workout-history-detail-api.yaml`
-- [ ] T030 Run quickstart validation checklist from `specs/017-workout-history-detail/quickstart.md` and capture verification notes in `specs/017-workout-history-detail/quickstart.md`
-- [ ] T031 Validate mobile viewport behavior for history and completed detail flows in `frontend/src/app/features/history/history-page.component.scss` and `frontend/src/app/features/history/history-workout-detail-page.component.scss`
+- [X] T029 [P] Update or add quick-reference API contract notes for implementation deltas in `specs/017-workout-history-detail/contracts/workout-history-detail-api.yaml`
+- [X] T030 Run quickstart validation checklist from `specs/017-workout-history-detail/quickstart.md` and capture verification notes in `specs/017-workout-history-detail/quickstart.md`
+- [X] T031 Validate mobile viewport behavior for history and completed detail flows in `frontend/src/app/features/history/history-page.component.scss` and `frontend/src/app/features/history/history-workout-detail-page.component.scss`
 
 ---
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Workouts;
+using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
 
 namespace WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
@@ -11,15 +12,21 @@ public sealed class ListWorkoutLiftsQueryHelper(WeightLiftingDbContext dbContext
 
     public async Task<IReadOnlyList<WorkoutLiftEntry>> GetAsync(
         Guid workoutId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool requireCompleted = false)
     {
-        var hasWorkout = await dbContext.Workouts
+        var workout = await dbContext.Workouts
             .AsNoTracking()
-            .AnyAsync(
+            .SingleOrDefaultAsync(
                 workout => workout.Id == workoutId && workout.UserId == DefaultUserId,
                 cancellationToken);
 
-        if (!hasWorkout)
+        if (workout is null)
+        {
+            throw new KeyNotFoundException("Workout was not found.");
+        }
+
+        if (requireCompleted && workout.Status != WorkoutStatus.Completed)
         {
             throw new KeyNotFoundException("Workout was not found.");
         }

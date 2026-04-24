@@ -70,6 +70,19 @@ public sealed class WorkoutLiftsIntegrationTests : IAsyncLifetime
         Assert.All(listed, entry => Assert.Equal(liftId, entry.LiftId));
     }
 
+    [Fact]
+    public async Task ListWorkoutLiftsWhenRequireCompletedAndWorkoutInProgressThrowsNotFound()
+    {
+        var workoutId = Guid.NewGuid();
+        var liftId = Guid.NewGuid();
+        await SeedWorkoutAndLiftsAsync(workoutId, (liftId, "Paused Bench", true));
+
+        var listHelper = new ListWorkoutLiftsQueryHelper(dbContext);
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            listHelper.GetAsync(workoutId, CancellationToken.None, requireCompleted: true));
+    }
+
     public async Task InitializeAsync()
     {
         await connection.OpenAsync();

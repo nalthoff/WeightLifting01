@@ -57,4 +57,6 @@ Validate that users can open a completed workout from history and review read-on
 
 ## Verification Notes
 
-- 2026-04-24: Planning artifacts prepared; implementation and verification pending.
+- 2026-04-24: Focused Angular history unit tests passed (`7/7`).
+- 2026-04-24: Targeted backend integration tests for workout history/detail query behavior passed (`8/8`).
+- 2026-04-24: Targeted backend contract tests for workouts and workout-lifts endpoints passed (`38/38`).

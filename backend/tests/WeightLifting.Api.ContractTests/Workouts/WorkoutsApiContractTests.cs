@@ -75,6 +75,27 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     }
 
     [Fact]
+    public async Task GetWorkoutForHistoryWhenWorkoutInProgressReturnsNotFoundPayload()
+    {
+        var client = factory.CreateClient();
+        var createResponse = await client.PostAsJsonAsync("/api/workouts", new
+        {
+            label = "In Progress History Probe",
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
+        Assert.NotNull(createdPayload);
+
+        var response = await client.GetAsync($"/api/workouts/{createdPayload.Workout.Id}?forHistory=true");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<NotFoundResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal("Workout not found", payload.Title);
+        Assert.Equal((int)HttpStatusCode.NotFound, payload.Status);
+    }
+
+    [Fact]
     public async Task GetActiveWorkoutWhenNoWorkoutExistsReturnsNoContent()
     {
         var client = factory.CreateClient();

@@ -1,0 +1,70 @@
+<section class="history-workout-detail-page">
+  <mat-card class="history-workout-detail-page__panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ getWorkoutLabel() }}</mat-card-title>
+      <mat-card-subtitle>Completed workout detail</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="history-workout-detail-page__content">
+      <p *ngIf="isLoading()" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
+        Loading workout detail...
+      </p>
+
+      <div *ngIf="!isLoading() && loadError()" class="history-workout-detail-page__error">
+        <p class="history-workout-detail-page__feedback history-workout-detail-page__feedback--error">
+          {{ loadError() }}
+        </p>
+        <button mat-stroked-button type="button" (click)="retryLoad()">Try again</button>
+      </div>
+
+      <ng-container *ngIf="!isLoading() && !loadError() && workout()">
+        <div class="history-workout-detail-page__summary" data-testid="history-workout-detail-summary">
+          <p data-testid="history-workout-detail-date">Completed {{ workout()!.completedAtUtc | date: 'medium' }}</p>
+          <p data-testid="history-workout-detail-duration">Duration {{ getDurationDisplay() }}</p>
+        </div>
+
+        <div *ngIf="hasLifts(); else emptyLifts" class="history-workout-detail-page__lifts">
+          <article
+            *ngFor="let lift of lifts(); trackBy: trackLift"
+            class="history-workout-detail-page__lift"
+            data-testid="history-workout-detail-lift"
+          >
+            <h3 class="history-workout-detail-page__lift-title">{{ lift.displayName }}</h3>
+
+            <p *ngIf="(lift.sets ?? []).length === 0" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
+              No sets recorded for this lift.
+            </p>
+
+            <table *ngIf="(lift.sets ?? []).length > 0" class="history-workout-detail-page__sets" data-testid="history-workout-detail-sets">
+              <thead>
+                <tr>
+                  <th scope="col">Set</th>
+                  <th scope="col">Reps</th>
+                  <th scope="col">Weight</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let set of lift.sets ?? []; trackBy: trackSet">
+                  <td>{{ set.setNumber }}</td>
+                  <td>{{ set.reps }}</td>
+                  <td>{{ getSetWeightDisplay(set.weight) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+        </div>
+      </ng-container>
+
+      <ng-template #emptyLifts>
+        <p class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
+          No lifts were recorded for this workout.
+        </p>
+      </ng-template>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <a mat-button routerLink="/history">Back to history</a>
+      <a mat-button routerLink="/">Back to home</a>
+    </mat-card-actions>
+  </mat-card>
+</section>

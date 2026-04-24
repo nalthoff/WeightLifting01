@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
 using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
@@ -135,6 +136,29 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
         Assert.Equal(start.AddHours(-1), result[1].CompletedAtUtc);
         Assert.Equal("01:00", result[1].DurationDisplay);
         Assert.Equal(1, result[1].LiftCount);
+    }
+
+    [Fact]
+    public async Task GetWorkoutByIdWhenRequireCompletedAndWorkoutInProgressReturnsNull()
+    {
+        var workoutId = Guid.NewGuid();
+        var now = new DateTime(2026, 4, 24, 12, 0, 0, DateTimeKind.Utc);
+        dbContext.Workouts.Add(new WorkoutEntity
+        {
+            Id = workoutId,
+            UserId = "default-user",
+            Status = WorkoutStatus.InProgress,
+            Label = "In progress",
+            StartedAtUtc = now,
+            CreatedAtUtc = now,
+            UpdatedAtUtc = now,
+        });
+        await dbContext.SaveChangesAsync();
+
+        var helper = new GetWorkoutByIdQueryHelper(dbContext);
+        var result = await helper.GetAsync(workoutId, "default-user", CancellationToken.None, requireCompleted: true);
+
+        Assert.Null(result);
     }
 
     public async Task InitializeAsync()

@@ -118,3 +118,134 @@ test('history page shows error feedback when loading fails', async ({ page }) =>
     page.getByText('Unable to load workout history right now. Check your connection and try again.'),
   ).toBeVisible();
 });
+
+test('opening a history row shows completed workout detail with lifts and sets', async ({ page }) => {
+  const workoutId = `history-detail-${Date.now()}`;
+
+  await page.route('**/api/workouts/history', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        items: [
+          {
+            id: workoutId,
+            label: 'Detail Session',
+            completedAtUtc: '2026-04-24T16:15:00Z',
+            durationDisplay: '01:15',
+            liftCount: 1,
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.route(`**/api/workouts/${workoutId}?forHistory=true`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        workout: {
+          id: workoutId,
+          status: 'Completed',
+          label: 'Detail Session',
+          startedAtUtc: '2026-04-24T15:00:00Z',
+          completedAtUtc: '2026-04-24T16:15:00Z',
+        },
+      }),
+    });
+  });
+
+  await page.route(`**/api/workouts/${workoutId}/lifts?forHistory=true`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        items: [
+          {
+            id: 'entry-1',
+            workoutId,
+            liftId: 'lift-1',
+            displayName: 'Squat',
+            addedAtUtc: '2026-04-24T15:05:00Z',
+            position: 0,
+            sets: [
+              {
+                id: 'set-1',
+                workoutLiftEntryId: 'entry-1',
+                setNumber: 1,
+                reps: 5,
+                weight: 225,
+                createdAtUtc: '2026-04-24T15:07:00Z',
+                updatedAtUtc: '2026-04-24T15:07:00Z',
+              },
+              {
+                id: 'set-2',
+                workoutLiftEntryId: 'entry-1',
+                setNumber: 2,
+                reps: 5,
+                weight: null,
+                createdAtUtc: '2026-04-24T15:11:00Z',
+                updatedAtUtc: '2026-04-24T15:11:00Z',
+              },
+            ],
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.goto('/history');
+  await page.getByTestId(`history-item-link-${workoutId}`).click();
+
+  await expect(page).toHaveURL(new RegExp(`/history/${workoutId}$`));
+  await expect(page.getByText('Detail Session')).toBeVisible();
+  await expect(page.getByTestId('history-workout-detail-duration')).toContainText('Duration 01:15');
+  await expect(page.getByText('Squat')).toBeVisible();
+  await expect(page.getByText('225 lb')).toBeVisible();
+  await expect(page.getByRole('cell', { name: '-' })).toBeVisible();
+});
+
+test('history detail shows actionable feedback when selected workout is unavailable', async ({ page }) => {
+  const workoutId = `history-missing-${Date.now()}`;
+
+  await page.route('**/api/workouts/history', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        items: [
+          {
+            id: workoutId,
+            label: 'Missing Session',
+            completedAtUtc: '2026-04-24T17:15:00Z',
+            durationDisplay: '00:30',
+            liftCount: 1,
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.route(`**/api/workouts/${workoutId}?forHistory=true`, async (route) => {
+    await route.fulfill({
+      status: 404,
+      contentType: 'application/json',
+      body: JSON.stringify({ title: 'Workout not found', status: 404 }),
+    });
+  });
+
+  await page.route(`**/api/workouts/${workoutId}/lifts?forHistory=true`, async (route) => {
+    await route.fulfill({
+      status: 404,
+      contentType: 'application/json',
+      body: JSON.stringify({ title: 'Workout not found', status: 404 }),
+    });
+  });
+
+  await page.goto('/history');
+  await page.getByTestId(`history-item-link-${workoutId}`).click();
+
+  await expect(page.getByText('This completed workout is no longer available')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Back to history' })).toBeVisible();
+});

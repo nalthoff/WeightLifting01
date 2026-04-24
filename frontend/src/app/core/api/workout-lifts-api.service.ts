@@ -76,8 +76,9 @@ export interface DeleteWorkoutSetResponse {
 export class WorkoutLiftsApiService {
   private readonly httpClient = inject(HttpClient);
 
-  listWorkoutLifts(workoutId: string): Observable<WorkoutLiftListResponse> {
-    return this.httpClient.get<WorkoutLiftListResponse>(`/api/workouts/${workoutId}/lifts`);
+  listWorkoutLifts(workoutId: string, forHistory = false): Observable<WorkoutLiftListResponse> {
+    const suffix = forHistory ? '?forHistory=true' : '';
+    return this.httpClient.get<WorkoutLiftListResponse>(`/api/workouts/${workoutId}/lifts${suffix}`);
   }
 
   addWorkoutLift(workoutId: string, request: AddWorkoutLiftRequest): Observable<AddWorkoutLiftResponse> {

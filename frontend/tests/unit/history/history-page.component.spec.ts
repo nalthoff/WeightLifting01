@@ -14,14 +14,14 @@ describe('HistoryPageComponent', () => {
       of({
         items: [
           {
-            id: 'history-1',
+            workoutId: 'history-1',
             label: 'Leg Day',
             completedAtUtc: '2026-04-22T15:30:00Z',
             durationDisplay: '00:45',
             liftCount: 4,
           },
           {
-            id: 'history-2',
+            workoutId: 'history-2',
             label: '   ',
             completedAtUtc: '2026-04-21T11:00:00Z',
             durationDisplay: '',
@@ -38,14 +38,14 @@ describe('HistoryPageComponent', () => {
       of({
         items: [
           {
-            id: 'history-1',
+            workoutId: 'history-1',
             label: 'Leg Day',
             completedAtUtc: '2026-04-22T15:30:00Z',
             durationDisplay: '00:45',
             liftCount: 4,
           },
           {
-            id: 'history-2',
+            workoutId: 'history-2',
             label: '   ',
             completedAtUtc: '2026-04-21T11:00:00Z',
             durationDisplay: '',
@@ -82,6 +82,8 @@ describe('HistoryPageComponent', () => {
     expect(text).toContain('4 lifts');
     expect(text).toContain('0 lifts');
     expect(fixture.nativeElement.querySelectorAll('[data-testid="history-item-label"]').length).toBe(2);
+    const firstLink = fixture.nativeElement.querySelector('[data-testid="history-item-link-history-1"]') as HTMLAnchorElement;
+    expect(firstLink.getAttribute('href')).toContain('/history/history-1');
     expect(durations.length).toBe(2);
     expect(liftCounts.length).toBe(2);
   });

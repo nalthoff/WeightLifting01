@@ -35,7 +35,9 @@ export interface DeleteWorkoutResponse {
 }
 
 export interface WorkoutHistorySummary {
-  id: string;
+  workoutId?: string;
+  // Backward-compatible alias in case older payloads still return `id`.
+  id?: string;
   label?: string | null;
   completedAtUtc: string;
   durationDisplay: string;
@@ -62,8 +64,9 @@ export class WorkoutsApiService {
     return this.httpClient.post<StartWorkoutCreatedResponse>('/api/workouts', request);
   }
 
-  getWorkout(workoutId: string): Observable<GetWorkoutResponse> {
-    return this.httpClient.get<GetWorkoutResponse>(`/api/workouts/${workoutId}`);
+  getWorkout(workoutId: string, forHistory = false): Observable<GetWorkoutResponse> {
+    const suffix = forHistory ? '?forHistory=true' : '';
+    return this.httpClient.get<GetWorkoutResponse>(`/api/workouts/${workoutId}${suffix}`);
   }
 
   getActiveWorkoutSummary(): Observable<GetActiveWorkoutSummaryResponse> {

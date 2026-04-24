@@ -6,7 +6,11 @@ namespace WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
 
 public sealed class GetWorkoutByIdQueryHelper(WeightLiftingDbContext dbContext)
 {
-    public async Task<Workout?> GetAsync(Guid workoutId, string userId, CancellationToken cancellationToken)
+    public async Task<Workout?> GetAsync(
+        Guid workoutId,
+        string userId,
+        CancellationToken cancellationToken,
+        bool requireCompleted = false)
     {
         var workoutEntity = await dbContext.Workouts
             .AsNoTracking()
@@ -15,6 +19,11 @@ public sealed class GetWorkoutByIdQueryHelper(WeightLiftingDbContext dbContext)
                 cancellationToken);
 
         if (workoutEntity is null)
+        {
+            return null;
+        }
+
+        if (requireCompleted && workoutEntity.Status != WorkoutStatus.Completed)
         {
             return null;
         }

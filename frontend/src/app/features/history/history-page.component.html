@@ -25,17 +25,23 @@
 
       <ul *ngIf="completedWorkouts().length > 0" class="history-page__list" data-testid="history-list">
         <li *ngFor="let workout of completedWorkouts(); trackBy: trackWorkout" class="history-page__list-item">
-          <div class="history-page__item-label" data-testid="history-item-label">
-            {{ getDisplayLabel(workout) }}
-          </div>
-          <div class="history-page__item-date" data-testid="history-item-date">
-            Completed {{ workout.completedAtUtc | date: 'medium' }}
-          </div>
-          <div class="history-page__item-summary" data-testid="history-item-summary">
-            <span data-testid="history-item-duration">Duration {{ getDurationDisplay(workout) }}</span>
-            <span aria-hidden="true">•</span>
-            <span data-testid="history-item-lift-count">{{ getLiftCountDisplay(workout) }}</span>
-          </div>
+          <a
+            class="history-page__item-link"
+            [routerLink]="['/history', getWorkoutId(workout)]"
+            [attr.data-testid]="'history-item-link-' + getWorkoutId(workout)"
+          >
+            <div class="history-page__item-label" data-testid="history-item-label">
+              {{ getDisplayLabel(workout) }}
+            </div>
+            <div class="history-page__item-date" data-testid="history-item-date">
+              Completed {{ workout.completedAtUtc | date: 'medium' }}
+            </div>
+            <div class="history-page__item-summary" data-testid="history-item-summary">
+              <span data-testid="history-item-duration">Duration {{ getDurationDisplay(workout) }}</span>
+              <span aria-hidden="true">•</span>
+              <span data-testid="history-item-lift-count">{{ getLiftCountDisplay(workout) }}</span>
+            </div>
+          </a>
         </li>
       </ul>
     </mat-card-content>

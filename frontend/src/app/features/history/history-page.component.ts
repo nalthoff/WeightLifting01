@@ -27,7 +27,11 @@ export class HistoryPageComponent {
   }
 
   trackWorkout(_index: number, workout: WorkoutHistorySummary): string {
-    return workout.id;
+    return workout.workoutId ?? workout.id ?? '';
+  }
+
+  getWorkoutId(workout: WorkoutHistorySummary): string {
+    return workout.workoutId ?? workout.id ?? '';
   }
 
   getDisplayLabel(workout: WorkoutHistorySummary): string {

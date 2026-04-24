@@ -61,9 +61,14 @@ public sealed class WorkoutsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetWorkoutResponse>> GetWorkout(
         Guid workoutId,
+        [FromQuery] bool forHistory = false,
         CancellationToken cancellationToken = default)
     {
-        var workout = await getWorkoutByIdQueryHelper.GetAsync(workoutId, DefaultUserId, cancellationToken);
+        var workout = await getWorkoutByIdQueryHelper.GetAsync(
+            workoutId,
+            DefaultUserId,
+            cancellationToken,
+            requireCompleted: forHistory);
         if (workout is null)
         {
             return NotFound(new
@@ -228,11 +233,15 @@ public sealed class WorkoutsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WorkoutLiftListResponse>> ListWorkoutLifts(
         Guid workoutId,
+        [FromQuery] bool forHistory = false,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var workoutLifts = await listWorkoutLiftsQueryHelper.GetAsync(workoutId, cancellationToken);
+            var workoutLifts = await listWorkoutLiftsQueryHelper.GetAsync(
+                workoutId,
+                cancellationToken,
+                requireCompleted: forHistory);
             return Ok(new WorkoutLiftListResponse
             {
                 Items = workoutLifts.Select(ToWorkoutLiftEntryResponse).ToList(),
