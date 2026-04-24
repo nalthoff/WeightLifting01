@@ -28,6 +28,15 @@
       <button
         type="button"
         mat-menu-item
+        data-testid="active-workout-rename"
+        (click)="beginRenameWorkout()"
+      >
+        <mat-icon>edit</mat-icon>
+        <span>Rename Workout</span>
+      </button>
+      <button
+        type="button"
+        mat-menu-item
         color="warn"
         data-testid="active-workout-delete"
         (click)="beginDeleteWorkout()"
@@ -40,6 +49,12 @@
     <mat-card-content *ngIf="workout() as activeWorkout; else unavailableContent" class="active-workout__content">
       <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
       <p><strong>Started:</strong> {{ activeWorkout.startedAtUtc | date: 'medium' }}</p>
+      <p *ngIf="workoutNameSuccess()" class="active-workout__feedback active-workout__feedback--success">
+        {{ workoutNameSuccess() }}
+      </p>
+      <p *ngIf="workoutNameError()" class="active-workout__feedback active-workout__feedback--error">
+        {{ workoutNameError() }}
+      </p>
 
       <p *ngIf="completeSuccessMessage()" class="active-workout__feedback active-workout__feedback--success">
         {{ completeSuccessMessage() }}

@@ -11,6 +11,7 @@ using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutLabel;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
 using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
@@ -29,6 +30,7 @@ public sealed class WorkoutsController(
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
     ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
+    UpdateWorkoutLabelCommandHandler updateWorkoutLabelCommandHandler,
     GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
     ListCompletedWorkoutsQueryHelper listCompletedWorkoutsQueryHelper,
@@ -122,6 +124,59 @@ public sealed class WorkoutsController(
         {
             return UnprocessableEntity(CreateLabelValidationResponse());
         }
+    }
+
+    [HttpPut("{workoutId:guid}/label")]
+    [ProducesResponseType(typeof(UpdateWorkoutLabelResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<UpdateWorkoutLabelResponse>> UpdateWorkoutLabel(
+        Guid workoutId,
+        [FromBody] UpdateWorkoutLabelRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await updateWorkoutLabelCommandHandler.HandleAsync(
+            new UpdateWorkoutLabelCommand
+            {
+                WorkoutId = workoutId,
+                Label = request?.Label,
+            },
+            cancellationToken);
+
+        if (result.Outcome == UpdateWorkoutLabelOutcome.NotFound)
+        {
+            return NotFound(new
+            {
+                title = "Workout not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+
+        if (result.Outcome == UpdateWorkoutLabelOutcome.Conflict)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot edit name",
+                status = StatusCodes.Status409Conflict,
+                errors = result.Errors,
+            });
+        }
+
+        if (result.Outcome == UpdateWorkoutLabelOutcome.ValidationFailed)
+        {
+            return UnprocessableEntity(new
+            {
+                title = "Validation failed",
+                status = StatusCodes.Status422UnprocessableEntity,
+                errors = result.Errors,
+            });
+        }
+
+        return Ok(new UpdateWorkoutLabelResponse
+        {
+            Workout = ToWorkoutSummary(result.Workout!),
+        });
     }
 
     [HttpPost("{workoutId:guid}/complete")]

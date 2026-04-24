@@ -34,6 +34,14 @@ export interface DeleteWorkoutResponse {
   workoutId: string;
 }
 
+export interface UpdateWorkoutLabelRequest {
+  label?: string | null;
+}
+
+export interface UpdateWorkoutLabelResponse {
+  workout: WorkoutSessionSummary;
+}
+
 export interface WorkoutHistorySummary {
   workoutId?: string;
   // Backward-compatible alias in case older payloads still return `id`.
@@ -79,6 +87,10 @@ export class WorkoutsApiService {
 
   deleteWorkout(workoutId: string): Observable<DeleteWorkoutResponse> {
     return this.httpClient.delete<DeleteWorkoutResponse>(`/api/workouts/${workoutId}`);
+  }
+
+  updateWorkoutLabel(workoutId: string, request: UpdateWorkoutLabelRequest): Observable<UpdateWorkoutLabelResponse> {
+    return this.httpClient.put<UpdateWorkoutLabelResponse>(`/api/workouts/${workoutId}/label`, request);
   }
 
   getWorkoutHistory(): Observable<GetWorkoutHistoryResponse> {

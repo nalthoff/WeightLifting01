@@ -56,3 +56,11 @@ Validate that workout naming remains optional, editable during active sessions, 
 - Backend contract tests for request/response shape and status code behavior of name update endpoint.
 - Frontend unit tests for active-workout naming state and post-completion read-only behavior.
 - Frontend e2e tests for optional naming across add/edit/clear/complete/history fallback paths.
+
+## Verification Notes
+
+- 2026-04-24: Backend unit tests for rename handler passed (`5/5`) via `dotnet test --filter UpdateWorkoutLabelCommandHandlerTests`.
+- 2026-04-24: Backend integration tests for rename lifecycle and completion compatibility passed (`3/3`) via `dotnet test --filter UpdateWorkoutLabelIntegrationTests`.
+- 2026-04-24: Backend contract tests for workout label endpoint passed (`4/4`) via `dotnet test --filter WorkoutLabelApiContractTests`.
+- 2026-04-24: Frontend Angular unit suite passed (`33/33`) via `npx ng test --watch=false --browsers=ChromeHeadless`.
+- 2026-04-24: New Playwright rename scenarios passed (`3/3`) via targeted `npx playwright test` commands.

@@ -24,6 +24,7 @@ import type {
 } from '../../core/state/workouts-store.models';
 import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
 import { WorkoutDeleteConfirmDialogComponent } from './workout-delete-confirm-dialog.component';
+import { WorkoutRenameDialogComponent } from './workout-rename-dialog.component';
 
 @Component({
   selector: 'app-active-workout-page',
@@ -55,6 +56,9 @@ export class ActiveWorkoutPageComponent {
   readonly loadError = signal<string | null>(null);
   readonly completeErrorMessage = signal<string | null>(null);
   readonly completeSuccessMessage = signal<string | null>(null);
+  readonly workoutNameError = signal<string | null>(null);
+  readonly workoutNameSuccess = signal<string | null>(null);
+  readonly isSavingWorkoutName = signal(false);
   readonly deleteWorkoutSession = signal<WorkoutDeleteSession | null>(null);
   readonly deleteErrorMessage = signal<string | null>(null);
   readonly deleteSuccessMessage = signal<string | null>(null);
@@ -154,6 +158,80 @@ export class ActiveWorkoutPageComponent {
 
           this.completeErrorMessage.set('Unable to complete workout. Check your connection and try again.');
           this.refreshActiveWorkoutState();
+        },
+      });
+  }
+
+  canEditWorkoutName(): boolean {
+    return this.workout()?.status === 'InProgress';
+  }
+
+  beginRenameWorkout(): void {
+    const workout = this.workout();
+    if (!workout || !this.canEditWorkoutName() || this.isSavingWorkoutName()) {
+      return;
+    }
+
+    this.workoutNameError.set(null);
+    this.workoutNameSuccess.set(null);
+
+    this.dialog
+      .open(WorkoutRenameDialogComponent, {
+        autoFocus: false,
+        data: {
+          initialLabel: workout.label ?? '',
+        },
+      })
+      .afterClosed()
+      .subscribe((label: string | undefined) => {
+        if (typeof label !== 'string') {
+          return;
+        }
+
+        this.saveWorkoutName(label);
+      });
+  }
+
+  private saveWorkoutName(label: string): void {
+    const workout = this.workout();
+    if (!workout || !this.canEditWorkoutName() || this.isSavingWorkoutName()) {
+      return;
+    }
+
+    this.isSavingWorkoutName.set(true);
+    this.workoutNameError.set(null);
+    this.workoutNameSuccess.set(null);
+
+    this.workoutsApiService
+      .updateWorkoutLabel(workout.id, {
+        label,
+      })
+      .pipe(finalize(() => this.isSavingWorkoutName.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.workoutsStoreService.reconcileActiveWorkout(response.workout);
+          this.workoutNameError.set(null);
+          this.workoutNameSuccess.set(response.workout.label ? 'Workout name saved.' : 'Workout name cleared.');
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.workoutNameError.set('This workout no longer exists. Refresh and try again.');
+            this.refreshActiveWorkoutState();
+            return;
+          }
+
+          if (error.status === 409) {
+            this.workoutNameError.set(error.error?.title ?? 'Only in-progress workouts can edit name.');
+            this.refreshActiveWorkoutState();
+            return;
+          }
+
+          if (error.status === 422) {
+            this.workoutNameError.set(error.error?.errors?.label?.[0] ?? 'Workout name is invalid.');
+            return;
+          }
+
+          this.workoutNameError.set('Workout name was not saved. Check your connection and try again.');
         },
       });
   }
@@ -744,6 +822,8 @@ export class ActiveWorkoutPageComponent {
       .subscribe({
         next: (response) => {
           this.workoutsStoreService.setActiveWorkout(response.workout);
+          this.workoutNameError.set(null);
+          this.workoutNameSuccess.set(null);
           this.loadWorkoutLifts(response.workout.id);
           this.isLoadingWorkout.set(false);
         },

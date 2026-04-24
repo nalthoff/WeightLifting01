@@ -11,6 +11,7 @@ using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutLabel;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
@@ -53,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<GetInProgressWorkoutQueryHelper>();
         services.AddScoped<GetActiveWorkoutSummaryQueryHelper>();
         services.AddScoped<StartWorkoutCommandHandler>();
+        services.AddScoped<UpdateWorkoutLabelCommandHandler>();
         services.AddScoped<CompleteWorkoutCommandHandler>();
         services.AddScoped<AddWorkoutLiftCommandHandler>();
         services.AddScoped<AddWorkoutSetCommandHandler>();
