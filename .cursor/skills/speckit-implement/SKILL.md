@@ -145,7 +145,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 6. Execute implementation following the task plan:
    - **Phase-by-phase execution**: Complete each phase before moving to the next
-   - **Respect dependencies**: Run sequential tasks in order; for every dependency-safe set of parallel tasks `[P]`, execute them concurrently using as many subagents as possible (one subagent per independent task when feasible)
+   - **Respect dependencies**: Run sequential tasks in order. For every dependency-safe runnable set of parallel tasks `[P]`, you MUST execute them concurrently with maximum safe fan-out (launch one subagent per independent task unless blocked by a safety constraint)
    - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding
@@ -157,17 +157,18 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Integration work**: Database connections, middleware, logging, external services
    - **Polish and validation**: Unit tests, performance optimization, documentation
    - **Agent orchestration (mandatory)**:
-     - Build dependency-aware execution waves and re-evaluate runnable tasks after each wave completes
-     - For each wave, dispatch the maximum safe concurrency: launch one subagent per independent task whenever possible
-     - Treat tasks as independent only when they do not overlap on files/symbols and do not violate declared dependencies
-     - If only one task is currently runnable, execute it and immediately re-scan for the next parallel wave
-     - If conflicts are detected mid-wave, split into smaller safe batches and continue with maximum feasible parallelism
+     - You MUST use dependency-aware execution waves and re-evaluate runnable tasks immediately after each wave completes
+     - For each wave, you MUST dispatch the maximum safe concurrency: launch one subagent per independent task
+     - A task is independent only if it has no unmet dependency, no same-file edit collision, no same-symbol ownership collision, and no exclusive resource lock conflict
+     - If only one task is runnable, execute it, then immediately re-scan to form the next wave
+     - If conflicts are detected, split work into smaller safe batches and continue with maximum feasible fan-out
 
 8. Progress tracking and error handling:
    - Report progress after each completed task and after each parallel wave
-   - For each parallel wave, list dispatched tasks/subagents and summarize success/failure outcomes before starting the next wave
+   - For each parallel wave, you MUST report: wave ID, dispatched task IDs, subagent count launched, and succeeded/failed/skipped outcomes with reasons
    - Halt execution if any non-parallel task fails
    - For parallel tasks [P], continue with successful tasks, report failed ones
+   - If fan-out is reduced or work is serialized, explicitly report the blocking safety constraint (dependency, file collision, symbol collision, or resource lock)
    - Provide clear error messages with context for debugging
    - Suggest next steps if implementation cannot proceed
    - **IMPORTANT** For completed tasks, make sure to mark the task off as [X] in the tasks file.
