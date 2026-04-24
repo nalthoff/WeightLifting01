@@ -145,7 +145,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 6. Execute implementation following the task plan:
    - **Phase-by-phase execution**: Complete each phase before moving to the next
-   - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together  
+   - **Respect dependencies**: Run sequential tasks in order; for every dependency-safe set of parallel tasks `[P]`, execute them concurrently using as many subagents as possible (one subagent per independent task when feasible)
    - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
    - **File-based coordination**: Tasks affecting the same files must run sequentially
    - **Validation checkpoints**: Verify each phase completion before proceeding
@@ -156,9 +156,16 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Core development**: Implement models, services, CLI commands, endpoints
    - **Integration work**: Database connections, middleware, logging, external services
    - **Polish and validation**: Unit tests, performance optimization, documentation
+   - **Agent orchestration (mandatory)**:
+     - Build dependency-aware execution waves and re-evaluate runnable tasks after each wave completes
+     - For each wave, dispatch the maximum safe concurrency: launch one subagent per independent task whenever possible
+     - Treat tasks as independent only when they do not overlap on files/symbols and do not violate declared dependencies
+     - If only one task is currently runnable, execute it and immediately re-scan for the next parallel wave
+     - If conflicts are detected mid-wave, split into smaller safe batches and continue with maximum feasible parallelism
 
 8. Progress tracking and error handling:
-   - Report progress after each completed task
+   - Report progress after each completed task and after each parallel wave
+   - For each parallel wave, list dispatched tasks/subagents and summarize success/failure outcomes before starting the next wave
    - Halt execution if any non-parallel task fails
    - For parallel tasks [P], continue with successful tasks, report failed ones
    - Provide clear error messages with context for debugging
