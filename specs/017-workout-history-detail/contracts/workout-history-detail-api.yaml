@@ -1,0 +1,192 @@
+openapi: 3.0.3
+info:
+  title: Workout History Detail API
+  version: 0.1.0
+  description: |
+    Contract usage for opening a completed workout from history and rendering a read-only detail view.
+paths:
+  /api/workouts/history:
+    get:
+      summary: List completed workouts for history selection
+      operationId: listCompletedWorkoutHistory
+      responses:
+        '200':
+          description: Completed workouts in newest-first order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutHistoryResponse'
+  /api/workouts/{workoutId}:
+    get:
+      summary: Get workout summary metadata by id
+      operationId: getWorkoutById
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout summary returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/workouts/{workoutId}/lifts:
+    get:
+      summary: List lift entries and set rows for a workout
+      operationId: listWorkoutLifts
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout lift entries returned in stored order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutLiftListResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    WorkoutHistoryResponse:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutHistoryItem'
+    WorkoutHistoryItem:
+      type: object
+      additionalProperties: false
+      required: [workoutId, label, completedAtUtc, durationDisplay, liftCount]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        label:
+          type: string
+        completedAtUtc:
+          type: string
+          format: date-time
+        durationDisplay:
+          type: string
+        liftCount:
+          type: integer
+          minimum: 0
+    GetWorkoutResponse:
+      type: object
+      additionalProperties: false
+      required: [workout]
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    WorkoutSessionSummary:
+      type: object
+      additionalProperties: false
+      required: [id, status, startedAtUtc]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress, Completed]
+        label:
+          type: string
+          nullable: true
+        startedAtUtc:
+          type: string
+          format: date-time
+        completedAtUtc:
+          type: string
+          format: date-time
+          nullable: true
+    WorkoutLiftListResponse:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutLiftEntry'
+    WorkoutLiftEntry:
+      type: object
+      additionalProperties: false
+      required: [id, workoutId, liftId, displayName, addedAtUtc, position, sets]
+      properties:
+        id:
+          type: string
+          format: uuid
+        workoutId:
+          type: string
+          format: uuid
+        liftId:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        addedAtUtc:
+          type: string
+          format: date-time
+        position:
+          type: integer
+          minimum: 0
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutSetEntry'
+    WorkoutSetEntry:
+      type: object
+      additionalProperties: false
+      required: [id, workoutLiftEntryId, setNumber, reps, createdAtUtc, updatedAtUtc]
+      properties:
+        id:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        setNumber:
+          type: integer
+          minimum: 1
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+        createdAtUtc:
+          type: string
+          format: date-time
+        updatedAtUtc:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
