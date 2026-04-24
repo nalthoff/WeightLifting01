@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
+using WeightLifting.Api.Infrastructure.Persistence.Lifts;
 using WeightLifting.Api.Infrastructure.Persistence.Workouts;
 
 namespace WeightLifting.Api.IntegrationTests.Workouts;
@@ -62,6 +63,62 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
                 CreatedAtUtc = start.AddHours(-3),
                 UpdatedAtUtc = start.AddHours(-2),
             });
+        var olderLiftId = Guid.NewGuid();
+        var newerLiftId1 = Guid.NewGuid();
+        var newerLiftId2 = Guid.NewGuid();
+        dbContext.Lifts.AddRange(
+            new LiftEntity
+            {
+                Id = olderLiftId,
+                Name = "Deadlift",
+                NameNormalized = "deadlift",
+                IsActive = true,
+                CreatedAtUtc = start.AddDays(-1),
+            },
+            new LiftEntity
+            {
+                Id = newerLiftId1,
+                Name = "Squat",
+                NameNormalized = "squat",
+                IsActive = true,
+                CreatedAtUtc = start.AddDays(-1),
+            },
+            new LiftEntity
+            {
+                Id = newerLiftId2,
+                Name = "Bench Press",
+                NameNormalized = "bench press",
+                IsActive = true,
+                CreatedAtUtc = start.AddDays(-1),
+            });
+        dbContext.WorkoutLiftEntries.AddRange(
+            new WorkoutLiftEntryEntity
+            {
+                Id = Guid.NewGuid(),
+                WorkoutId = olderWorkoutId,
+                LiftId = olderLiftId,
+                DisplayName = "Deadlift",
+                AddedAtUtc = start.AddHours(-2),
+                Position = 0,
+            },
+            new WorkoutLiftEntryEntity
+            {
+                Id = Guid.NewGuid(),
+                WorkoutId = newestWorkoutId,
+                LiftId = newerLiftId1,
+                DisplayName = "Squat",
+                AddedAtUtc = start.AddMinutes(-40),
+                Position = 0,
+            },
+            new WorkoutLiftEntryEntity
+            {
+                Id = Guid.NewGuid(),
+                WorkoutId = newestWorkoutId,
+                LiftId = newerLiftId2,
+                DisplayName = "Bench",
+                AddedAtUtc = start.AddMinutes(-35),
+                Position = 1,
+            });
         await dbContext.SaveChangesAsync();
 
         var helper = new ListCompletedWorkoutsQueryHelper(dbContext);
@@ -71,9 +128,13 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
         Assert.Equal(newestWorkoutId, result[0].WorkoutId);
         Assert.Null(result[0].Label);
         Assert.Equal(start.AddMinutes(-15), result[0].CompletedAtUtc);
+        Assert.Equal("00:30", result[0].DurationDisplay);
+        Assert.Equal(2, result[0].LiftCount);
         Assert.Equal(olderWorkoutId, result[1].WorkoutId);
         Assert.Equal("Older workout", result[1].Label);
         Assert.Equal(start.AddHours(-1), result[1].CompletedAtUtc);
+        Assert.Equal("01:00", result[1].DurationDisplay);
+        Assert.Equal(1, result[1].LiftCount);
     }
 
     public async Task InitializeAsync()

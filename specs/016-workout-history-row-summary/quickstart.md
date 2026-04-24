@@ -45,3 +45,8 @@ Validate that Workout History keeps existing behavior and now shows label, compl
 - Backend contract tests for updated `GET /api/workouts/history` response schema.
 - Frontend unit tests for row field rendering and fallback handling.
 - Frontend e2e tests for history row summaries and regression states.
+
+## Verification Notes
+
+- 2026-04-24: Backend unit, integration, and contract history tests passed for new duration/lift-count behavior.
+- 2026-04-24: Frontend history unit tests and workout-history e2e suite passed, including empty/error regression scenarios.

@@ -17,9 +17,9 @@
 
 **Purpose**: Confirm current history feature touchpoints and test surfaces before implementation.
 
-- [ ] T001 Review existing history query and contract touchpoints in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`, `backend/src/WeightLifting.Api/Api/Contracts/Workouts/WorkoutHistoryItemResponse.cs`, and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T002 [P] Review history frontend rendering and API client usage in `frontend/src/app/features/history/history-page.component.ts`, `frontend/src/app/features/history/history-page.component.html`, and `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T003 [P] Review existing automated coverage for history and completion flow in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`, `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`, `frontend/tests/unit/history/history-page.component.spec.ts`, and `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [x] T001 Review existing history query and contract touchpoints in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`, `backend/src/WeightLifting.Api/Api/Contracts/Workouts/WorkoutHistoryItemResponse.cs`, and `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [x] T002 [P] Review history frontend rendering and API client usage in `frontend/src/app/features/history/history-page.component.ts`, `frontend/src/app/features/history/history-page.component.html`, and `frontend/src/app/core/api/workouts-api.service.ts`
+- [x] T003 [P] Review existing automated coverage for history and completion flow in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`, `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`, `frontend/tests/unit/history/history-page.component.spec.ts`, and `frontend/tests/e2e/workouts/workout-history.spec.ts`
 
 ---
 
@@ -29,10 +29,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 Extend backend history contract DTO with duration and lift count fields in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/WorkoutHistoryItemResponse.cs`
-- [ ] T005 [P] Extend backend query projection model for row summary fields in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/CompletedWorkoutHistoryItem.cs`
-- [ ] T006 [P] Extend frontend history API DTO for duration and lift count fields in `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T007 [P] Update history API contract documentation in `specs/016-workout-history-row-summary/contracts/workout-history-summary-api.yaml`
+- [x] T004 Extend backend history contract DTO with duration and lift count fields in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/WorkoutHistoryItemResponse.cs`
+- [x] T005 [P] Extend backend query projection model for row summary fields in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/CompletedWorkoutHistoryItem.cs`
+- [x] T006 [P] Extend frontend history API DTO for duration and lift count fields in `frontend/src/app/core/api/workouts-api.service.ts`
+- [x] T007 [P] Update history API contract documentation in `specs/016-workout-history-row-summary/contracts/workout-history-summary-api.yaml`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin.
 
@@ -46,18 +46,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Add backend unit tests for duration formatting, invalid timestamp fallback, and lift-count derivation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelperTests.cs`
-- [ ] T009 [P] [US1] Add backend integration tests for completed-only recency ordering and summary fields in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
-- [ ] T010 [P] [US1] Add backend contract tests for enriched `GET /api/workouts/history` response shape in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
-- [ ] T011 [P] [US1] Add frontend unit tests for duration/lift-count row rendering in `frontend/tests/unit/history/history-page.component.spec.ts`
-- [ ] T012 [P] [US1] Add e2e coverage for enriched history rows in `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [x] T008 [P] [US1] Add backend unit tests for duration formatting, invalid timestamp fallback, and lift-count derivation in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelperTests.cs`
+- [x] T009 [P] [US1] Add backend integration tests for completed-only recency ordering and summary fields in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
+- [x] T010 [P] [US1] Add backend contract tests for enriched `GET /api/workouts/history` response shape in `backend/tests/WeightLifting.Api.ContractTests/Workouts/WorkoutsApiContractTests.cs`
+- [x] T011 [P] [US1] Add frontend unit tests for duration/lift-count row rendering in `frontend/tests/unit/history/history-page.component.spec.ts`
+- [x] T012 [P] [US1] Add e2e coverage for enriched history rows in `frontend/tests/e2e/workouts/workout-history.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement history query logic for duration calculation, safe fallback, and lift count in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
-- [ ] T014 [US1] Map enriched history query fields in API response mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T015 [US1] Update frontend history page state handling for duration and lift count fields in `frontend/src/app/features/history/history-page.component.ts`
-- [ ] T016 [US1] Render duration and lift-count metadata in each history row in `frontend/src/app/features/history/history-page.component.html` and `frontend/src/app/features/history/history-page.component.scss`
+- [x] T013 [US1] Implement history query logic for duration calculation, safe fallback, and lift count in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
+- [x] T014 [US1] Map enriched history query fields in API response mapping in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [x] T015 [US1] Update frontend history page state handling for duration and lift count fields in `frontend/src/app/features/history/history-page.component.ts`
+- [x] T016 [US1] Render duration and lift-count metadata in each history row in `frontend/src/app/features/history/history-page.component.html` and `frontend/src/app/features/history/history-page.component.scss`
 
 **Checkpoint**: US1 is fully functional and testable independently.
 
@@ -71,15 +71,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Add frontend unit regression tests for empty and load-error states with enhanced row model in `frontend/tests/unit/history/history-page.component.spec.ts`
-- [ ] T018 [P] [US2] Add e2e regression checks for history route and state behavior in `frontend/tests/e2e/workouts/workout-history.spec.ts`
-- [ ] T019 [P] [US2] Add backend integration regression assertions for completed-only filtering and stable ordering in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
+- [x] T017 [P] [US2] Add frontend unit regression tests for empty and load-error states with enhanced row model in `frontend/tests/unit/history/history-page.component.spec.ts`
+- [x] T018 [P] [US2] Add e2e regression checks for history route and state behavior in `frontend/tests/e2e/workouts/workout-history.spec.ts`
+- [x] T019 [P] [US2] Add backend integration regression assertions for completed-only filtering and stable ordering in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryIntegrationTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Preserve and verify history route wiring with no navigation regressions in `frontend/src/app/app.routes.ts`, `frontend/src/app/app.html`, and `frontend/src/app/features/history/history.routes.ts`
-- [ ] T021 [US2] Preserve existing history page loading/empty/error behavior while integrating enriched rows in `frontend/src/app/features/history/history-page.component.ts` and `frontend/src/app/features/history/history-page.component.html`
-- [ ] T022 [US2] Preserve completed-only and recency query semantics while adding enriched projection fields in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
+- [x] T020 [US2] Preserve and verify history route wiring with no navigation regressions in `frontend/src/app/app.routes.ts`, `frontend/src/app/app.html`, and `frontend/src/app/features/history/history.routes.ts`
+- [x] T021 [US2] Preserve existing history page loading/empty/error behavior while integrating enriched rows in `frontend/src/app/features/history/history-page.component.ts` and `frontend/src/app/features/history/history-page.component.html`
+- [x] T022 [US2] Preserve completed-only and recency query semantics while adding enriched projection fields in `backend/src/WeightLifting.Api/Application/Workouts/Queries/ListCompletedWorkouts/ListCompletedWorkoutsQueryHelper.cs`
 
 **Checkpoint**: US1 and US2 are independently functional and regression-safe.
 
@@ -89,10 +89,10 @@
 
 **Purpose**: Final validation and cross-story hardening.
 
-- [ ] T023 [P] Run backend unit/integration/contract suites for history summary behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
-- [ ] T024 [P] Run frontend unit and e2e suites for history summary and regression flows in `frontend/tests/unit/history/` and `frontend/tests/e2e/workouts/`
-- [ ] T025 Validate quickstart walkthrough and update verification notes in `specs/016-workout-history-row-summary/quickstart.md`
-- [ ] T026 Validate mobile viewport readability for history row summary metadata in `frontend/src/app/features/history/history-page.component.html` and `frontend/src/app/features/history/history-page.component.scss`
+- [x] T023 [P] Run backend unit/integration/contract suites for history summary behavior in `backend/tests/WeightLifting.Api.UnitTests/`, `backend/tests/WeightLifting.Api.IntegrationTests/`, and `backend/tests/WeightLifting.Api.ContractTests/`
+- [x] T024 [P] Run frontend unit and e2e suites for history summary and regression flows in `frontend/tests/unit/history/` and `frontend/tests/e2e/workouts/`
+- [x] T025 Validate quickstart walkthrough and update verification notes in `specs/016-workout-history-row-summary/quickstart.md`
+- [x] T026 Validate mobile viewport readability for history row summary metadata in `frontend/src/app/features/history/history-page.component.html` and `frontend/src/app/features/history/history-page.component.scss`
 
 ---
 

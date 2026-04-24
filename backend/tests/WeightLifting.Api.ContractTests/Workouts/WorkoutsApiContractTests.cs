@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using WeightLifting.Api.ContractTests;
 using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
+using WeightLifting.Api.Infrastructure.Persistence.Lifts;
+using WeightLifting.Api.Infrastructure.Persistence.Workouts;
 
 namespace WeightLifting.Api.ContractTests.Workouts;
 
@@ -302,6 +304,51 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         var secondPayload = await secondCreate.Content.ReadFromJsonAsync<StartWorkoutCreatedResponse>(JsonOptions);
         Assert.NotNull(secondPayload);
 
+        using (var scope = factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<WeightLiftingDbContext>();
+            var now = DateTime.UtcNow;
+            var squatLiftId = Guid.NewGuid();
+            var benchLiftId = Guid.NewGuid();
+            dbContext.Lifts.AddRange(
+                new LiftEntity
+                {
+                    Id = squatLiftId,
+                    Name = "Squat",
+                    NameNormalized = "squat",
+                    IsActive = true,
+                    CreatedAtUtc = now,
+                },
+                new LiftEntity
+                {
+                    Id = benchLiftId,
+                    Name = "Bench Press",
+                    NameNormalized = "bench press",
+                    IsActive = true,
+                    CreatedAtUtc = now,
+                });
+            dbContext.WorkoutLiftEntries.AddRange(
+                new WorkoutLiftEntryEntity
+                {
+                    Id = Guid.NewGuid(),
+                    WorkoutId = secondPayload.Workout.Id,
+                    LiftId = squatLiftId,
+                    DisplayName = "Squat",
+                    AddedAtUtc = now,
+                    Position = 0,
+                },
+                new WorkoutLiftEntryEntity
+                {
+                    Id = Guid.NewGuid(),
+                    WorkoutId = secondPayload.Workout.Id,
+                    LiftId = benchLiftId,
+                    DisplayName = "Bench",
+                    AddedAtUtc = now,
+                    Position = 1,
+                });
+            await dbContext.SaveChangesAsync();
+        }
+
         var secondComplete = await client.PostAsync($"/api/workouts/{secondPayload.Workout.Id}/complete", null);
         Assert.Equal(HttpStatusCode.OK, secondComplete.StatusCode);
 
@@ -313,8 +360,12 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         Assert.Equal(2, payload.Items.Count);
         Assert.Equal(secondPayload.Workout.Id, payload.Items[0].WorkoutId);
         Assert.Equal("Workout", payload.Items[0].Label);
+        Assert.Matches("^[0-9]{2}:[0-9]{2}$", payload.Items[0].DurationDisplay);
+        Assert.Equal(2, payload.Items[0].LiftCount);
         Assert.Equal(firstPayload.Workout.Id, payload.Items[1].WorkoutId);
         Assert.Equal("First complete", payload.Items[1].Label);
+        Assert.Matches("^[0-9]{2}:[0-9]{2}$", payload.Items[1].DurationDisplay);
+        Assert.Equal(0, payload.Items[1].LiftCount);
         Assert.True(payload.Items[0].CompletedAtUtc >= payload.Items[1].CompletedAtUtc);
     }
 
@@ -404,5 +455,9 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         public required string Label { get; init; }
 
         public required DateTime CompletedAtUtc { get; init; }
+
+        public required string DurationDisplay { get; init; }
+
+        public required int LiftCount { get; init; }
     }
 }

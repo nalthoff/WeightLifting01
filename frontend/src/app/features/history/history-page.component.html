@@ -31,6 +31,11 @@
           <div class="history-page__item-date" data-testid="history-item-date">
             Completed {{ workout.completedAtUtc | date: 'medium' }}
           </div>
+          <div class="history-page__item-summary" data-testid="history-item-summary">
+            <span data-testid="history-item-duration">Duration {{ getDurationDisplay(workout) }}</span>
+            <span aria-hidden="true">•</span>
+            <span data-testid="history-item-lift-count">{{ getLiftCountDisplay(workout) }}</span>
+          </div>
         </li>
       </ul>
     </mat-card-content>

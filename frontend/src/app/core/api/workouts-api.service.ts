@@ -38,6 +38,8 @@ export interface WorkoutHistorySummary {
   id: string;
   label?: string | null;
   completedAtUtc: string;
+  durationDisplay: string;
+  liftCount: number;
 }
 
 export interface GetWorkoutHistoryResponse {

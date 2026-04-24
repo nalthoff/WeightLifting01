@@ -38,6 +38,14 @@
   font-size: 0.95rem;
 }
 
+.history-page__item-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  color: var(--app-text-muted);
+  font-size: 0.9rem;
+}
+
 .history-page__feedback {
   margin: 0;
 }

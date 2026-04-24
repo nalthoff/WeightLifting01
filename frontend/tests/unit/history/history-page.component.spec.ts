@@ -17,11 +17,15 @@ describe('HistoryPageComponent', () => {
             id: 'history-1',
             label: 'Leg Day',
             completedAtUtc: '2026-04-22T15:30:00Z',
+            durationDisplay: '00:45',
+            liftCount: 4,
           },
           {
             id: 'history-2',
             label: '   ',
             completedAtUtc: '2026-04-21T11:00:00Z',
+            durationDisplay: '',
+            liftCount: 0,
           },
         ],
       }),
@@ -37,11 +41,15 @@ describe('HistoryPageComponent', () => {
             id: 'history-1',
             label: 'Leg Day',
             completedAtUtc: '2026-04-22T15:30:00Z',
+            durationDisplay: '00:45',
+            liftCount: 4,
           },
           {
             id: 'history-2',
             label: '   ',
             completedAtUtc: '2026-04-21T11:00:00Z',
+            durationDisplay: '',
+            liftCount: 0,
           },
         ],
       }),
@@ -59,15 +67,23 @@ describe('HistoryPageComponent', () => {
     fixture = TestBed.createComponent(HistoryPageComponent);
   });
 
-  it('renders completed workout labels and fallback label', () => {
+  it('renders completed workout labels and row summary metadata', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent as string;
+    const durations = fixture.nativeElement.querySelectorAll('[data-testid="history-item-duration"]');
+    const liftCounts = fixture.nativeElement.querySelectorAll('[data-testid="history-item-lift-count"]');
 
     expect(workoutsApiService.getWorkoutHistory).toHaveBeenCalled();
     expect(text).toContain('Leg Day');
     expect(text).toContain('Workout');
+    expect(text).toContain('Duration 00:45');
+    expect(text).toContain('Duration --:--');
+    expect(text).toContain('4 lifts');
+    expect(text).toContain('0 lifts');
     expect(fixture.nativeElement.querySelectorAll('[data-testid="history-item-label"]').length).toBe(2);
+    expect(durations.length).toBe(2);
+    expect(liftCounts.length).toBe(2);
   });
 
   it('renders empty feedback when history is empty', () => {
@@ -76,6 +92,19 @@ describe('HistoryPageComponent', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement.textContent as string)).toContain('No completed workouts yet.');
+  });
+
+  it('treats 404 history response as empty state', () => {
+    workoutsApiService.getWorkoutHistory.and.returnValue(
+      throwError(() => ({ status: 404 })),
+    );
+    fixture = TestBed.createComponent(HistoryPageComponent);
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('No completed workouts yet.');
+    expect(text).not.toContain('Unable to load workout history right now.');
   });
 
   it('renders load error feedback when request fails', () => {

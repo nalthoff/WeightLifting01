@@ -34,6 +34,14 @@ export class HistoryPageComponent {
     return workout.label?.trim() || 'Workout';
   }
 
+  getDurationDisplay(workout: WorkoutHistorySummary): string {
+    return workout.durationDisplay?.trim() || '--:--';
+  }
+
+  getLiftCountDisplay(workout: WorkoutHistorySummary): string {
+    return `${workout.liftCount} lifts`;
+  }
+
   private loadHistory(): void {
     this.isLoading.set(true);
     this.loadError.set(null);

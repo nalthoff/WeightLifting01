@@ -635,6 +635,8 @@ public sealed class WorkoutsController(
         WorkoutId = item.WorkoutId,
         Label = string.IsNullOrWhiteSpace(item.Label) ? "Workout" : item.Label,
         CompletedAtUtc = item.CompletedAtUtc,
+        DurationDisplay = item.DurationDisplay,
+        LiftCount = item.LiftCount,
     };
 
     private static object CreateLabelValidationResponse() => new
