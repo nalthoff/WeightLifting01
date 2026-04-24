@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: Workout Name API
+  version: 0.1.0
+  description: |
+    Contract updates for optional workout naming in the active workout lifecycle.
+paths:
+  /api/workouts:
+    post:
+      summary: Start a workout with optional initial name
+      operationId: startWorkout
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartWorkoutRequest'
+      responses:
+        '201':
+          description: Workout created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartWorkoutCreatedResponse'
+        '409':
+          description: Existing in-progress workout prevents new start
+        '422':
+          description: Validation failed
+  /api/workouts/{workoutId}/label:
+    put:
+      summary: Set, change, or clear workout name while in progress
+      operationId: updateWorkoutLabel
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkoutLabelRequest'
+      responses:
+        '200':
+          description: Workout name updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateWorkoutLabelResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in progress and cannot be renamed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: Validation failed (for example, over-length name)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/workouts/history:
+    get:
+      summary: List completed workouts with fallback label behavior
+      operationId: listWorkoutHistory
+      responses:
+        '200':
+          description: Completed workouts returned in newest-first order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutHistoryResponse'
+components:
+  schemas:
+    StartWorkoutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          nullable: true
+          description: Optional initial workout name.
+    StartWorkoutCreatedResponse:
+      type: object
+      additionalProperties: false
+      required: [workout]
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    UpdateWorkoutLabelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          nullable: true
+          description: |
+            Optional workout name. Empty or whitespace-only input is treated as no name.
+    UpdateWorkoutLabelResponse:
+      type: object
+      additionalProperties: false
+      required: [workout]
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    WorkoutHistoryResponse:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutHistoryItem'
+    WorkoutHistoryItem:
+      type: object
+      additionalProperties: false
+      required: [workoutId, label, completedAtUtc, durationDisplay, liftCount]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        label:
+          type: string
+          description: Stored workout name or fallback "Workout" when absent.
+        completedAtUtc:
+          type: string
+          format: date-time
+        durationDisplay:
+          type: string
+        liftCount:
+          type: integer
+          minimum: 0
+    WorkoutSessionSummary:
+      type: object
+      additionalProperties: false
+      required: [id, status, startedAtUtc]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress, Completed]
+        label:
+          type: string
+          nullable: true
+        startedAtUtc:
+          type: string
+          format: date-time
+        completedAtUtc:
+          type: string
+          format: date-time
+          nullable: true
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer

@@ -1,4 +1,4 @@
-﻿---
+---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
@@ -28,6 +28,7 @@ Auto-generated from all feature plans. Last updated: 2026-04-24
 - Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core (016-workout-history-row-summary)
 - SQL Server / Azure SQL-compatible relational database (existing workout tables) (016-workout-history-row-summary)
 - Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core (017-workout-history-detail)
+- SQL Server / Azure SQL-compatible relational database (existing workouts table and migrations) (018-name-workout)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -48,9 +49,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 018-name-workout: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core
 - 017-workout-history-detail: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core
 - 016-workout-history-row-summary: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core
-- 015-delete-active-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->
