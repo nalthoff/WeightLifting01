@@ -1,0 +1,70 @@
+openapi: 3.0.3
+info:
+  title: Workout History Summary API
+  version: 0.1.0
+  description: Contract for listing completed workout history rows with duration and lift count summary fields.
+paths:
+  /api/workouts/history:
+    get:
+      summary: List completed workouts with row summary metadata
+      operationId: listCompletedWorkoutHistorySummaries
+      responses:
+        '200':
+          description: Completed workouts returned in most-recent-first order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutHistoryResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    WorkoutHistoryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutHistoryItem'
+    WorkoutHistoryItem:
+      type: object
+      additionalProperties: false
+      required:
+        - workoutId
+        - label
+        - completedAtUtc
+        - durationDisplay
+        - liftCount
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        label:
+          type: string
+          description: Workout label or fallback "Workout" when label is empty.
+        completedAtUtc:
+          type: string
+          format: date-time
+        durationDisplay:
+          type: string
+          description: Workout duration formatted as HH:MM.
+          pattern: '^[0-9]{2}:[0-9]{2}$'
+        liftCount:
+          type: integer
+          minimum: 0
+          description: Number of lifts (exercises) in the completed workout.
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
