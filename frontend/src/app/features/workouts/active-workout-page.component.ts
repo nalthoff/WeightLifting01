@@ -16,6 +16,8 @@ import { LiftsApiService } from '../../core/api/lifts-api.service';
 import { WorkoutLiftsApiService } from '../../core/api/workout-lifts-api.service';
 import { WorkoutsApiService } from '../../core/api/workouts-api.service';
 import type {
+  InlineLiftHistoryPanelState,
+  LiftHistorySessionSummary,
   SetRowDeleteSession,
   SetRowEditSession,
   WorkoutDeleteSession,
@@ -79,6 +81,7 @@ export class ActiveWorkoutPageComponent {
   readonly addSetErrorByEntryId = signal<Record<string, string | null>>({});
   readonly isAddingSetByEntryId = signal<Record<string, boolean>>({});
   readonly addSetDraftByEntryId = signal<Record<string, { reps: string; weight: string }>>({});
+  readonly inlineHistoryStateByEntryId = signal<Record<string, InlineLiftHistoryPanelState>>({});
   readonly setEditSessionByKey = signal<Record<string, SetRowEditSession>>({});
   readonly setDeleteSessionByKey = signal<Record<string, SetRowDeleteSession>>({});
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
@@ -813,6 +816,67 @@ export class ActiveWorkoutPageComponent {
     return `${setEntry.weight} lb`;
   }
 
+  toggleLiftHistory(entryId: string): void {
+    const state = this.getInlineHistoryState(entryId);
+    if (state.isExpanded) {
+      this.patchInlineHistoryState(entryId, { isExpanded: false });
+      return;
+    }
+
+    this.patchInlineHistoryState(entryId, { isExpanded: true });
+    this.loadInlineLiftHistory(entryId);
+  }
+
+  isLiftHistoryExpanded(entryId: string): boolean {
+    return this.getInlineHistoryState(entryId).isExpanded;
+  }
+
+  isLiftHistoryLoading(entryId: string): boolean {
+    return this.getInlineHistoryState(entryId).isLoading;
+  }
+
+  getLiftHistoryError(entryId: string): string | null {
+    return this.getInlineHistoryState(entryId).errorMessage;
+  }
+
+  getLiftHistoryItems(entryId: string): LiftHistorySessionSummary[] {
+    return this.getInlineHistoryState(entryId).items;
+  }
+
+  getLiftHistorySummaryLines(item: LiftHistorySessionSummary): string[] {
+    if (item.sets.length === 0) {
+      return ['0 x 0 @ -'];
+    }
+
+    const setsByWeight = new Map<string, { weight: number | null; reps: number; setCount: number }>();
+    for (const setItem of item.sets) {
+      const key = setItem.weight === null ? 'bodyweight' : String(setItem.weight);
+      const existing = setsByWeight.get(key);
+      if (existing) {
+        existing.setCount += 1;
+        continue;
+      }
+
+      setsByWeight.set(key, {
+        weight: setItem.weight,
+        reps: setItem.reps,
+        setCount: 1,
+      });
+    }
+
+    return [...setsByWeight.values()].map((summary) =>
+      `${summary.setCount} x ${summary.reps} @ ${this.formatHistoryWeight(summary.weight)}`,
+    );
+  }
+
+  formatHistoryWeight(weight: number | null): string {
+    if (weight === null) {
+      return '-';
+    }
+
+    return `${weight} lb`;
+  }
+
   private ensureWorkoutLoaded(workoutId: string | null): void {
     if (!workoutId) {
       this.loadError.set('Workout ID is missing.');
@@ -1036,6 +1100,9 @@ export class ActiveWorkoutPageComponent {
     this.isAddingSetByEntryId.update((current) =>
       Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
     );
+    this.inlineHistoryStateByEntryId.update((current) =>
+      Object.fromEntries(Object.entries(current).filter(([entryId]) => allowedIds.has(entryId))),
+    );
     this.setEditSessionByKey.update((current) =>
       Object.fromEntries(
         Object.entries(current).filter(([key]) => allowedIds.has(this.extractEntryIdFromSetRowKey(key))),
@@ -1105,5 +1172,74 @@ export class ActiveWorkoutPageComponent {
     }
 
     return key.slice(0, separatorIndex);
+  }
+
+  private loadInlineLiftHistory(entryId: string): void {
+    const workoutId = this.workoutId();
+    if (!workoutId) {
+      this.patchInlineHistoryState(entryId, {
+        isLoading: false,
+        errorMessage: 'Workout ID is missing.',
+      });
+      return;
+    }
+
+    this.patchInlineHistoryState(entryId, {
+      isLoading: true,
+      errorMessage: null,
+    });
+
+    this.workoutLiftsApiService
+      .getInlineLiftHistory(workoutId, entryId)
+      .subscribe({
+        next: (response) => {
+          this.patchInlineHistoryState(entryId, {
+            isLoading: false,
+            errorMessage: null,
+            items: response.items,
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          let message = 'History is unavailable right now. Keep logging and try again.';
+          if (error.status === 404) {
+            message = 'This lift entry no longer exists. Refresh and try again.';
+          } else if (error.status === 409) {
+            message = error.error?.title ?? 'History is available only while workout entry is active.';
+          }
+
+          this.patchInlineHistoryState(entryId, {
+            isLoading: false,
+            errorMessage: message,
+            items: [],
+          });
+        },
+      });
+  }
+
+  private getInlineHistoryState(entryId: string): InlineLiftHistoryPanelState {
+    return this.inlineHistoryStateByEntryId()[entryId] ?? {
+      isExpanded: false,
+      isLoading: false,
+      errorMessage: null,
+      items: [],
+    };
+  }
+
+  private patchInlineHistoryState(entryId: string, patch: Partial<InlineLiftHistoryPanelState>): void {
+    this.inlineHistoryStateByEntryId.update((current) => {
+      const existing = current[entryId] ?? {
+        isExpanded: false,
+        isLoading: false,
+        errorMessage: null,
+        items: [],
+      };
+      return {
+        ...current,
+        [entryId]: {
+          ...existing,
+          ...patch,
+        },
+      };
+    });
   }
 }

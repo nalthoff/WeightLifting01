@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Inline Lift History API Contract
+  version: 0.1.0
+  description: |
+    Contract for retrieving recent completed session history for the exact lift shown
+    in the active workout entry screen.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/history:
+    get:
+      summary: Get recent completed history for exact lift in active workout context
+      operationId: getInlineLiftHistory
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: workoutLiftEntryId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Recent completed sessions for exact lift (up to 3)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InlineLiftHistoryResponse'
+        '404':
+          description: Workout or workout-lift entry not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout context is not valid for active-entry inline history
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    InlineLiftHistoryResponse:
+      type: object
+      required: [workoutId, workoutLiftEntryId, items]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/LiftHistorySessionSummary'
+    LiftHistorySessionSummary:
+      type: object
+      required: [workoutId, completedAtUtc, sets]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLabel:
+          type: string
+          nullable: true
+        completedAtUtc:
+          type: string
+          format: date-time
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiftHistorySetSummary'
+    LiftHistorySetSummary:
+      type: object
+      required: [setNumber, reps]
+      properties:
+        setNumber:
+          type: integer
+          minimum: 1
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+    Problem:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string

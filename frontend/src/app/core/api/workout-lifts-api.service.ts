@@ -70,6 +70,25 @@ export interface DeleteWorkoutSetResponse {
   setId: string;
 }
 
+export interface InlineLiftHistorySet {
+  setNumber: number;
+  reps: number;
+  weight: number | null;
+}
+
+export interface InlineLiftHistorySession {
+  workoutId: string;
+  workoutLabel?: string | null;
+  completedAtUtc: string;
+  sets: InlineLiftHistorySet[];
+}
+
+export interface InlineLiftHistoryResponse {
+  workoutId: string;
+  workoutLiftEntryId: string;
+  items: InlineLiftHistorySession[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -128,6 +147,12 @@ export class WorkoutLiftsApiService {
   ): Observable<DeleteWorkoutSetResponse> {
     return this.httpClient.delete<DeleteWorkoutSetResponse>(
       `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets/${setId}`,
+    );
+  }
+
+  getInlineLiftHistory(workoutId: string, workoutLiftEntryId: string): Observable<InlineLiftHistoryResponse> {
+    return this.httpClient.get<InlineLiftHistoryResponse>(
+      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/history`,
     );
   }
 }

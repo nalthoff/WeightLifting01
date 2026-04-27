@@ -249,7 +249,63 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+}
+
+.active-workout__history {
+  margin-top: -0.125rem;
+  margin-bottom: -0.125rem;
+}
+
+.active-workout__history-toggle {
+  align-self: flex-start;
+  min-height: 0;
+  line-height: 1.2;
+  padding: 0;
+}
+
+.active-workout__history-panel {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.5rem;
+  background: var(--app-info-bg);
+  padding: 0.5rem 0.625rem;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.active-workout__history-empty {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 0.875rem;
+}
+
+.active-workout__history-list,
+.active-workout__history-set-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.active-workout__history-item {
+  border: 1px solid var(--app-surface-outline);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem;
+}
+
+.active-workout__history-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.active-workout__history-set-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--app-text-muted);
 }
 
 .active-workout__set-empty {
