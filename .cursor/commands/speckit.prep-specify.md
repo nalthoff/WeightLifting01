@@ -45,17 +45,18 @@ Execution steps:
    - In-scope vs out-of-scope behavior
    - Domain entities, terminology, or data shape
    - Constraints, compatibility, or migration concerns
-   - Edge cases and failure handling
+   - Edge cases and user-visible error outcomes
    - Success criteria and measurable outcomes
+   - Product intent ("what should happen"), never implementation approach ("how to build it")
 
 4. Triage and ask only high-priority clarification questions:
    - Build an internal candidate list from the clarification map and rank by **impact x uncertainty**.
-   - Ask only questions whose answers would materially affect scope, behavior, acceptance criteria, data model, constraints, edge-case handling, or rework risk.
+   - Ask only questions whose answers would materially affect scope, behavior, acceptance criteria, user-visible outcomes, business/domain constraints, edge-case handling, or rework risk.
    - Ask **up to 5** questions total; fewer is preferred when that resolves critical ambiguity.
    - If no critical or high-priority ambiguities remain, ask **0 questions** and proceed directly to synthesis.
    - When asking questions, present them together in one response, ordered from highest impact to lowest impact.
    - Keep each question concise, specific, and directly tied to better spec quality.
-   - Avoid low-value implementation-detail questions unless they materially affect scope or behavior.
+   - Do not ask implementation-detail questions (stack, architecture, API shape, DB schema, internal status handling, UI component mechanics). Reframe every question to product behavior and user outcomes.
    - For each question, include:
      - A short question title
      - The question itself
@@ -80,7 +81,10 @@ Execution steps:
      - constraints or compatibility requirements
      - edge cases worth covering
      - measurable success criteria
-   - Avoid unnecessary implementation detail unless the user explicitly identified a technical constraint that meaningfully affects the feature.
+   - Keep the final prompt strictly product-focused: include only the "what" and "why", not the "how".
+   - Do not include technical implementation details of any kind (examples: API behavior, malformed payload handling internals, status-code parsing, database design, framework/library choices, component-level logic, algorithm choices, or system architecture).
+   - If a user mentions technical constraints, translate them into user-facing/product constraints whenever possible.
+   - If a technical constraint is truly unavoidable, state it at the highest level without implementation mechanics.
    - Resolve obvious ambiguity instead of copying vague language forward.
 
 7. Output format:
@@ -97,6 +101,7 @@ Quality bar:
 - Ask the **fewest** questions needed to resolve critical ambiguity (0 to 5 is valid).
 - If questions are asked, they should be the **highest leverage** questions, not merely the first unknowns you notice.
 - The final pasted message should read like a strong product-oriented feature brief, not like raw notes.
+- The final pasted message must avoid technical phrasing and internal-system mechanics; it should be understandable to a product stakeholder without engineering context.
 - Optimize for helping `/speckit.specify` generate a clearer spec with fewer downstream clarifications.
 
 Context for preparation: $ARGUMENTS
