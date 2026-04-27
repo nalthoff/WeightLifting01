@@ -101,6 +101,10 @@ export class ActiveWorkoutPageComponent {
 
     return this.workoutsStoreService.activeWorkoutLiftEntries();
   });
+  private readonly statusBadgeByCode: Record<string, { label: string; tone: 'progress' | 'complete' | 'unknown' }> = {
+    InProgress: { label: 'In Progress', tone: 'progress' },
+    Completed: { label: 'Completed', tone: 'complete' },
+  };
 
   constructor() {
     this.ensureWorkoutLoaded(this.workoutId());
@@ -473,6 +477,14 @@ export class ActiveWorkoutPageComponent {
 
   trackWorkoutSet(_index: number, setEntry: WorkoutSetEntry): string {
     return setEntry.id;
+  }
+
+  getWorkoutStatusBadge(status: string | null | undefined): { label: string; tone: 'progress' | 'complete' | 'unknown' } {
+    if (!status) {
+      return { label: 'Unknown', tone: 'unknown' };
+    }
+
+    return this.statusBadgeByCode[status] ?? { label: status, tone: 'unknown' };
   }
 
   getAddSetDraft(entryId: string): { reps: string; weight: string } {

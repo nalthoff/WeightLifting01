@@ -37,12 +37,17 @@ export class HistoryWorkoutDetailPageComponent {
   readonly loadError = signal<string | null>(null);
   readonly workout = signal<{
     id: string;
+    status?: string | null;
     label?: string | null;
     startedAtUtc: string;
     completedAtUtc?: string | null;
   } | null>(null);
   readonly lifts = signal<WorkoutLiftEntry[]>([]);
   readonly hasLifts = computed(() => this.lifts().length > 0);
+  private readonly statusBadgeByCode: Record<string, { label: string; tone: 'progress' | 'complete' | 'unknown' }> = {
+    InProgress: { label: 'In Progress', tone: 'progress' },
+    Completed: { label: 'Completed', tone: 'complete' },
+  };
 
   constructor() {
     this.loadWorkoutDetail();
@@ -78,6 +83,14 @@ export class HistoryWorkoutDetailPageComponent {
     }
 
     return `${weight} lb`;
+  }
+
+  getWorkoutStatusBadge(status: string | null | undefined): { label: string; tone: 'progress' | 'complete' | 'unknown' } {
+    if (!status) {
+      return { label: 'Unknown', tone: 'unknown' };
+    }
+
+    return this.statusBadgeByCode[status] ?? { label: status, tone: 'unknown' };
   }
 
   retryLoad(): void {

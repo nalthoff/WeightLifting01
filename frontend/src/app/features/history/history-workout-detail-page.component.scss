@@ -7,6 +7,43 @@
   margin: 0 auto;
 }
 
+.history-workout-detail-page__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.history-workout-detail-page__header-text {
+  min-width: 0;
+}
+
+.history-workout-detail-page__status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+}
+
+.history-workout-detail-page__status-badge--progress {
+  background: rgba(25, 118, 210, 0.2);
+}
+
+.history-workout-detail-page__status-badge--complete {
+  background: rgba(56, 142, 60, 0.24);
+}
+
+.history-workout-detail-page__status-badge--unknown {
+  background: rgba(245, 124, 0, 0.2);
+}
+
 .history-workout-detail-page__content {
   display: flex;
   flex-direction: column;
@@ -57,6 +94,11 @@
 @media (max-width: 480px) {
   .history-workout-detail-page {
     padding: 0.5rem;
+  }
+
+  .history-workout-detail-page__header-row {
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .history-workout-detail-page__lift {

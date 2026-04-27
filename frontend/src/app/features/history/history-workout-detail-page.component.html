@@ -1,8 +1,22 @@
 <section class="history-workout-detail-page">
   <mat-card class="history-workout-detail-page__panel" appearance="outlined">
     <mat-card-header>
-      <mat-card-title>{{ getWorkoutLabel() }}</mat-card-title>
-      <mat-card-subtitle>Completed workout detail</mat-card-subtitle>
+      <div class="history-workout-detail-page__header-row">
+        <div class="history-workout-detail-page__header-text">
+          <mat-card-title>{{ getWorkoutLabel() }}</mat-card-title>
+          <mat-card-subtitle>Completed workout detail</mat-card-subtitle>
+        </div>
+        <span
+          *ngIf="workout() as currentWorkout"
+          class="history-workout-detail-page__status-badge"
+          [class.history-workout-detail-page__status-badge--progress]="getWorkoutStatusBadge(currentWorkout.status).tone === 'progress'"
+          [class.history-workout-detail-page__status-badge--complete]="getWorkoutStatusBadge(currentWorkout.status).tone === 'complete'"
+          [class.history-workout-detail-page__status-badge--unknown]="getWorkoutStatusBadge(currentWorkout.status).tone === 'unknown'"
+          data-testid="history-workout-detail-status-badge"
+        >
+          {{ getWorkoutStatusBadge(currentWorkout.status).label }}
+        </span>
+      </div>
     </mat-card-header>
 
     <mat-card-content class="history-workout-detail-page__content">

@@ -89,6 +89,40 @@ public sealed class CompleteWorkoutCommandHandlerTests
         Assert.Null(result.Workout);
     }
 
+    [Fact]
+    public async Task HandleAsyncWhenWorkoutAlreadyCompletedDoesNotMutateCompletionTimestamp()
+    {
+        await using var dbContext = CreateDbContext();
+        var workoutId = Guid.NewGuid();
+        var startedAtUtc = new DateTime(2026, 4, 22, 12, 0, 0, DateTimeKind.Utc);
+        var completedAtUtc = startedAtUtc.AddMinutes(30);
+
+        dbContext.Workouts.Add(new WorkoutEntity
+        {
+            Id = workoutId,
+            UserId = "default-user",
+            Status = WorkoutStatus.Completed,
+            Label = "Session",
+            StartedAtUtc = startedAtUtc,
+            CompletedAtUtc = completedAtUtc,
+            CreatedAtUtc = startedAtUtc,
+            UpdatedAtUtc = completedAtUtc,
+        });
+        await dbContext.SaveChangesAsync();
+
+        var handler = new CompleteWorkoutCommandHandler(dbContext);
+        var result = await handler.HandleAsync(new CompleteWorkoutCommand
+        {
+            WorkoutId = workoutId,
+        }, CancellationToken.None);
+        var persistedWorkout = await dbContext.Workouts.SingleAsync(workout => workout.Id == workoutId);
+
+        Assert.Equal(CompleteWorkoutOutcome.Conflict, result.Outcome);
+        Assert.Null(result.Workout);
+        Assert.Equal(completedAtUtc, persistedWorkout.CompletedAtUtc);
+        Assert.Equal(completedAtUtc, persistedWorkout.UpdatedAtUtc);
+    }
+
     private static WeightLiftingDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<WeightLiftingDbContext>()

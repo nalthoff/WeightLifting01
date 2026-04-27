@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # WeightLifting01 Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-24
+Auto-generated from all feature plans. Last updated: 2026-04-27
 
 ## Active Technologies
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core (001-create-lift)
@@ -29,6 +29,7 @@ Auto-generated from all feature plans. Last updated: 2026-04-24
 - SQL Server / Azure SQL-compatible relational database (existing workout tables) (016-workout-history-row-summary)
 - Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core (017-workout-history-detail)
 - SQL Server / Azure SQL-compatible relational database (existing workouts table and migrations) (018-name-workout)
+- Angular 20 frontend (TypeScript), C# on .NET 10 backend + Angular Router, Angular Material, RxJS; ASP.NET Core Web API, Entity Framework Core (019-workout-status-visibility)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -49,9 +50,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 019-workout-status-visibility: Added Angular 20 frontend (TypeScript), C# on .NET 10 backend + Angular Router, Angular Material, RxJS; ASP.NET Core Web API, Entity Framework Core
 - 018-name-workout: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core
 - 017-workout-history-detail: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Router, Angular Material, ASP.NET Core Web API, Entity Framework Core
-- 016-workout-history-row-summary: Added Angular 20 (TypeScript) frontend; C# on .NET 10 backend + Angular, Angular Material, ASP.NET Core Web API, Entity Framework Core
 
 
 <!-- MANUAL ADDITIONS START -->

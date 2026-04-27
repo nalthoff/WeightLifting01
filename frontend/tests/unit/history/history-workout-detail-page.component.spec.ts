@@ -137,13 +137,36 @@ describe('HistoryWorkoutDetailPageComponent', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent as string;
+    const badge = fixture.nativeElement.querySelector('[data-testid="history-workout-detail-status-badge"]') as HTMLElement | null;
     expect(workoutsApiService.getWorkout).toHaveBeenCalledWith('workout-1', true);
     expect(workoutLiftsApiService.listWorkoutLifts).toHaveBeenCalledWith('workout-1', true);
     expect(text).toContain('Heavy Day');
+    expect(badge?.textContent?.trim()).toBe('Completed');
     expect(text).toContain('Duration 01:05');
     expect(text).toContain('Squat');
     expect(text).toContain('225 lb');
     expect(text).toContain('-');
+  });
+
+  it('uses unknown badge tone for unmapped workout statuses', () => {
+    workoutsApiService.getWorkout.and.returnValue(
+      of({
+        workout: {
+          id: 'workout-1',
+          status: 'Archived',
+          label: 'Heavy Day',
+          startedAtUtc: '2026-04-24T09:00:00Z',
+          completedAtUtc: '2026-04-24T10:05:00Z',
+        },
+      }),
+    );
+
+    fixture = TestBed.createComponent(HistoryWorkoutDetailPageComponent);
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('[data-testid="history-workout-detail-status-badge"]') as HTMLElement | null;
+    expect(badge?.textContent?.trim()).toBe('Archived');
+    expect(badge?.classList.contains('history-workout-detail-page__status-badge--unknown')).toBeTrue();
   });
 
   it('renders a not-found style message on 404 failures', () => {

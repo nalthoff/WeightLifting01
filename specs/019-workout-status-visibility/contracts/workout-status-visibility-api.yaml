@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: Workout Status Visibility API
+  version: 0.1.0
+  description: |
+    Lifecycle status and history gating contract expectations for workout detail and history flows.
+paths:
+  /api/workouts/{workoutId}:
+    get:
+      summary: Get workout summary with lifecycle status for detail screens
+      operationId: getWorkout
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: forHistory
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Workout found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWorkoutResponse'
+        '404':
+          description: Workout not found or not eligible for requested context
+  /api/workouts/{workoutId}/complete:
+    post:
+      summary: Complete an in-progress workout and stamp completion timestamp
+      operationId: completeWorkout
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteWorkoutResponse'
+        '404':
+          description: Workout not found
+        '409':
+          description: Workout is not in progress
+  /api/workouts/history:
+    get:
+      summary: List completed workouts only for history/progress views
+      operationId: listCompletedWorkouts
+      responses:
+        '200':
+          description: Completed workouts returned newest-first
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutHistoryResponse'
+components:
+  schemas:
+    GetWorkoutResponse:
+      type: object
+      required: [workout]
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    CompleteWorkoutResponse:
+      type: object
+      required: [workout]
+      properties:
+        workout:
+          $ref: '#/components/schemas/WorkoutSessionSummary'
+    WorkoutHistoryResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkoutHistoryItem'
+    WorkoutSessionSummary:
+      type: object
+      required: [id, status, startedAtUtc]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress, Completed]
+          description: Lifecycle state source for status badge display.
+        label:
+          type: string
+          nullable: true
+        startedAtUtc:
+          type: string
+          format: date-time
+        completedAtUtc:
+          type: string
+          format: date-time
+          nullable: true
+    WorkoutHistoryItem:
+      type: object
+      required: [workoutId, label, completedAtUtc, durationDisplay, liftCount]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        label:
+          type: string
+        completedAtUtc:
+          type: string
+          format: date-time
+        durationDisplay:
+          type: string
+        liftCount:
+          type: integer
+          minimum: 0

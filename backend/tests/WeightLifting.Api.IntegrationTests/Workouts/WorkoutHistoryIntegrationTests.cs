@@ -63,6 +63,17 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
                 CompletedAtUtc = start.AddHours(-2),
                 CreatedAtUtc = start.AddHours(-3),
                 UpdatedAtUtc = start.AddHours(-2),
+            },
+            new WorkoutEntity
+            {
+                Id = Guid.NewGuid(),
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Missing completion timestamp",
+                StartedAtUtc = start.AddHours(-4),
+                CompletedAtUtc = null,
+                CreatedAtUtc = start.AddHours(-4),
+                UpdatedAtUtc = start.AddHours(-4),
             });
         var olderLiftId = Guid.NewGuid();
         var newerLiftId1 = Guid.NewGuid();
@@ -136,6 +147,7 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
         Assert.Equal(start.AddHours(-1), result[1].CompletedAtUtc);
         Assert.Equal("01:00", result[1].DurationDisplay);
         Assert.Equal(1, result[1].LiftCount);
+        Assert.DoesNotContain(result, item => item.Label == "Missing completion timestamp");
     }
 
     [Fact]

@@ -6,22 +6,32 @@
           <mat-card-title>{{ workout()?.label || 'Workout' }}</mat-card-title>
           <mat-card-subtitle *ngIf="!workout()">No in-progress workout is loaded in this session.</mat-card-subtitle>
         </div>
-        <button
-          *ngIf="workout() as headerWorkout"
-          type="button"
-          mat-icon-button
-          data-testid="active-workout-menu"
-          [matMenuTriggerFor]="workoutMenu"
-          [disabled]="
-            isCompletingWorkout() ||
-            isRefreshingActiveWorkout() ||
-            deleteWorkoutSession()?.isDeleting ||
-            headerWorkout.status !== 'InProgress'
-          "
-          aria-label="Open workout actions menu"
-        >
-          <mat-icon>more_vert</mat-icon>
-        </button>
+        <div *ngIf="workout() as headerWorkout" class="active-workout__header-actions">
+          <span
+            class="active-workout__status-badge"
+            [class.active-workout__status-badge--progress]="getWorkoutStatusBadge(headerWorkout.status).tone === 'progress'"
+            [class.active-workout__status-badge--complete]="getWorkoutStatusBadge(headerWorkout.status).tone === 'complete'"
+            [class.active-workout__status-badge--unknown]="getWorkoutStatusBadge(headerWorkout.status).tone === 'unknown'"
+            data-testid="active-workout-status-badge"
+          >
+            {{ getWorkoutStatusBadge(headerWorkout.status).label }}
+          </span>
+          <button
+            type="button"
+            mat-icon-button
+            data-testid="active-workout-menu"
+            [matMenuTriggerFor]="workoutMenu"
+            [disabled]="
+              isCompletingWorkout() ||
+              isRefreshingActiveWorkout() ||
+              deleteWorkoutSession()?.isDeleting ||
+              headerWorkout.status !== 'InProgress'
+            "
+            aria-label="Open workout actions menu"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
       </div>
     </mat-card-header>
     <mat-menu #workoutMenu="matMenu">
@@ -47,7 +57,6 @@
     </mat-menu>
 
     <mat-card-content *ngIf="workout() as activeWorkout; else unavailableContent" class="active-workout__content">
-      <p><strong>Status:</strong> {{ activeWorkout.status }}</p>
       <p><strong>Started:</strong> {{ activeWorkout.startedAtUtc | date: 'medium' }}</p>
       <p *ngIf="workoutNameSuccess()" class="active-workout__feedback active-workout__feedback--success">
         {{ workoutNameSuccess() }}
@@ -139,8 +148,8 @@
             <ul *ngIf="getSetsForEntry(entry).length > 0" class="active-workout__set-list">
               <li *ngFor="let setEntry of getSetsForEntry(entry); trackBy: trackWorkoutSet" class="active-workout__set-list-item">
                 <div class="active-workout__set-readonly" *ngIf="!isEditingSetRow(entry.id, setEntry.id); else editSetRowTemplate">
-                  <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
                   <span class="active-workout__set-value">{{ formatSetWeight(setEntry) }}</span>
+                  <span class="active-workout__set-value">{{ setEntry.reps }} reps</span>
                   <div class="active-workout__set-actions" *ngIf="canEditWorkoutSetRows()">
                     <button
                       type="button"
@@ -194,20 +203,6 @@
                 </div>
                 <ng-template #editSetRowTemplate>
                   <div class="active-workout__set-edit-row">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
-                      <mat-label>Reps</mat-label>
-                      <input
-                        matInput
-                        type="number"
-                        inputmode="numeric"
-                        min="1"
-                        required
-                        [value]="getSetEditSession(entry.id, setEntry.id)?.draftReps ?? ''"
-                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
-                        [attr.aria-label]="'Edit reps for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
-                        (input)="updateSetEditReps(entry.id, setEntry, $any($event.target).value)"
-                      />
-                    </mat-form-field>
                     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--weight">
                       <mat-label>Weight</mat-label>
                       <input
@@ -220,6 +215,20 @@
                         [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
                         [attr.aria-label]="'Edit weight for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
                         (input)="updateSetEditWeight(entry.id, setEntry, $any($event.target).value)"
+                      />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
+                      <mat-label>Reps</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        required
+                        [value]="getSetEditSession(entry.id, setEntry.id)?.draftReps ?? ''"
+                        [disabled]="getSetEditSession(entry.id, setEntry.id)?.isSaving"
+                        [attr.aria-label]="'Edit reps for set ' + setEntry.setNumber + ' of ' + entry.displayName + ' entry #' + entry.position"
+                        (input)="updateSetEditReps(entry.id, setEntry, $any($event.target).value)"
                       />
                     </mat-form-field>
                     <div class="active-workout__set-edit-actions">
@@ -268,20 +277,6 @@
             <div class="active-workout__set-divider" aria-hidden="true"></div>
 
             <div class="active-workout__set-form">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
-                <mat-label>Reps</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  inputmode="numeric"
-                  min="1"
-                  required
-                  [value]="getAddSetDraft(entry.id).reps"
-                  [disabled]="isAddingSet(entry.id)"
-                  [attr.aria-label]="'Reps for ' + entry.displayName + ' entry #' + entry.position"
-                  (input)="updateAddSetReps(entry.id, $any($event.target).value)"
-                />
-              </mat-form-field>
               <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--weight">
                 <mat-label>Weight</mat-label>
                 <input
@@ -294,6 +289,20 @@
                   [disabled]="isAddingSet(entry.id)"
                   [attr.aria-label]="'Weight for ' + entry.displayName + ' entry #' + entry.position"
                   (input)="updateAddSetWeight(entry.id, $any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="active-workout__set-form-field active-workout__set-form-field--reps">
+                <mat-label>Reps</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  required
+                  [value]="getAddSetDraft(entry.id).reps"
+                  [disabled]="isAddingSet(entry.id)"
+                  [attr.aria-label]="'Reps for ' + entry.displayName + ' entry #' + entry.position"
+                  (input)="updateAddSetReps(entry.id, $any($event.target).value)"
                 />
               </mat-form-field>
               <button

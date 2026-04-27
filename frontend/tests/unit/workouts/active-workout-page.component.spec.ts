@@ -37,9 +37,14 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
   };
 
   const workoutsStoreService = {
-    activeWorkout: signal({
+    activeWorkout: signal<{
+      id: string;
+      status: string;
+      label: string;
+      startedAtUtc: string;
+    }>({
       id: workoutId,
-      status: 'InProgress' as const,
+      status: 'InProgress',
       label: 'Delete Day',
       startedAtUtc: '2026-04-23T17:00:00Z',
     }),
@@ -83,6 +88,14 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
 
   beforeEach(async () => {
     workoutLiftsApiService.deleteWorkoutSet.calls.reset();
+    workoutsStoreService.activeWorkout.set({
+      id: workoutId,
+      status: 'InProgress',
+      label: 'Delete Day',
+      startedAtUtc: '2026-04-23T17:00:00Z',
+    });
+    workoutsStoreService.activeWorkoutLiftEntries.set([liftEntry]);
+    workoutsStoreService.removeWorkoutSet.calls.reset();
 
     await TestBed.configureTestingModule({
       imports: [ActiveWorkoutPageComponent],
@@ -111,5 +124,29 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
     expect(component.isConfirmingSetDelete(entryId, setId)).toBeFalse();
     expect(workoutLiftsApiService.deleteWorkoutSet).not.toHaveBeenCalled();
     expect(workoutsStoreService.removeWorkoutSet).not.toHaveBeenCalled();
+  });
+
+  it('renders in-progress status badge text for active workouts', () => {
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('[data-testid="active-workout-status-badge"]') as HTMLElement | null;
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent?.trim()).toBe('In Progress');
+  });
+
+  it('falls back to unknown tone mapping for unmapped statuses', () => {
+    workoutsStoreService.activeWorkout.set({
+      id: workoutId,
+      status: 'Paused',
+      label: 'Delete Day',
+      startedAtUtc: '2026-04-23T17:00:00Z',
+    });
+
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('[data-testid="active-workout-status-badge"]') as HTMLElement | null;
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent?.trim()).toBe('Paused');
+    expect(badge?.classList.contains('active-workout__status-badge--unknown')).toBeTrue();
   });
 });

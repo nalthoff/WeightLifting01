@@ -123,6 +123,47 @@ public sealed class ListCompletedWorkoutsQueryHelperTests
         Assert.Equal(0, result[0].LiftCount);
     }
 
+    [Fact]
+    public async Task GetAsyncExcludesCompletedWorkoutsWithoutCompletionTimestamp()
+    {
+        await using var dbContext = CreateDbContext();
+        var now = new DateTime(2026, 4, 24, 12, 0, 0, DateTimeKind.Utc);
+        var eligibleWorkoutId = Guid.NewGuid();
+        var missingTimestampWorkoutId = Guid.NewGuid();
+
+        dbContext.Workouts.AddRange(
+            new WorkoutEntity
+            {
+                Id = eligibleWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Completed with timestamp",
+                StartedAtUtc = now.AddHours(-1),
+                CompletedAtUtc = now,
+                CreatedAtUtc = now.AddHours(-1),
+                UpdatedAtUtc = now,
+            },
+            new WorkoutEntity
+            {
+                Id = missingTimestampWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Completed without timestamp",
+                StartedAtUtc = now.AddHours(-2),
+                CompletedAtUtc = null,
+                CreatedAtUtc = now.AddHours(-2),
+                UpdatedAtUtc = now.AddHours(-2),
+            });
+        await dbContext.SaveChangesAsync();
+
+        var helper = new ListCompletedWorkoutsQueryHelper(dbContext);
+        var result = await helper.GetAsync(CancellationToken.None);
+
+        Assert.Single(result);
+        Assert.Equal(eligibleWorkoutId, result[0].WorkoutId);
+        Assert.DoesNotContain(result, item => item.WorkoutId == missingTimestampWorkoutId);
+    }
+
     private static WeightLiftingDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<WeightLiftingDbContext>()

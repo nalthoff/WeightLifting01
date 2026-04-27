@@ -24,6 +24,44 @@
   min-width: 0;
 }
 
+.active-workout__header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.active-workout__status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
+}
+
+.active-workout__status-badge--progress {
+  background: var(--app-info-bg);
+  border-color: var(--app-surface-outline);
+  color: var(--app-text-default);
+}
+
+.active-workout__status-badge--complete {
+  background: var(--app-success-bg);
+  border-color: var(--app-surface-outline);
+  color: var(--app-text-default);
+}
+
+.active-workout__status-badge--unknown {
+  background: var(--app-warning-bg, var(--app-info-bg));
+  border-color: var(--app-surface-outline);
+  color: var(--app-text-default);
+}
+
 .active-workout__panel mat-card-subtitle {
   @include surface.supporting-copy;
 }
@@ -346,6 +384,12 @@
 }
 
 @media (max-width: 640px) {
+  .active-workout__header-row {
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+  }
+
   .active-workout__set-form {
     grid-template-columns: auto auto auto;
     gap: 0.5rem;
