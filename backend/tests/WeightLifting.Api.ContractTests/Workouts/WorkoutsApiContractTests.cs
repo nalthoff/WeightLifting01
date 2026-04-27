@@ -278,7 +278,7 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     }
 
     [Fact]
-    public async Task DeleteWorkoutWhenAlreadyCompletedReturnsConflictPayload()
+    public async Task DeleteWorkoutWhenAlreadyCompletedReturnsSuccessContract()
     {
         var client = factory.CreateClient();
         var createResponse = await client.PostAsJsonAsync("/api/workouts", new
@@ -293,13 +293,11 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
         Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
 
         var deleteResponse = await client.DeleteAsync($"/api/workouts/{createdPayload.Workout.Id}");
-        Assert.Equal(HttpStatusCode.Conflict, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
 
-        var payload = await deleteResponse.Content.ReadFromJsonAsync<ValidationErrorResponse>(JsonOptions);
+        var payload = await deleteResponse.Content.ReadFromJsonAsync<DeleteWorkoutResponse>(JsonOptions);
         Assert.NotNull(payload);
-        Assert.Equal("Workout cannot be deleted", payload.Title);
-        Assert.Equal((int)HttpStatusCode.Conflict, payload.Status);
-        Assert.Contains("Workout must be in progress to delete.", payload.Errors["workout"]);
+        Assert.Equal(createdPayload.Workout.Id, payload.WorkoutId);
     }
 
     [Fact]

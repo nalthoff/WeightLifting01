@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
 import { WorkoutLiftsApiService } from '../../../src/app/core/api/workout-lifts-api.service';
@@ -20,6 +21,11 @@ describe('HistoryWorkoutDetailPageComponent', () => {
           startedAtUtc: '2026-04-24T09:00:00Z',
           completedAtUtc: '2026-04-24T10:05:00Z',
         },
+      }),
+    ),
+    deleteWorkout: jasmine.createSpy('deleteWorkout').and.returnValue(
+      of({
+        workoutId: 'workout-1',
       }),
     ),
   };
@@ -60,10 +66,17 @@ describe('HistoryWorkoutDetailPageComponent', () => {
       }),
     ),
   };
+  const dialog = {
+    open: jasmine.createSpy('open').and.returnValue({
+      afterClosed: () => of(true),
+    }),
+  };
 
   beforeEach(async () => {
     workoutsApiService.getWorkout.calls.reset();
+    workoutsApiService.deleteWorkout.calls.reset();
     workoutLiftsApiService.listWorkoutLifts.calls.reset();
+    dialog.open.calls.reset();
     workoutsApiService.getWorkout.and.returnValue(
       of({
         workout: {
@@ -117,6 +130,7 @@ describe('HistoryWorkoutDetailPageComponent', () => {
         provideNoopAnimations(),
         { provide: WorkoutsApiService, useValue: workoutsApiService },
         { provide: WorkoutLiftsApiService, useValue: workoutLiftsApiService },
+        { provide: MatDialog, useValue: dialog },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -185,5 +199,35 @@ describe('HistoryWorkoutDetailPageComponent', () => {
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Unable to load workout details right now');
     expect(text).toContain('Try again');
+  });
+
+  it('opens confirmation flow and deletes workout from history detail', async () => {
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    component.beginDeleteWorkout();
+
+    expect(dialog.open).toHaveBeenCalled();
+    expect(workoutsApiService.deleteWorkout).toHaveBeenCalledWith('workout-1');
+    expect(router.navigate).toHaveBeenCalledWith(['/history']);
+  });
+
+  it('surfaces delete error feedback when delete fails', async () => {
+    workoutsApiService.deleteWorkout.and.returnValue(
+      throwError(() => ({ status: 500 })),
+    );
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    component.beginDeleteWorkout();
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement.textContent as string)).toContain('Unable to delete workout. Check your connection and try again.');
   });
 });

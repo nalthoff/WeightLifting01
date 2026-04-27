@@ -10,7 +10,7 @@ import { MatDialogModule } from '@angular/material/dialog';
   template: `
     <h2 mat-dialog-title>Delete workout?</h2>
     <mat-dialog-content>
-      Deleting removes this in-progress workout and its entries permanently.
+      Deleting removes this workout and its entries permanently.
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button type="button" mat-button data-testid="active-workout-delete-cancel" [mat-dialog-close]="false">

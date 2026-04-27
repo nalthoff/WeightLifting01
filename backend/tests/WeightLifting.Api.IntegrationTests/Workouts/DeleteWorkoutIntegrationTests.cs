@@ -34,7 +34,7 @@ public sealed class DeleteWorkoutIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task DeleteWorkoutReturnsExpectedNotFoundAndConflictOutcomes()
+    public async Task DeleteWorkoutReturnsExpectedNotFoundAndDeletesCompletedWorkout()
     {
         var completedWorkoutId = Guid.NewGuid();
         await SeedWorkoutAggregateAsync(completedWorkoutId, WorkoutStatus.Completed);
@@ -44,18 +44,20 @@ public sealed class DeleteWorkoutIntegrationTests : IAsyncLifetime
         {
             WorkoutId = Guid.NewGuid(),
         }, CancellationToken.None);
-        var conflict = await handler.HandleAsync(new DeleteWorkoutCommand
+        var deleteCompleted = await handler.HandleAsync(new DeleteWorkoutCommand
         {
             WorkoutId = completedWorkoutId,
         }, CancellationToken.None);
 
         Assert.Equal(DeleteWorkoutOutcome.NotFound, notFound.Outcome);
-        Assert.Equal(DeleteWorkoutOutcome.Conflict, conflict.Outcome);
-        Assert.True(await dbContext.Workouts.AnyAsync(workout => workout.Id == completedWorkoutId));
+        Assert.Equal(DeleteWorkoutOutcome.Deleted, deleteCompleted.Outcome);
+        Assert.False(await dbContext.Workouts.AnyAsync(workout => workout.Id == completedWorkoutId));
+        Assert.False(await dbContext.WorkoutLiftEntries.AnyAsync(entry => entry.WorkoutId == completedWorkoutId));
+        Assert.False(await dbContext.WorkoutSets.AnyAsync(set => set.WorkoutId == completedWorkoutId));
     }
 
     [Fact]
-    public async Task DeleteWorkoutStaleStateReturnsConflictWhenWorkoutCompletedBeforeDelete()
+    public async Task DeleteWorkoutStaleStateStillDeletesWhenWorkoutCompletedBeforeDelete()
     {
         var workoutId = Guid.NewGuid();
         await SeedWorkoutAggregateAsync(workoutId, WorkoutStatus.InProgress);
@@ -72,8 +74,10 @@ public sealed class DeleteWorkoutIntegrationTests : IAsyncLifetime
             WorkoutId = workoutId,
         }, CancellationToken.None);
 
-        Assert.Equal(DeleteWorkoutOutcome.Conflict, result.Outcome);
-        Assert.True(await dbContext.Workouts.AnyAsync(workout => workout.Id == workoutId));
+        Assert.Equal(DeleteWorkoutOutcome.Deleted, result.Outcome);
+        Assert.False(await dbContext.Workouts.AnyAsync(workout => workout.Id == workoutId));
+        Assert.False(await dbContext.WorkoutLiftEntries.AnyAsync(entry => entry.WorkoutId == workoutId));
+        Assert.False(await dbContext.WorkoutSets.AnyAsync(set => set.WorkoutId == workoutId));
     }
 
     public async Task InitializeAsync()

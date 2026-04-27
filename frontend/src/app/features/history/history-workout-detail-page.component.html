@@ -23,6 +23,9 @@
       <p *ngIf="isLoading()" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
         Loading workout detail...
       </p>
+      <p *ngIf="deleteErrorMessage()" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--error">
+        {{ deleteErrorMessage() }}
+      </p>
 
       <div *ngIf="!isLoading() && loadError()" class="history-workout-detail-page__error">
         <p class="history-workout-detail-page__feedback history-workout-detail-page__feedback--error">
@@ -77,8 +80,17 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <a mat-button routerLink="/history">Back to history</a>
-      <a mat-button routerLink="/">Back to home</a>
+      <a mat-button routerLink="/history">Back</a>
+      <button
+        type="button"
+        mat-button
+        color="warn"
+        data-testid="history-workout-delete"
+        [disabled]="isLoading() || isDeletingWorkout() || !workout()"
+        (click)="beginDeleteWorkout()"
+      >
+        {{ isDeletingWorkout() ? 'Deleting...' : 'Delete Workout' }}
+      </button>
     </mat-card-actions>
   </mat-card>
 </section>

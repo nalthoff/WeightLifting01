@@ -26,14 +26,6 @@ public sealed class DeleteWorkoutCommandHandler(WeightLiftingDbContext dbContext
             };
         }
 
-        if (workoutEntity.Status != WorkoutStatus.InProgress)
-        {
-            return new DeleteWorkoutResult
-            {
-                Outcome = DeleteWorkoutOutcome.Conflict,
-            };
-        }
-
         var workoutSets = await dbContext.WorkoutSets
             .Where(set => set.WorkoutId == command.WorkoutId)
             .ToListAsync(cancellationToken);

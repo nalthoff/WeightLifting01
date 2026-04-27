@@ -45,7 +45,7 @@ public sealed class DeleteWorkoutCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsyncReturnsConflictWhenWorkoutNotInProgress()
+    public async Task HandleAsyncDeletesCompletedWorkoutAggregateAndChildren()
     {
         await using var dbContext = CreateDbContext();
         var workoutId = Guid.NewGuid();
@@ -57,8 +57,10 @@ public sealed class DeleteWorkoutCommandHandlerTests
             WorkoutId = workoutId,
         }, CancellationToken.None);
 
-        Assert.Equal(DeleteWorkoutOutcome.Conflict, result.Outcome);
-        Assert.True(await dbContext.Workouts.AnyAsync(workout => workout.Id == workoutId));
+        Assert.Equal(DeleteWorkoutOutcome.Deleted, result.Outcome);
+        Assert.False(await dbContext.Workouts.AnyAsync(workout => workout.Id == workoutId));
+        Assert.False(await dbContext.WorkoutLiftEntries.AnyAsync(entry => entry.WorkoutId == workoutId));
+        Assert.False(await dbContext.WorkoutSets.AnyAsync(set => set.WorkoutId == workoutId));
     }
 
     private static WeightLiftingDbContext CreateDbContext()

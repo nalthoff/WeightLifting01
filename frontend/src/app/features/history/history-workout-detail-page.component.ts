@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { finalize, forkJoin } from 'rxjs';
 
 import { WorkoutLiftsApiService } from '../../core/api/workout-lifts-api.service';
 import { WorkoutsApiService } from '../../core/api/workouts-api.service';
+import { WorkoutDeleteConfirmDialogComponent } from '../workouts/workout-delete-confirm-dialog.component';
 
 type WorkoutLiftEntry = {
   id: string;
@@ -29,12 +31,16 @@ type WorkoutLiftEntry = {
 })
 export class HistoryWorkoutDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
   private readonly workoutsApiService = inject(WorkoutsApiService);
   private readonly workoutLiftsApiService = inject(WorkoutLiftsApiService);
 
   readonly workoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
   readonly isLoading = signal(false);
   readonly loadError = signal<string | null>(null);
+  readonly isDeletingWorkout = signal(false);
+  readonly deleteErrorMessage = signal<string | null>(null);
   readonly workout = signal<{
     id: string;
     status?: string | null;
@@ -97,6 +103,27 @@ export class HistoryWorkoutDetailPageComponent {
     this.loadWorkoutDetail();
   }
 
+  beginDeleteWorkout(): void {
+    if (this.isLoading() || this.isDeletingWorkout() || !this.workout()) {
+      return;
+    }
+
+    this.deleteErrorMessage.set(null);
+
+    this.dialog
+      .open(WorkoutDeleteConfirmDialogComponent, {
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((confirmed: boolean | undefined) => {
+        if (confirmed !== true) {
+          return;
+        }
+
+        this.confirmDeleteWorkout();
+      });
+  }
+
   trackLift(_index: number, entry: WorkoutLiftEntry): string {
     return entry.id;
   }
@@ -114,6 +141,7 @@ export class HistoryWorkoutDetailPageComponent {
 
     this.isLoading.set(true);
     this.loadError.set(null);
+    this.deleteErrorMessage.set(null);
 
     forkJoin({
       workoutResponse: this.workoutsApiService.getWorkout(workoutId, true),
@@ -132,6 +160,38 @@ export class HistoryWorkoutDetailPageComponent {
           }
 
           this.loadError.set('Unable to load workout details right now. Check your connection and try again.');
+        },
+      });
+  }
+
+  private confirmDeleteWorkout(): void {
+    const workout = this.workout();
+    if (!workout || this.isDeletingWorkout()) {
+      return;
+    }
+
+    this.isDeletingWorkout.set(true);
+    this.deleteErrorMessage.set(null);
+
+    this.workoutsApiService
+      .deleteWorkout(workout.id)
+      .pipe(finalize(() => this.isDeletingWorkout.set(false)))
+      .subscribe({
+        next: () => {
+          void this.router.navigate(['/history']);
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            this.deleteErrorMessage.set('This workout no longer exists. Return to history to choose another workout.');
+            return;
+          }
+
+          if (error.status === 409) {
+            this.deleteErrorMessage.set(error.error?.title ?? 'This workout cannot be deleted in its current state.');
+            return;
+          }
+
+          this.deleteErrorMessage.set('Unable to delete workout. Check your connection and try again.');
         },
       });
   }
