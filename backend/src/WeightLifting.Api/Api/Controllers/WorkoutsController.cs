@@ -13,6 +13,7 @@ using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutLabel;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
+using WeightLifting.Api.Application.Workouts.Queries.GetInlineLiftHistory;
 using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
 using WeightLifting.Api.Domain.Workouts;
@@ -33,6 +34,7 @@ public sealed class WorkoutsController(
     UpdateWorkoutLabelCommandHandler updateWorkoutLabelCommandHandler,
     GetActiveWorkoutSummaryQueryHelper getActiveWorkoutSummaryQueryHelper,
     ListWorkoutLiftsQueryHelper listWorkoutLiftsQueryHelper,
+    InlineLiftHistoryQueryHelper inlineLiftHistoryQueryHelper,
     ListCompletedWorkoutsQueryHelper listCompletedWorkoutsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
     GetWorkoutByIdQueryHelper getWorkoutByIdQueryHelper) : ControllerBase
@@ -308,6 +310,43 @@ public sealed class WorkoutsController(
             {
                 title = "Workout not found",
                 status = StatusCodes.Status404NotFound,
+            });
+        }
+    }
+
+    [HttpGet("{workoutId:guid}/lifts/{workoutLiftEntryId:guid}/history")]
+    [ProducesResponseType(typeof(InlineLiftHistoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<InlineLiftHistoryResponse>> GetInlineLiftHistory(
+        Guid workoutId,
+        Guid workoutLiftEntryId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var items = await inlineLiftHistoryQueryHelper.GetAsync(workoutId, workoutLiftEntryId, cancellationToken);
+            return Ok(new InlineLiftHistoryResponse
+            {
+                WorkoutId = workoutId,
+                WorkoutLiftEntryId = workoutLiftEntryId,
+                Items = items.Select(ToInlineLiftHistorySessionResponse).ToList(),
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new
+            {
+                title = "Workout not found",
+                status = StatusCodes.Status404NotFound,
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            return Conflict(new
+            {
+                title = "Workout cannot load inline history",
+                status = StatusCodes.Status409Conflict,
             });
         }
     }
@@ -701,6 +740,21 @@ public sealed class WorkoutsController(
         CompletedAtUtc = item.CompletedAtUtc,
         DurationDisplay = item.DurationDisplay,
         LiftCount = item.LiftCount,
+    };
+
+    private static InlineLiftHistorySessionResponse ToInlineLiftHistorySessionResponse(InlineLiftHistorySession session) => new()
+    {
+        WorkoutId = session.WorkoutId,
+        WorkoutLabel = session.WorkoutLabel,
+        CompletedAtUtc = session.CompletedAtUtc,
+        Sets = session.Sets.Select(ToInlineLiftHistorySetResponse).ToList(),
+    };
+
+    private static InlineLiftHistorySetResponse ToInlineLiftHistorySetResponse(InlineLiftHistorySet item) => new()
+    {
+        SetNumber = item.SetNumber,
+        Reps = item.Reps,
+        Weight = item.Weight,
     };
 
     private static object CreateLabelValidationResponse() => new

@@ -78,6 +78,7 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
 
   const workoutLiftsApiService = {
     listWorkoutLifts: jasmine.createSpy('listWorkoutLifts').and.returnValue(of({ items: [] })),
+    getInlineLiftHistory: jasmine.createSpy('getInlineLiftHistory').and.returnValue(of({ workoutId, workoutLiftEntryId: entryId, items: [] })),
     addWorkoutSet: jasmine.createSpy('addWorkoutSet').and.returnValue(
       of({
         workoutId,
@@ -113,6 +114,8 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
 
   beforeEach(async () => {
     workoutLiftsApiService.addWorkoutSet.calls.reset();
+    workoutLiftsApiService.getInlineLiftHistory.calls.reset();
+    workoutLiftsApiService.getInlineLiftHistory.and.returnValue(of({ workoutId, workoutLiftEntryId: entryId, items: [] }));
     workoutLiftsApiService.addWorkoutSet.and.returnValue(
       of({
         workoutId,
@@ -276,6 +279,96 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
     const badge = fixture.nativeElement.querySelector('[data-testid="active-workout-status-badge"]') as HTMLElement | null;
     expect(badge).not.toBeNull();
     expect(badge?.textContent?.trim()).toBe('In Progress');
+  });
+
+  it('opens and closes inline lift history panel from view history action', () => {
+    expect(component.isLiftHistoryExpanded(entryId)).toBeFalse();
+
+    component.toggleLiftHistory(entryId);
+    expect(component.isLiftHistoryExpanded(entryId)).toBeTrue();
+    expect(workoutLiftsApiService.getInlineLiftHistory).toHaveBeenCalledWith(workoutId, entryId);
+
+    component.toggleLiftHistory(entryId);
+    expect(component.isLiftHistoryExpanded(entryId)).toBeFalse();
+  });
+
+  it('does not navigate when loading inline history', () => {
+    component.toggleLiftHistory(entryId);
+
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('shows compact No history when inline lift history is empty', () => {
+    workoutLiftsApiService.getInlineLiftHistory.and.returnValue(
+      of({ workoutId, workoutLiftEntryId: entryId, items: [] }),
+    );
+
+    component.toggleLiftHistory(entryId);
+    fixture.detectChanges();
+
+    const empty = fixture.nativeElement.querySelector('.active-workout__history-empty') as HTMLElement | null;
+    expect(empty).not.toBeNull();
+    expect(empty?.textContent?.trim()).toBe('No history');
+  });
+
+  it('renders only three inline history sessions and keeps exact-lift sets', () => {
+    workoutLiftsApiService.getInlineLiftHistory.and.returnValue(
+      of({
+        workoutId,
+        workoutLiftEntryId: entryId,
+        items: [
+          { workoutId: 'w1', completedAtUtc: '2026-04-20T10:00:00Z', workoutLabel: 'A', sets: [{ setNumber: 1, reps: 5, weight: 225 }] },
+          { workoutId: 'w2', completedAtUtc: '2026-04-19T10:00:00Z', workoutLabel: 'B', sets: [{ setNumber: 1, reps: 4, weight: 230 }] },
+          { workoutId: 'w3', completedAtUtc: '2026-04-18T10:00:00Z', workoutLabel: 'C', sets: [{ setNumber: 1, reps: 3, weight: 235 }] },
+        ],
+      }),
+    );
+
+    component.toggleLiftHistory(entryId);
+
+    expect(component.getLiftHistoryItems(entryId).length).toBe(3);
+    expect(component.getLiftHistoryItems(entryId)[0].sets[0].reps).toBe(5);
+  });
+
+  it('summarizes same-weight session history to one compact line', () => {
+    const lines = component.getLiftHistorySummaryLines({
+      workoutId: 'w1',
+      workoutLabel: 'A',
+      completedAtUtc: '2026-04-20T10:00:00Z',
+      sets: [
+        { setNumber: 1, reps: 5, weight: 225 },
+        { setNumber: 2, reps: 5, weight: 225 },
+        { setNumber: 3, reps: 5, weight: 225 },
+      ],
+    });
+
+    expect(lines).toEqual(['3 x 5 @ 225 lb']);
+  });
+
+  it('summarizes mixed-weight session history to one line per weight', () => {
+    const lines = component.getLiftHistorySummaryLines({
+      workoutId: 'w1',
+      workoutLabel: 'A',
+      completedAtUtc: '2026-04-20T10:00:00Z',
+      sets: [
+        { setNumber: 1, reps: 5, weight: 225 },
+        { setNumber: 2, reps: 5, weight: 225 },
+        { setNumber: 3, reps: 3, weight: 245 },
+      ],
+    });
+
+    expect(lines).toEqual(['2 x 5 @ 225 lb', '1 x 3 @ 245 lb']);
+  });
+
+  it('shows inline history error state while leaving other lift actions available', () => {
+    workoutLiftsApiService.getInlineLiftHistory.and.returnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+
+    component.toggleLiftHistory(entryId);
+
+    expect(component.getLiftHistoryError(entryId)).toBe('History is unavailable right now. Keep logging and try again.');
+    expect(component.canMoveLiftDown(0)).toBeTrue();
   });
 
   it('falls back to unknown tone mapping for unmapped statuses', () => {

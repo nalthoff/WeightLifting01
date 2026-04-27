@@ -141,6 +141,57 @@
           </div>
 
           <div class="active-workout__set-section">
+            <div class="active-workout__history">
+              <button
+                type="button"
+                mat-button
+                class="active-workout__history-toggle"
+                [attr.aria-expanded]="isLiftHistoryExpanded(entry.id)"
+                [attr.aria-label]="'Toggle history for ' + entry.displayName + ' entry #' + entry.position"
+                (click)="toggleLiftHistory(entry.id)"
+              >
+                {{ isLiftHistoryExpanded(entry.id) ? 'Hide History' : 'View History' }}
+              </button>
+
+              <section *ngIf="isLiftHistoryExpanded(entry.id)" class="active-workout__history-panel">
+                <p *ngIf="isLiftHistoryLoading(entry.id)" class="active-workout__info">Loading history...</p>
+                <p *ngIf="getLiftHistoryError(entry.id)" class="active-workout__feedback active-workout__feedback--error">
+                  {{ getLiftHistoryError(entry.id) }}
+                </p>
+
+                <p
+                  *ngIf="
+                    !isLiftHistoryLoading(entry.id) &&
+                    !getLiftHistoryError(entry.id) &&
+                    getLiftHistoryItems(entry.id).length === 0
+                  "
+                  class="active-workout__history-empty"
+                >
+                  No history
+                </p>
+
+                <ul
+                  *ngIf="
+                    !isLiftHistoryLoading(entry.id) &&
+                    !getLiftHistoryError(entry.id) &&
+                    getLiftHistoryItems(entry.id).length > 0
+                  "
+                  class="active-workout__history-list"
+                >
+                  <li *ngFor="let item of getLiftHistoryItems(entry.id)" class="active-workout__history-item">
+                    <p class="active-workout__history-title">
+                      {{ item.completedAtUtc | date: 'shortDate' }}
+                    </p>
+                    <ul class="active-workout__history-set-list">
+                      <li *ngFor="let summaryLine of getLiftHistorySummaryLines(item)" class="active-workout__history-set-item">
+                        <span>{{ summaryLine }}</span>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </section>
+            </div>
+
             <p *ngIf="getSetsForEntry(entry).length === 0" class="active-workout__set-empty">
               No sets yet.
             </p>

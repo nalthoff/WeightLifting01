@@ -40,3 +40,23 @@ export interface WorkoutDeleteSession {
   isDeleting: boolean;
   errorMessage: string | null;
 }
+
+export interface LiftHistorySetSummary {
+  setNumber: number;
+  reps: number;
+  weight: number | null;
+}
+
+export interface LiftHistorySessionSummary {
+  workoutId: string;
+  workoutLabel?: string | null;
+  completedAtUtc: string;
+  sets: LiftHistorySetSummary[];
+}
+
+export interface InlineLiftHistoryPanelState {
+  isExpanded: boolean;
+  isLoading: boolean;
+  errorMessage: string | null;
+  items: LiftHistorySessionSummary[];
+}

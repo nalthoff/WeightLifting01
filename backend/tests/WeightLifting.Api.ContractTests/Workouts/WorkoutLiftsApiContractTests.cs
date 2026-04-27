@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using WeightLifting.Api.ContractTests;
 using WeightLifting.Api.Domain.Workouts;
 using WeightLifting.Api.Infrastructure.Persistence;
+using WeightLifting.Api.Infrastructure.Persistence.Entities;
+using WeightLifting.Api.Infrastructure.Persistence.Workouts;
 
 namespace WeightLifting.Api.ContractTests.Workouts;
 
@@ -75,6 +77,73 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         Assert.NotNull(payload);
         Assert.Equal("Workout not found", payload.Title);
         Assert.Equal((int)HttpStatusCode.NotFound, payload.Status);
+    }
+
+    [Fact]
+    public async Task GetInlineLiftHistoryReturnsExactLiftCompletedSessionsLimitedToThree()
+    {
+        var client = factory.CreateClient();
+        var workout = await CreateWorkoutAsync(client, "Inline History Active Workout");
+        var lift = await CreateLiftAsync(client, "Inline History Bench Press");
+        var addLiftResponse = await client.PostAsJsonAsync($"/api/workouts/{workout.Id}/lifts", new { liftId = lift.Id });
+        var addLiftPayload = await addLiftResponse.Content.ReadFromJsonAsync<AddWorkoutLiftResponse>(JsonOptions);
+        Assert.NotNull(addLiftPayload);
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<WeightLiftingDbContext>();
+            var now = DateTime.UtcNow;
+
+            for (var i = 1; i <= 4; i++)
+            {
+                var completedWorkoutId = Guid.NewGuid();
+                var completedEntryId = Guid.NewGuid();
+                dbContext.Workouts.Add(new WorkoutEntity
+                {
+                    Id = completedWorkoutId,
+                    UserId = "default-user",
+                    Status = WorkoutStatus.Completed,
+                    Label = $"Completed {i}",
+                    StartedAtUtc = now.AddDays(-i).AddHours(-1),
+                    CompletedAtUtc = now.AddDays(-i),
+                    CreatedAtUtc = now.AddDays(-i).AddHours(-1),
+                    UpdatedAtUtc = now.AddDays(-i),
+                });
+                dbContext.WorkoutLiftEntries.Add(new WorkoutLiftEntryEntity
+                {
+                    Id = completedEntryId,
+                    WorkoutId = completedWorkoutId,
+                    LiftId = lift.Id,
+                    DisplayName = "Inline History Bench Press",
+                    AddedAtUtc = now.AddDays(-i).AddMinutes(-30),
+                    Position = 1,
+                });
+                dbContext.WorkoutSets.Add(new WorkoutSetEntity
+                {
+                    Id = Guid.NewGuid(),
+                    WorkoutId = completedWorkoutId,
+                    WorkoutLiftEntryId = completedEntryId,
+                    SetNumber = 1,
+                    Reps = 5 + i,
+                    Weight = 200 + i,
+                    CreatedAtUtc = now.AddDays(-i).AddMinutes(-20),
+                    UpdatedAtUtc = now.AddDays(-i).AddMinutes(-20),
+                });
+            }
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        var response = await client.GetAsync($"/api/workouts/{workout.Id}/lifts/{addLiftPayload.WorkoutLift.Id}/history");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<InlineLiftHistoryResponse>(JsonOptions);
+        Assert.NotNull(payload);
+        Assert.Equal(workout.Id, payload.WorkoutId);
+        Assert.Equal(addLiftPayload.WorkoutLift.Id, payload.WorkoutLiftEntryId);
+        Assert.Equal(3, payload.Items.Count);
+        Assert.All(payload.Items, item => Assert.Single(item.Sets));
+        Assert.True(payload.Items[0].CompletedAtUtc >= payload.Items[1].CompletedAtUtc);
     }
 
     [Fact]
@@ -860,5 +929,34 @@ public sealed class WorkoutLiftsApiContractTests(LiftsContractWebApplicationFact
         public required string Title { get; init; }
 
         public required int Status { get; init; }
+    }
+
+    public sealed class InlineLiftHistoryResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public required Guid WorkoutLiftEntryId { get; init; }
+
+        public required IReadOnlyList<InlineLiftHistorySessionResponse> Items { get; init; }
+    }
+
+    public sealed class InlineLiftHistorySessionResponse
+    {
+        public required Guid WorkoutId { get; init; }
+
+        public string? WorkoutLabel { get; init; }
+
+        public required DateTime CompletedAtUtc { get; init; }
+
+        public required IReadOnlyList<InlineLiftHistorySetResponse> Sets { get; init; }
+    }
+
+    public sealed class InlineLiftHistorySetResponse
+    {
+        public required int SetNumber { get; init; }
+
+        public required int Reps { get; init; }
+
+        public decimal? Weight { get; init; }
     }
 }
