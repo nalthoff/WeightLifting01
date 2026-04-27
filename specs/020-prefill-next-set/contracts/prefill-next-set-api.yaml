@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: Prefill Next Set Behavior Contract
+  version: 0.1.0
+  description: |
+    Contract expectations for add-set responses that drive next-set prefill behavior
+    within the active workout logging flow.
+paths:
+  /api/workouts/{workoutId}/lifts/{workoutLiftEntryId}/sets:
+    post:
+      summary: Add a set for a workout-lift entry
+      operationId: addWorkoutSet
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: workoutLiftEntryId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddWorkoutSetRequest'
+      responses:
+        '200':
+          description: Set saved successfully; response values are authoritative for next-set defaults
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddWorkoutSetResponse'
+        '404':
+          description: Workout or workout-lift entry not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in an editable state
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: Reps or weight validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblem'
+components:
+  schemas:
+    AddWorkoutSetRequest:
+      type: object
+      required: [reps]
+      properties:
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Optional; null means no weight value was logged.
+    AddWorkoutSetResponse:
+      type: object
+      required: [workoutId, workoutLiftEntryId, set]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        set:
+          $ref: '#/components/schemas/WorkoutSetEntryView'
+    WorkoutSetEntryView:
+      type: object
+      required: [id, workoutLiftEntryId, setNumber, reps, createdAtUtc]
+      properties:
+        id:
+          type: string
+          format: uuid
+        workoutLiftEntryId:
+          type: string
+          format: uuid
+        setNumber:
+          type: integer
+          minimum: 1
+        reps:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          nullable: true
+        createdAtUtc:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

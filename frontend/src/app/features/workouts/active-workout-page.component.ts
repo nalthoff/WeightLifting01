@@ -547,7 +547,10 @@ export class ActiveWorkoutPageComponent {
       .subscribe({
         next: (response) => {
           this.workoutsStoreService.appendWorkoutSet(response.workoutId, response.workoutLiftEntryId, response.set);
-          this.updateAddSetDraft(entryId, { reps: '', weight: '' });
+          this.updateAddSetDraft(entryId, {
+            reps: String(response.set.reps),
+            weight: response.set.weight === null ? '' : String(response.set.weight),
+          });
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 404) {
