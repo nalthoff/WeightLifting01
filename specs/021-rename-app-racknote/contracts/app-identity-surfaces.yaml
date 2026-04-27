@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: RackNote App Identity Surface Contract
+  version: 1.0.0
+  description: >
+    User-facing identity contract for the rename feature. This contract defines
+    expected name presentation across primary product surfaces and does not
+    describe backend API behavior changes.
+paths: {}
+components:
+  schemas:
+    AppIdentitySurface:
+      type: object
+      required:
+        - surfaceId
+        - surfaceType
+        - location
+        - expectedDisplayName
+      properties:
+        surfaceId:
+          type: string
+          examples: [app-shell-brand]
+        surfaceType:
+          type: string
+          enum: [InAppBranding, PageMetadata, Documentation]
+        location:
+          type: string
+          examples:
+            - frontend/src/app/app.html
+            - frontend/src/index.html
+            - README.md
+        expectedDisplayName:
+          type: string
+          enum: [RackNote]
+        legacyDisplayNameAllowed:
+          type: boolean
+          enum: [false]
+    IdentityVerificationMatrix:
+      type: object
+      required:
+        - mobile
+        - desktop
+      properties:
+        mobile:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppIdentitySurface'
+        desktop:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppIdentitySurface'

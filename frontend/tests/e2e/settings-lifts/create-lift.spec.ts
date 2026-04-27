@@ -5,7 +5,7 @@ test('create lift appears in settings lift list', async ({ page }) => {
 
   await page.goto('/settings/lifts');
 
-  await expect(page.getByText('WeightLifting01')).toBeVisible();
+  await expect(page.getByText('RackNote')).toBeVisible();
   await expect(page.getByText('Add a lift')).toBeVisible();
 
   await page.getByLabel('Lift name').fill(liftName);

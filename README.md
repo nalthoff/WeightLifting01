@@ -1,6 +1,6 @@
-# WeightLifting01
+# RackNote
 
-`WeightLifting01` is a mobile-first web app for quickly logging strength workouts in the gym.
+`RackNote` is a mobile-first web app for quickly logging strength workouts in the gym.
 The current implementation includes the first feature slice for managing lifts from
 `Settings -> Lifts`, styled with an Angular Material dark theme that uses Iowa State-inspired
 cardinal and gold accents.

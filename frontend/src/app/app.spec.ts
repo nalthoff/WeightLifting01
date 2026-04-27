@@ -47,7 +47,7 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const brandHomeLink = compiled.querySelector('[data-testid="brand-home-link"]');
 
-    expect(compiled.textContent).toContain('WeightLifting01');
+    expect(compiled.textContent).toContain('RackNote');
     expect(compiled.textContent).toContain('Home');
     expect(compiled.textContent).not.toContain('Workout');
     expect(compiled.textContent).not.toContain('Log');
