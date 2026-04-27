@@ -1,10 +1,15 @@
 <main class="app-shell">
   <header class="app-shell__header">
     <mat-toolbar class="app-shell__toolbar">
-      <span class="app-shell__brand">
+      <a
+        class="app-shell__brand app-shell__brand-link"
+        data-testid="brand-home-link"
+        routerLink="/"
+        aria-label="Go to home screen"
+      >
         <mat-icon>fitness_center</mat-icon>
         <span>WeightLifting01</span>
-      </span>
+      </a>
 
       <span class="app-shell__spacer"></span>
 

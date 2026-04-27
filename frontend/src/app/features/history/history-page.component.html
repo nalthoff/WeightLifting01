@@ -2,7 +2,6 @@
   <mat-card class="history-page__panel" appearance="outlined">
     <mat-card-header>
       <mat-card-title>Workout History</mat-card-title>
-      <mat-card-subtitle>Your completed workouts.</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content class="history-page__content">
@@ -34,7 +33,7 @@
               {{ getDisplayLabel(workout) }}
             </div>
             <div class="history-page__item-date" data-testid="history-item-date">
-              Completed {{ workout.completedAtUtc | date: 'medium' }}
+              {{ workout.completedAtUtc | date: 'MM/dd/yy' }}
             </div>
             <div class="history-page__item-summary" data-testid="history-item-summary">
               <span data-testid="history-item-duration">Duration {{ getDurationDisplay(workout) }}</span>

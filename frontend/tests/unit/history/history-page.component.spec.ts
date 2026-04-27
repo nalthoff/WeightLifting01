@@ -77,6 +77,7 @@ describe('HistoryPageComponent', () => {
     expect(workoutsApiService.getWorkoutHistory).toHaveBeenCalled();
     expect(text).toContain('Leg Day');
     expect(text).toContain('Workout');
+    expect(text).toContain('04/22/26');
     expect(text).toContain('Duration 00:45');
     expect(text).toContain('Duration --:--');
     expect(text).toContain('4 lifts');

@@ -45,11 +45,13 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
+    const brandHomeLink = compiled.querySelector('[data-testid="brand-home-link"]');
 
     expect(compiled.textContent).toContain('WeightLifting01');
     expect(compiled.textContent).toContain('Home');
     expect(compiled.textContent).not.toContain('Workout');
     expect(compiled.textContent).not.toContain('Log');
+    expect(brandHomeLink?.getAttribute('href')).toContain('/');
   });
 
   it('should show Settings navigation and route to /settings/lifts', async () => {
