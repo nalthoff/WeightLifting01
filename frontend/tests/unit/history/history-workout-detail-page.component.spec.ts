@@ -162,6 +162,50 @@ describe('HistoryWorkoutDetailPageComponent', () => {
     expect(text).toContain('-');
   });
 
+  it('renders sets sorted by set number for consistent historical display', () => {
+    workoutLiftsApiService.listWorkoutLifts.and.returnValue(
+      of({
+        items: [
+          {
+            id: 'lift-1',
+            workoutId: 'workout-1',
+            liftId: 'squat',
+            displayName: 'Squat',
+            addedAtUtc: '2026-04-24T09:05:00Z',
+            position: 0,
+            sets: [
+              {
+                id: 'set-2',
+                workoutLiftEntryId: 'lift-1',
+                setNumber: 2,
+                reps: 5,
+                weight: 225,
+                createdAtUtc: '2026-04-24T09:11:00Z',
+                updatedAtUtc: '2026-04-24T09:11:00Z',
+              },
+              {
+                id: 'set-1',
+                workoutLiftEntryId: 'lift-1',
+                setNumber: 1,
+                reps: 8,
+                weight: 185,
+                createdAtUtc: '2026-04-24T09:06:00Z',
+                updatedAtUtc: '2026-04-24T09:06:00Z',
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    fixture = TestBed.createComponent(HistoryWorkoutDetailPageComponent);
+    fixture.detectChanges();
+
+    const rows = fixture.nativeElement.querySelectorAll('[data-testid="history-workout-detail-sets"] tbody tr');
+    expect(rows.length).toBe(2);
+    expect(rows[0].querySelectorAll('td')[0].textContent?.trim()).toBe('1');
+    expect(rows[1].querySelectorAll('td')[0].textContent?.trim()).toBe('2');
+  });
+
   it('uses unknown badge tone for unmapped workout statuses', () => {
     workoutsApiService.getWorkout.and.returnValue(
       of({

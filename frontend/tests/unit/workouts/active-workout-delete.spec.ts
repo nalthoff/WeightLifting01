@@ -26,6 +26,7 @@ describe('ActiveWorkoutPageComponent delete workout', () => {
   const workoutsStoreService = {
     activeWorkout: signal<typeof inProgressWorkout | null>(inProgressWorkout),
     activeWorkoutLiftEntries: signal([]),
+    historicalFlowNavigationContext: signal({ returnToWorkoutId: null as string | null }),
     setActiveWorkout: jasmine.createSpy('setActiveWorkout'),
     setActiveWorkoutLiftEntries: jasmine.createSpy('setActiveWorkoutLiftEntries'),
     reconcileActiveWorkout: jasmine

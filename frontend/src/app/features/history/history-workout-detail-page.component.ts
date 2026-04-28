@@ -132,6 +132,10 @@ export class HistoryWorkoutDetailPageComponent {
     return set.id;
   }
 
+  getOrderedSets(lift: WorkoutLiftEntry): NonNullable<WorkoutLiftEntry['sets']> {
+    return [...(lift.sets ?? [])].sort((left, right) => left.setNumber - right.setNumber);
+  }
+
   private loadWorkoutDetail(): void {
     const workoutId = this.workoutId();
     if (!workoutId) {

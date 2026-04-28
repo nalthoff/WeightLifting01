@@ -1,0 +1,25 @@
+.historical-form-page {
+  display: block;
+}
+
+.historical-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.historical-form__message {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.historical-form__message--success {
+  color: #1b5e20;
+}
+
+.historical-form__message--error {
+  color: #b71c1c;
+}
+
+.historical-form__message--info {
+  color: #0d47a1;
+}

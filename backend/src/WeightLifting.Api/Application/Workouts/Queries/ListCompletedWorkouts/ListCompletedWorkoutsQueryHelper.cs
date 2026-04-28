@@ -19,6 +19,9 @@ public sealed class ListCompletedWorkoutsQueryHelper(WeightLiftingDbContext dbCo
                 && workout.Status == WorkoutStatus.Completed
                 && workout.CompletedAtUtc.HasValue)
             .OrderByDescending(workout => workout.CompletedAtUtc)
+            .ThenByDescending(workout => workout.StartedAtUtc)
+            .ThenByDescending(workout => workout.CreatedAtUtc)
+            .ThenByDescending(workout => workout.Id)
             .Select(workout => new
             {
                 WorkoutId = workout.Id,

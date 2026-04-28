@@ -6,14 +6,17 @@ using WeightLifting.Api.Application.Lifts.Queries.GetLifts;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.CreateHistoricalWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
+using WeightLifting.Api.Application.Workouts.Commands.TimingValidation;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutLabel;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
+using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutDetail;
 using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
 using WeightLifting.Api.Application.Workouts.Queries.GetInProgressWorkout;
 using WeightLifting.Api.Application.Workouts.Queries.GetInlineLiftHistory;
@@ -35,6 +38,7 @@ public static class ServiceCollectionExtensions
             ?? "Server=(localdb)\\MSSQLLocalDB;Database=WeightLifting01;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
 
         services.AddWeightLiftingProblemDetails();
+        services.AddSingleton(TimeProvider.System);
 
         services.AddDbContext<WeightLiftingDbContext>(options =>
         {
@@ -52,11 +56,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<DeactivateLiftCommandHandler>();
         services.AddScoped<GetLiftsQueryHandler>();
         services.AddScoped<GetWorkoutByIdQueryHelper>();
+        services.AddScoped<GetWorkoutDetailQueryHandler>();
         services.AddScoped<GetInProgressWorkoutQueryHelper>();
+        services.AddScoped<GetActiveWorkoutContextQueryHelper>();
         services.AddScoped<GetActiveWorkoutSummaryQueryHelper>();
         services.AddScoped<StartWorkoutCommandHandler>();
         services.AddScoped<UpdateWorkoutLabelCommandHandler>();
         services.AddScoped<CompleteWorkoutCommandHandler>();
+        services.AddScoped<CreateHistoricalWorkoutCommandHandler>();
         services.AddScoped<AddWorkoutLiftCommandHandler>();
         services.AddScoped<AddWorkoutSetCommandHandler>();
         services.AddScoped<UpdateWorkoutSetCommandHandler>();
@@ -64,6 +71,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<DeleteWorkoutCommandHandler>();
         services.AddScoped<ReorderWorkoutLiftsCommandHandler>();
         services.AddScoped<RemoveWorkoutLiftCommandHandler>();
+        services.AddScoped<IHistoricalWorkoutTimingValidator, HistoricalWorkoutTimingValidator>();
         services.AddScoped<ListWorkoutLiftsQueryHelper>();
         services.AddScoped<ListCompletedWorkoutsQueryHelper>();
         services.AddScoped<InlineLiftHistoryQueryHelper>();

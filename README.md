@@ -96,6 +96,32 @@ During local development, frontend requests to `/api/*` are proxied to the backe
 The default visible theme is dark mode. The frontend theme structure is set up so a light theme
 can be added later without replacing the current styling approach.
 
+## Historical Workout Backfill
+
+RackNote supports logging previously completed workouts so history stays trustworthy for
+next-weight decisions.
+
+- Open Home and choose `Log Past Workout`.
+- Enter required historical timing:
+  - training date (past day)
+  - start time (`HH:mm`)
+  - session duration (minutes, > 0)
+- Save the historical workout, then review it in History and History Detail views.
+
+### Active Workout Coexistence
+
+If an in-progress workout already exists, backfilling a historical workout does **not**
+delete or auto-complete the active workout. After saving the historical entry, the app
+keeps the active workout context available so you can resume current training.
+
+### Relevant API Endpoints
+
+- `POST /api/workouts/historical` creates a historical workout using required timing fields.
+- `POST /api/workouts/{workoutId}/complete` completes a workout; historical flows reuse the
+  same response shape and lifecycle conflict handling.
+- `GET /api/workouts/history` returns deterministic ordering for completed workouts, including
+  same-day tie-break behavior.
+
 ## One-Click Debugging in Cursor/VS Code
 
 Use the built-in debug profile to launch the API and Angular app together:

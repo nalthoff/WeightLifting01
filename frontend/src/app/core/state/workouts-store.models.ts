@@ -60,3 +60,14 @@ export interface InlineLiftHistoryPanelState {
   errorMessage: string | null;
   items: LiftHistorySessionSummary[];
 }
+
+export type HistoricalFlowMessageKind = 'success' | 'error' | 'info';
+
+export interface HistoricalFlowMessageState {
+  kind: HistoricalFlowMessageKind;
+  text: string;
+}
+
+export interface HistoricalFlowNavigationContext {
+  returnToWorkoutId: string | null;
+}

@@ -1,66 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import type {
+  CompleteWorkoutResponse,
+  CreateHistoricalWorkoutRequest,
+  DeleteWorkoutResponse,
+  GetActiveWorkoutSummaryResponse,
+  GetWorkoutHistoryResponse,
+  GetWorkoutResponse,
+  StartWorkoutCreatedResponse,
+  StartWorkoutRequest,
+  UpdateWorkoutLabelRequest,
+  UpdateWorkoutLabelResponse,
+} from './workouts.models';
 
-export interface WorkoutSessionSummary {
-  id: string;
-  status: 'InProgress' | 'Completed';
-  label?: string | null;
-  startedAtUtc: string;
-  completedAtUtc?: string | null;
-}
-
-export interface StartWorkoutRequest {
-  label?: string;
-}
-
-export interface StartWorkoutCreatedResponse {
-  workout: WorkoutSessionSummary;
-}
-
-export interface GetWorkoutResponse {
-  workout: WorkoutSessionSummary;
-}
-
-export interface GetActiveWorkoutSummaryResponse {
-  workout: WorkoutSessionSummary;
-}
-
-export interface CompleteWorkoutResponse {
-  workout: WorkoutSessionSummary;
-}
-
-export interface DeleteWorkoutResponse {
-  workoutId: string;
-}
-
-export interface UpdateWorkoutLabelRequest {
-  label?: string | null;
-}
-
-export interface UpdateWorkoutLabelResponse {
-  workout: WorkoutSessionSummary;
-}
-
-export interface WorkoutHistorySummary {
-  workoutId?: string;
-  // Backward-compatible alias in case older payloads still return `id`.
-  id?: string;
-  label?: string | null;
-  completedAtUtc: string;
-  durationDisplay: string;
-  liftCount: number;
-}
-
-export interface GetWorkoutHistoryResponse {
-  items: WorkoutHistorySummary[];
-}
-
-export interface ExistingInProgressWorkoutResponse {
-  title: string;
-  status: 409;
-  workout: WorkoutSessionSummary;
-}
+export type {
+  CompleteWorkoutResponse,
+  CreateHistoricalWorkoutRequest,
+  DeleteWorkoutResponse,
+  ExistingInProgressWorkoutResponse,
+  GetActiveWorkoutSummaryResponse,
+  GetWorkoutHistoryResponse,
+  GetWorkoutResponse,
+  HistoricalWorkoutTimingFields,
+  StartWorkoutCreatedResponse,
+  StartWorkoutRequest,
+  UpdateWorkoutLabelRequest,
+  UpdateWorkoutLabelResponse,
+  WorkoutHistorySummary,
+  WorkoutSessionResponse,
+  WorkoutSessionSummary,
+} from './workouts.models';
 
 @Injectable({
   providedIn: 'root',
@@ -70,6 +40,10 @@ export class WorkoutsApiService {
 
   startWorkout(request: StartWorkoutRequest = {}): Observable<StartWorkoutCreatedResponse> {
     return this.httpClient.post<StartWorkoutCreatedResponse>('/api/workouts', request);
+  }
+
+  createHistoricalWorkout(request: CreateHistoricalWorkoutRequest): Observable<StartWorkoutCreatedResponse> {
+    return this.httpClient.post<StartWorkoutCreatedResponse>('/api/workouts/historical', request);
   }
 
   getWorkout(workoutId: string, forHistory = false): Observable<GetWorkoutResponse> {

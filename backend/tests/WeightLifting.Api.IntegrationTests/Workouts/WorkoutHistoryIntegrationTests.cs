@@ -173,6 +173,59 @@ public sealed class WorkoutHistoryIntegrationTests : IAsyncLifetime
         Assert.Null(result);
     }
 
+    [Fact]
+    public async Task GetAsyncWhenCompletionTimesTieOrdersDeterministically()
+    {
+        var completedAtUtc = new DateTime(2026, 4, 24, 18, 0, 0, DateTimeKind.Utc);
+        var firstWorkoutId = Guid.Parse("10000000-0000-0000-0000-000000000001");
+        var secondWorkoutId = Guid.Parse("20000000-0000-0000-0000-000000000002");
+        var thirdWorkoutId = Guid.Parse("90000000-0000-0000-0000-000000000009");
+
+        dbContext.Workouts.AddRange(
+            new WorkoutEntity
+            {
+                Id = firstWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "First",
+                StartedAtUtc = completedAtUtc.AddHours(-3),
+                CompletedAtUtc = completedAtUtc,
+                CreatedAtUtc = completedAtUtc.AddHours(-3),
+                UpdatedAtUtc = completedAtUtc,
+            },
+            new WorkoutEntity
+            {
+                Id = secondWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Second",
+                StartedAtUtc = completedAtUtc.AddHours(-2),
+                CompletedAtUtc = completedAtUtc,
+                CreatedAtUtc = completedAtUtc.AddHours(-2),
+                UpdatedAtUtc = completedAtUtc,
+            },
+            new WorkoutEntity
+            {
+                Id = thirdWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Third",
+                StartedAtUtc = completedAtUtc.AddHours(-2),
+                CompletedAtUtc = completedAtUtc,
+                CreatedAtUtc = completedAtUtc.AddHours(-2),
+                UpdatedAtUtc = completedAtUtc,
+            });
+        await dbContext.SaveChangesAsync();
+
+        var helper = new ListCompletedWorkoutsQueryHelper(dbContext);
+        var result = await helper.GetAsync(CancellationToken.None);
+
+        Assert.Equal(3, result.Count);
+        Assert.Equal(thirdWorkoutId, result[0].WorkoutId);
+        Assert.Equal(secondWorkoutId, result[1].WorkoutId);
+        Assert.Equal(firstWorkoutId, result[2].WorkoutId);
+    }
+
     public async Task InitializeAsync()
     {
         await connection.OpenAsync();

@@ -9,4 +9,6 @@ public sealed class AddWorkoutSetCommand
     public int Reps { get; init; }
 
     public decimal? Weight { get; init; }
+
+    public bool AllowHistoricalEdits { get; init; }
 }

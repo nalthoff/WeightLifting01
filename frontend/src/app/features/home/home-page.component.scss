@@ -12,6 +12,10 @@
   @include surface.elevated-panel;
 }
 
+.home__history-entry {
+  @include surface.elevated-panel;
+}
+
 .home__hero mat-card-title {
   @include surface.card-heading;
 }
@@ -28,6 +32,14 @@
   @include surface.supporting-copy;
 }
 
+.home__history-entry mat-card-title {
+  @include surface.card-heading;
+}
+
+.home__history-entry mat-card-subtitle {
+  @include surface.supporting-copy;
+}
+
 .home__form {
   @include surface.section-stack(0.875rem);
   margin-top: 0.5rem;
@@ -41,6 +53,13 @@
   width: 100%;
   min-height: 3rem;
   font-weight: 700;
+}
+
+.home__history-button {
+  width: 100%;
+  min-height: 2.75rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
 }
 
 .home__message {

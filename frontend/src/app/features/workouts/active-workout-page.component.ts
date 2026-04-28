@@ -85,7 +85,17 @@ export class ActiveWorkoutPageComponent {
   readonly setEditSessionByKey = signal<Record<string, SetRowEditSession>>({});
   readonly setDeleteSessionByKey = signal<Record<string, SetRowDeleteSession>>({});
   private readonly routeWorkoutId = signal<string | null>(this.route.snapshot.paramMap.get('workoutId'));
+  private readonly routeMode = signal<string | null>(this.route.snapshot.queryParamMap?.get('mode') ?? null);
   readonly workoutId = this.routeWorkoutId.asReadonly();
+  readonly isHistoricalMode = computed(() => this.routeMode() === 'historical');
+  readonly returnToWorkoutId = computed(
+    () => this.workoutsStoreService.historicalFlowNavigationContext().returnToWorkoutId,
+  );
+  readonly canReturnToOriginalActiveWorkout = computed(() => {
+    const returnToWorkoutId = this.returnToWorkoutId();
+    const currentWorkoutId = this.workoutId();
+    return this.isHistoricalMode() && !!returnToWorkoutId && returnToWorkoutId !== currentWorkoutId;
+  });
   readonly workout = computed(() => {
     const activeWorkout = this.workoutsStoreService.activeWorkout();
     const workoutId = this.workoutId();
@@ -121,6 +131,15 @@ export class ActiveWorkoutPageComponent {
         this.routeWorkoutId.set(workoutId);
         this.ensureWorkoutLoaded(workoutId);
       });
+
+    this.route.queryParamMap
+      ?.pipe(
+        map((params) => params.get('mode')),
+        takeUntilDestroyed(),
+      )
+      .subscribe((mode) => {
+        this.routeMode.set(mode);
+      });
   }
 
   openAddLiftPicker(): void {
@@ -154,6 +173,20 @@ export class ActiveWorkoutPageComponent {
           this.workoutsStoreService.reconcileActiveWorkout(response.workout);
           this.completeSuccessMessage.set('Workout completed. Great work.');
           this.completeErrorMessage.set(null);
+          if (this.isHistoricalMode()) {
+            const returnToWorkoutId = this.returnToWorkoutId();
+            if (returnToWorkoutId && returnToWorkoutId !== workout.id) {
+              this.workoutsStoreService.setHistoricalFlowMessage(
+                'info',
+                'Historical workout saved. Returned to your active workout in progress.',
+              );
+              void this.router.navigate(['/workouts', returnToWorkoutId]);
+              return;
+            }
+
+            void this.router.navigate(['/history', workout.id]);
+            return;
+          }
           this.refreshActiveWorkoutState();
         },
         error: (error: HttpErrorResponse) => {
@@ -171,6 +204,14 @@ export class ActiveWorkoutPageComponent {
 
   canEditWorkoutName(): boolean {
     return this.workout()?.status === 'InProgress';
+  }
+
+  getPrimaryActionLabel(): string {
+    if (this.isCompletingWorkout() || this.isRefreshingActiveWorkout()) {
+      return this.isHistoricalMode() ? 'Saving...' : 'Completing...';
+    }
+
+    return this.isHistoricalMode() ? 'Save to History' : 'Complete Workout';
   }
 
   beginRenameWorkout(): void {
@@ -197,6 +238,15 @@ export class ActiveWorkoutPageComponent {
 
         this.saveWorkoutName(label);
       });
+  }
+
+  returnToOriginalActiveWorkout(): void {
+    const returnToWorkoutId = this.returnToWorkoutId();
+    if (!returnToWorkoutId || !this.canReturnToOriginalActiveWorkout()) {
+      return;
+    }
+
+    void this.router.navigate(['/workouts', returnToWorkoutId]);
   }
 
   private saveWorkoutName(label: string): void {
@@ -368,7 +418,7 @@ export class ActiveWorkoutPageComponent {
     this.addLiftError.set(null);
 
     this.workoutLiftsApiService
-      .addWorkoutLift(workoutId, { liftId })
+      .addWorkoutLift(workoutId, { liftId }, this.isHistoricalMode())
       .pipe(finalize(() => this.isAddingLift.set(false)))
       .subscribe({
         next: (response) => {
@@ -545,7 +595,7 @@ export class ActiveWorkoutPageComponent {
     this.setAddSetError(entryId, null);
 
     this.workoutLiftsApiService
-      .addWorkoutSet(workoutId, entryId, { reps, weight })
+      .addWorkoutSet(workoutId, entryId, { reps, weight }, this.isHistoricalMode())
       .pipe(finalize(() => this.setIsAddingSet(entryId, false)))
       .subscribe({
         next: (response) => {

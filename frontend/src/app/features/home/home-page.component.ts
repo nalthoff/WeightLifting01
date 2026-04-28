@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,6 +24,7 @@ import { WorkoutsStoreService } from '../../core/state/workouts-store.service';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    RouterLink,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',

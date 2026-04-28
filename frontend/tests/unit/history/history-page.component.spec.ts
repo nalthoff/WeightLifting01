@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { WorkoutsApiService } from '../../../src/app/core/api/workouts-api.service';
+import { WorkoutsStoreService } from '../../../src/app/core/state/workouts-store.service';
 import { HistoryPageComponent } from '../../../src/app/features/history/history-page.component';
 
 describe('HistoryPageComponent', () => {
@@ -31,9 +33,15 @@ describe('HistoryPageComponent', () => {
       }),
     ),
   };
+  const workoutsStoreService = {
+    historicalFlowMessage: signal(null),
+    historicalFlowNavigationContext: signal({ returnToWorkoutId: null }),
+    clearHistoricalFlowMessage: jasmine.createSpy('clearHistoricalFlowMessage'),
+  };
 
   beforeEach(async () => {
     workoutsApiService.getWorkoutHistory.calls.reset();
+    workoutsStoreService.clearHistoricalFlowMessage.calls.reset();
     workoutsApiService.getWorkoutHistory.and.returnValue(
       of({
         items: [
@@ -59,6 +67,7 @@ describe('HistoryPageComponent', () => {
       imports: [HistoryPageComponent],
       providers: [
         { provide: WorkoutsApiService, useValue: workoutsApiService },
+        { provide: WorkoutsStoreService, useValue: workoutsStoreService },
         provideRouter([]),
         provideNoopAnimations(),
       ],

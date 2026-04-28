@@ -5,6 +5,22 @@
     </mat-card-header>
 
     <mat-card-content class="history-page__content">
+      <p
+        *ngIf="historicalFlowMessage() as historicalMessage"
+        class="history-page__feedback"
+        [class.history-page__feedback--success]="historicalMessage.kind === 'success'"
+        [class.history-page__feedback--error]="historicalMessage.kind === 'error'"
+        [class.history-page__feedback--info]="historicalMessage.kind === 'info'"
+      >
+        {{ historicalMessage.text }}
+        <button type="button" mat-button (click)="dismissHistoricalFlowMessage()">Dismiss</button>
+      </p>
+
+      <p *ngIf="historicalFlowNavigationContext().returnToWorkoutId" class="history-page__feedback history-page__feedback--info">
+        Your active workout is still in progress.
+        <button type="button" mat-button color="primary" (click)="returnToActiveWorkout()">Return to workout</button>
+      </p>
+
       <p *ngIf="isLoading()" class="history-page__feedback history-page__feedback--info">Loading workout history...</p>
 
       <p *ngIf="loadError()" class="history-page__feedback history-page__feedback--error">

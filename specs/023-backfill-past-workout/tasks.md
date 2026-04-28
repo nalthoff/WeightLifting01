@@ -17,9 +17,9 @@
 
 **Purpose**: Prepare shared contracts and extension points used by all stories.
 
-- [ ] T001 Extend existing workout API contracts by adding only historical timing request fields and reusing standard workout response DTOs in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`
-- [ ] T002 [P] Reuse existing frontend workout API models and add minimal historical timing extensions via shared interfaces in `frontend/src/app/core/api/workouts.models.ts`
-- [ ] T003 [P] Add route and menu-entry placeholders for historical logging access in `frontend/src/app/features/home/`
+- [X] T001 Extend existing workout API contracts by adding only historical timing request fields and reusing standard workout response DTOs in `backend/src/WeightLifting.Api/Api/Contracts/Workouts/`
+- [X] T002 [P] Reuse existing frontend workout API models and add minimal historical timing extensions via shared interfaces in `frontend/src/app/core/api/workouts.models.ts`
+- [X] T003 [P] Add route and menu-entry placeholders for historical logging access in `frontend/src/app/features/home/`
 
 ---
 
@@ -27,11 +27,11 @@
 
 **Purpose**: Core reusable backend/frontend plumbing that must be in place before story-level behavior.
 
-- [ ] T004 Implement reusable workout timing validation abstractions (base validator + historical specialization) in `backend/src/WeightLifting.Api/Application/Workouts/Commands/`
-- [ ] T005 [P] Wire historical workout endpoint surface in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T006 [P] Add historical workout API client methods by extending existing workout service methods (no duplicate request/response mapping) in `frontend/src/app/core/api/workouts-api.service.ts`
-- [ ] T007 Add shared active-workout state query/update helpers for coexistence checks in `backend/src/WeightLifting.Api/Application/Workouts/Queries/`
-- [ ] T008 Add shared frontend workout state hooks for historical-flow navigation and feedback by reusing existing workout state stores/selectors in `frontend/src/app/core/state/`
+- [X] T004 Implement reusable workout timing validation abstractions (base validator + historical specialization) in `backend/src/WeightLifting.Api/Application/Workouts/Commands/`
+- [X] T005 [P] Wire historical workout endpoint surface in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T006 [P] Add historical workout API client methods by extending existing workout service methods (no duplicate request/response mapping) in `frontend/src/app/core/api/workouts-api.service.ts`
+- [X] T007 Add shared active-workout state query/update helpers for coexistence checks in `backend/src/WeightLifting.Api/Application/Workouts/Queries/`
+- [X] T008 Add shared frontend workout state hooks for historical-flow navigation and feedback by reusing existing workout state stores/selectors in `frontend/src/app/core/state/`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel.
 
@@ -45,20 +45,20 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add unit tests for shared timing validator base behavior and historical validator specialization in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CreateHistoricalWorkoutCommandHandlerTests.cs`
-- [ ] T010 [P] [US1] Add integration tests for historical create/complete lifecycle in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalWorkoutLifecycleTests.cs`
-- [ ] T011 [P] [US1] Add contract tests for `POST /api/workouts/historical` request/response requirements in `backend/tests/WeightLifting.Api.ContractTests/Workouts/HistoricalWorkoutApiContractTests.cs`
-- [ ] T012 [P] [US1] Add frontend unit tests for required field validation and save gating in `frontend/src/app/features/workouts/historical-workout-form.component.spec.ts`
+- [X] T009 [P] [US1] Add unit tests for shared timing validator base behavior and historical validator specialization in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/CreateHistoricalWorkoutCommandHandlerTests.cs`
+- [X] T010 [P] [US1] Add integration tests for historical create/complete lifecycle in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalWorkoutLifecycleTests.cs`
+- [X] T011 [P] [US1] Add contract tests for `POST /api/workouts/historical` request/response requirements in `backend/tests/WeightLifting.Api.ContractTests/Workouts/HistoricalWorkoutApiContractTests.cs`
+- [X] T012 [P] [US1] Add frontend unit tests for required field validation and save gating in `frontend/src/app/features/workouts/historical-workout-form.component.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement historical create command handler by deriving from shared workout command base and adding only past-date/time/duration rules in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CreateHistoricalWorkoutCommandHandler.cs`
-- [ ] T014 [US1] Implement completion timestamp derivation in shared completion workflow to support both live and historical sessions in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkoutCommandHandler.cs`
-- [ ] T015 [US1] Implement deterministic historical ordering projection for history queries in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutHistoryQueryHandler.cs`
-- [ ] T016 [US1] Implement historical create endpoint request mapping with shared response mapping reused from existing workout endpoints in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T017 [US1] Build mobile-first historical workout timing form (date, hour/minute, duration) in `frontend/src/app/features/workouts/historical-workout-form.component.ts`
-- [ ] T018 [US1] Wire save success/failure messaging for historical entry flow in `frontend/src/app/features/workouts/historical-workout-form.component.html`
-- [ ] T019 [US1] Connect historical timing form to API service and history refresh in `frontend/src/app/features/workouts/historical-workout-form.component.ts`
+- [X] T013 [US1] Implement historical create command handler by deriving from shared workout command base and adding only past-date/time/duration rules in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CreateHistoricalWorkoutCommandHandler.cs`
+- [X] T014 [US1] Implement completion timestamp derivation in shared completion workflow to support both live and historical sessions in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkoutCommandHandler.cs`
+- [X] T015 [US1] Implement deterministic historical ordering projection for history queries in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutHistoryQueryHandler.cs`
+- [X] T016 [US1] Implement historical create endpoint request mapping with shared response mapping reused from existing workout endpoints in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T017 [US1] Build mobile-first historical workout timing form (date, hour/minute, duration) in `frontend/src/app/features/workouts/historical-workout-form.component.ts`
+- [X] T018 [US1] Wire save success/failure messaging for historical entry flow in `frontend/src/app/features/workouts/historical-workout-form.component.html`
+- [X] T019 [US1] Connect historical timing form to API service and history refresh in `frontend/src/app/features/workouts/historical-workout-form.component.ts`
 
 **Checkpoint**: User Story 1 should be fully functional and independently testable.
 
@@ -72,16 +72,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T020 [P] [US2] Add backend unit tests proving historical flow reuses live lift/set persistence abstractions with no duplicate write path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/HistoricalWorkoutLiftSetParityTests.cs`
-- [ ] T021 [P] [US2] Add backend integration tests for historical workout detail retrieval with lifts/sets in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalWorkoutDetailsTests.cs`
-- [ ] T022 [P] [US2] Add frontend e2e test for adding lifts/sets during historical logging in `frontend/tests/e2e/historical-workout-lift-set-parity.spec.ts`
+- [X] T020 [P] [US2] Add backend unit tests proving historical flow reuses live lift/set persistence abstractions with no duplicate write path in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/HistoricalWorkoutLiftSetParityTests.cs`
+- [X] T021 [P] [US2] Add backend integration tests for historical workout detail retrieval with lifts/sets in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalWorkoutDetailsTests.cs`
+- [X] T022 [P] [US2] Add frontend e2e test for adding lifts/sets during historical logging in `frontend/tests/e2e/historical-workout-lift-set-parity.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Reuse live workout lift/set command path by introducing a shared base workout entry service and historical specialization only where required in `backend/src/WeightLifting.Api/Application/Workouts/Commands/`
-- [ ] T024 [US2] Ensure historical workout detail query returns lift/set payload parity in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutDetailQueryHandler.cs`
-- [ ] T025 [US2] Adapt workout entry UI to launch historical mode with shared lift/set editors in `frontend/src/app/features/workouts/workout-entry.component.ts`
-- [ ] T026 [US2] Ensure history detail screen renders historical lifts/sets consistently in `frontend/src/app/features/history/workout-history-detail.component.ts`
+- [X] T023 [US2] Reuse live workout lift/set command path by introducing a shared base workout entry service and historical specialization only where required in `backend/src/WeightLifting.Api/Application/Workouts/Commands/`
+- [X] T024 [US2] Ensure historical workout detail query returns lift/set payload parity in `backend/src/WeightLifting.Api/Application/Workouts/Queries/GetWorkoutDetailQueryHandler.cs`
+- [X] T025 [US2] Adapt workout entry UI to launch historical mode with shared lift/set editors in `frontend/src/app/features/workouts/workout-entry.component.ts`
+- [X] T026 [US2] Ensure history detail screen renders historical lifts/sets consistently in `frontend/src/app/features/history/workout-history-detail.component.ts`
 
 **Checkpoint**: User Stories 1 and 2 should both work independently.
 
@@ -95,15 +95,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Add backend unit tests for active-workout continuity guard behavior using shared lifecycle guard abstractions in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/HistoricalWorkoutActiveContextTests.cs`
-- [ ] T028 [P] [US3] Add backend integration tests for active + historical coexistence lifecycle in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalAndActiveWorkoutCoexistenceTests.cs`
-- [ ] T029 [P] [US3] Add frontend e2e catch-up scenario test with active workout preserved in `frontend/tests/e2e/historical-workout-active-context.spec.ts`
+- [X] T027 [P] [US3] Add backend unit tests for active-workout continuity guard behavior using shared lifecycle guard abstractions in `backend/tests/WeightLifting.Api.UnitTests/Application/Workouts/HistoricalWorkoutActiveContextTests.cs`
+- [X] T028 [P] [US3] Add backend integration tests for active + historical coexistence lifecycle in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/HistoricalAndActiveWorkoutCoexistenceTests.cs`
+- [X] T029 [P] [US3] Add frontend e2e catch-up scenario test with active workout preserved in `frontend/tests/e2e/historical-workout-active-context.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T030 [US3] Implement lifecycle rules in shared workout lifecycle service, with historical-specific override only for coexistence checks, in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkoutCommandHandler.cs`
-- [ ] T031 [US3] Implement conflict handling and explicit problem responses for lifecycle violations in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
-- [ ] T032 [US3] Implement frontend catch-up flow routing that returns user to active workout context in `frontend/src/app/features/workouts/workout-entry.component.ts`
+- [X] T030 [US3] Implement lifecycle rules in shared workout lifecycle service, with historical-specific override only for coexistence checks, in `backend/src/WeightLifting.Api/Application/Workouts/Commands/CompleteWorkoutCommandHandler.cs`
+- [X] T031 [US3] Implement conflict handling and explicit problem responses for lifecycle violations in `backend/src/WeightLifting.Api/Api/Controllers/WorkoutsController.cs`
+- [X] T032 [US3] Implement frontend catch-up flow routing that returns user to active workout context in `frontend/src/app/features/workouts/workout-entry.component.ts`
 
 **Checkpoint**: All user stories should now be independently functional.
 
@@ -113,10 +113,10 @@
 
 **Purpose**: Final validation, chronology edge-case hardening, and documentation updates.
 
-- [ ] T033 [P] Add backend regression tests for same-day ordering tie-break behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryOrderingTests.cs`
-- [ ] T034 [P] Add frontend regression test for required-field mobile UX feedback in `frontend/src/app/features/workouts/historical-workout-form.component.spec.ts`
-- [ ] T035 Run quickstart validation scenarios and document observed results in `specs/023-backfill-past-workout/quickstart.md`
-- [ ] T036 Update feature documentation and API notes for historical workflow behavior in `README.md`
+- [X] T033 [P] Add backend regression tests for same-day ordering tie-break behavior in `backend/tests/WeightLifting.Api.IntegrationTests/Workouts/WorkoutHistoryOrderingTests.cs`
+- [X] T034 [P] Add frontend regression test for required-field mobile UX feedback in `frontend/src/app/features/workouts/historical-workout-form.component.spec.ts`
+- [X] T035 Run quickstart validation scenarios and document observed results in `specs/023-backfill-past-workout/quickstart.md`
+- [X] T036 Update feature documentation and API notes for historical workflow behavior in `README.md`
 
 ---
 

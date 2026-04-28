@@ -7,4 +7,6 @@ public sealed class CompleteWorkoutResult
     public required CompleteWorkoutOutcome Outcome { get; init; }
 
     public Workout? Workout { get; init; }
+
+    public IReadOnlyDictionary<string, string[]> Errors { get; init; } = new Dictionary<string, string[]>();
 }

@@ -52,3 +52,17 @@ Verify a user can record a previously completed workout on a chosen past day, wi
 1. Create a historical workout with required date/time/duration and minimal lift/set data accepted by current rules.
 2. Complete and open it from history.
 3. Confirm it remains stable and viewable in history/detail surfaces.
+
+## Validation Run Notes
+
+Last validated: 2026-04-28
+
+- Backend integration ordering regression:
+  - `dotnet test backend/tests/WeightLifting.Api.IntegrationTests/WeightLifting.Api.IntegrationTests.csproj --filter "FullyQualifiedName~WorkoutHistoryOrderingTests"`
+  - Result: PASS (1/1)
+- Frontend required-field regression:
+  - `npx ng test --watch=false --browsers=ChromeHeadless --include="src/app/features/workouts/historical-workout-form.component.spec.ts"`
+  - Result: PASS (8/8)
+- Backend historical lifecycle suites:
+  - `HistoricalWorkoutLifecycleTests`, `HistoricalWorkoutDetailsTests`, `HistoricalAndActiveWorkoutCoexistenceTests`
+  - Result: PASS in targeted runs during implementation.

@@ -60,6 +60,7 @@ describe('ActiveWorkoutPageComponent delete confirmation', () => {
       startedAtUtc: '2026-04-23T17:00:00Z',
     }),
     activeWorkoutLiftEntries: signal([liftEntry]),
+    historicalFlowNavigationContext: signal({ returnToWorkoutId: null as string | null }),
     setActiveWorkout: jasmine.createSpy('setActiveWorkout'),
     setActiveWorkoutLiftEntries: jasmine.createSpy('setActiveWorkoutLiftEntries'),
     appendActiveWorkoutLiftEntry: jasmine.createSpy('appendActiveWorkoutLiftEntry'),

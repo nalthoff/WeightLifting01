@@ -164,6 +164,47 @@ public sealed class ListCompletedWorkoutsQueryHelperTests
         Assert.DoesNotContain(result, item => item.WorkoutId == missingTimestampWorkoutId);
     }
 
+    [Fact]
+    public async Task GetAsyncAppliesDeterministicTieBreakersWhenCompletionTimestampsMatch()
+    {
+        await using var dbContext = CreateDbContext();
+        var completedAtUtc = new DateTime(2026, 4, 24, 12, 0, 0, DateTimeKind.Utc);
+        var oldestStartedWorkoutId = Guid.Parse("10000000-0000-0000-0000-000000000001");
+        var newestStartedWorkoutId = Guid.Parse("90000000-0000-0000-0000-000000000009");
+
+        dbContext.Workouts.AddRange(
+            new WorkoutEntity
+            {
+                Id = oldestStartedWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Older start",
+                StartedAtUtc = completedAtUtc.AddHours(-2),
+                CompletedAtUtc = completedAtUtc,
+                CreatedAtUtc = completedAtUtc.AddHours(-2),
+                UpdatedAtUtc = completedAtUtc,
+            },
+            new WorkoutEntity
+            {
+                Id = newestStartedWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.Completed,
+                Label = "Newer start",
+                StartedAtUtc = completedAtUtc.AddHours(-1),
+                CompletedAtUtc = completedAtUtc,
+                CreatedAtUtc = completedAtUtc.AddHours(-1),
+                UpdatedAtUtc = completedAtUtc,
+            });
+        await dbContext.SaveChangesAsync();
+
+        var helper = new ListCompletedWorkoutsQueryHelper(dbContext);
+        var result = await helper.GetAsync(CancellationToken.None);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(newestStartedWorkoutId, result[0].WorkoutId);
+        Assert.Equal(oldestStartedWorkoutId, result[1].WorkoutId);
+    }
+
     private static WeightLiftingDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<WeightLiftingDbContext>()
