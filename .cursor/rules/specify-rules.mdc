@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # WeightLifting01 Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-27
+Auto-generated from all feature plans. Last updated: 2026-04-28
 
 ## Active Technologies
 - Angular 20 frontend, C# with .NET 10 backend + Angular, Angular Material, RxJS, ASP.NET Core Web API, Entity Framework Core (001-create-lift)
@@ -35,6 +35,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-27
 - Existing SQL Server / Azure SQL-compatible relational storage (unchanged) (021-rename-app-racknote)
 - Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material, Angular Router, ASP.NET Core Web API, Entity Framework Core 10 (022-view-lift-history)
 - SQL Server / Azure SQL-compatible relational database (existing workout, workout-lift, and workout-set tables) (022-view-lift-history)
+- Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material, Angular Router, RxJS, ASP.NET Core Web API, Entity Framework Core 10 (023-backfill-past-workout)
+- SQL Server / Azure SQL-compatible relational database (existing workout, workout-lift, and workout-set persistence with migration support) (023-backfill-past-workout)
 
 - Angular 20 frontend, C# with .NET 10 backend + Angular, ASP.NET Core Web API, Entity Framework Core, SQL Server provider (001-create-lift)
 
@@ -55,9 +57,9 @@ tests/
 Angular 20 frontend, C# with .NET 10 backend: Follow standard conventions
 
 ## Recent Changes
+- 023-backfill-past-workout: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material, Angular Router, RxJS, ASP.NET Core Web API, Entity Framework Core 10
 - 022-view-lift-history: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material, Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 - 021-rename-app-racknote: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core, Entity Framework Core 10
-- 020-prefill-next-set: Added Angular 20 (TypeScript) frontend, C# on .NET 10 backend + Angular Material + Angular Router, ASP.NET Core Web API, Entity Framework Core 10
 
 
 <!-- MANUAL ADDITIONS START -->

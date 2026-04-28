@@ -9,7 +9,7 @@
 
 ### User Story 1 - Log missed workout on chosen day (Priority: P1)
 
-As a lifter, I want to record a previously completed session on a past calendar day so my history reflects when I actually trained.
+As a lifter, I want to record a previously completed session with a required past date, start time, and duration so my history reflects when I actually trained.
 
 **Why this priority**: Accurate chronology is the core user value and directly affects trust in workout history.
 
@@ -17,9 +17,9 @@ As a lifter, I want to record a previously completed session on a past calendar 
 
 **Acceptance Scenarios**:
 
-1. **Given** I am logging a missed workout, **When** I choose a prior calendar day and save, **Then** the workout is stored as completed for that chosen training day.
-2. **Given** I skip optional session length, **When** I save the historical workout, **Then** the workout still saves successfully and displays sensibly in history.
-3. **Given** I provide optional session length, **When** I save the historical workout, **Then** the workout remains correctly ordered by chosen training day and does not block completion.
+1. **Given** I am logging a missed workout, **When** I enter a past calendar day, hour/minute start time, and duration and save, **Then** the workout is stored as completed for that chosen training time window.
+2. **Given** I have entered date, time, and duration, **When** I save the historical workout, **Then** the workout appears in history in the expected chronological position.
+3. **Given** one of date, time, or duration is missing, **When** I attempt to save, **Then** the app clearly prompts me to complete the required fields.
 
 ---
 
@@ -55,19 +55,19 @@ As a lifter, I want to log a previous session even when I currently have an acti
 ### Edge Cases
 
 - Multiple completed workouts share the same calendar day; ordering remains predictable and consistent with existing history rules.
-- Local day-boundary ambiguity (late-night/early-morning training) still results in user-understandable history placement based on the chosen training day.
-- Historical workouts with no optional length and historical workouts with optional length both preserve a low-friction mobile flow.
+- Local day-boundary ambiguity (late-night/early-morning training) still results in user-understandable history placement based on entered date and time.
+- Required date, time, and duration inputs remain easy to complete on mobile (simple date selector plus hour/minute and duration controls).
 - Historical workouts with minimal lift/set data remain visible and stable in history and detail surfaces.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow a user to create a workout associated with a user-selected past calendar day.
-- **FR-002**: System MUST allow users to complete and save a historical workout without requiring optional session length.
-- **FR-003**: System MUST allow users to optionally provide session length for a historical workout without changing the primary completion flow.
+- **FR-001**: System MUST require users to enter a past calendar date for a historical workout.
+- **FR-002**: System MUST require users to enter a start time (hour and minute) for a historical workout.
+- **FR-003**: System MUST require users to enter workout duration for a historical workout before save.
 - **FR-004**: Users MUST be able to add lifts and sets to a historical workout using the same core logging interaction model as live workouts.
-- **FR-005**: System MUST include completed historical workouts in workout history in chronological order that matches the selected training day and existing ordering behavior.
+- **FR-005**: System MUST include completed historical workouts in workout history in chronological order that matches the entered historical date/time and existing ordering behavior.
 - **FR-006**: System MUST allow historical workout logging even when another workout is currently in progress.
 - **FR-007**: System MUST preserve the in-progress workout state when a historical workout is created and completed during catch-up.
 - **FR-008**: System MUST present clear, low-friction mobile feedback for save success and failure so users can trust historical entries were captured.
@@ -75,8 +75,8 @@ As a lifter, I want to log a previous session even when I currently have an acti
 
 ### Key Entities *(include if feature involves data)*
 
-- **HistoricalWorkoutSession**: A completed workout entry recorded after the fact, anchored to a chosen past training day, with optional session length metadata.
-- **TrainingDaySelection**: User-provided calendar-day intent used to place a historical workout correctly within completed workout chronology.
+- **HistoricalWorkoutSession**: A completed workout entry recorded after the fact, anchored to required past date/time and required duration inputs.
+- **HistoricalSessionTimingInput**: User-provided date, hour/minute start time, and duration used to place a historical workout correctly within completed workout chronology.
 - **WorkoutEntrySet**: Exercise and set records attached to a historical workout session using the same structure as live workout logging.
 - **ActiveWorkoutContext**: Existing in-progress workout state that must remain unaffected while a historical session is backfilled.
 
@@ -92,7 +92,7 @@ As a lifter, I want to log a previous session even when I currently have an acti
 ## Assumptions
 
 - Users are intentionally backfilling previously completed sessions rather than drafting future workouts.
-- Optional session length is non-blocking and secondary to recording day, lifts, and sets accurately.
+- Date, start time, and duration are mandatory for historical entries but must be captured in a simple, low-friction mobile UI.
 - Existing history and detail surfaces remain the primary places users confirm saved workouts and review prior same-lift context.
 - The selected training day is the authoritative user intent for historical ordering behavior.
 - Historical logging must preserve mobile-first speed and clarity comparable to current live logging flow.
