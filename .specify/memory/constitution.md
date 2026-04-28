@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 1.1.1
+- Version change: 1.1.1 -> 1.2.0
 - Modified principles:
   - III. Angular, C#, and SOLID Boundaries -> III. Angular, C#, and SOLID Boundaries
 - Added sections:
@@ -11,7 +11,8 @@ Sync Impact Report
   - ✅ .specify/templates/plan-template.md
   - ✅ .specify/templates/spec-template.md
   - ✅ .specify/templates/tasks-template.md
-  - ✅ README.md
+  - ⚠ pending .specify/templates/commands/*.md (directory not present in this repo)
+  - ✅ README.md (no principle wording references requiring changes)
 - Follow-up TODOs:
   - None
 -->
@@ -46,6 +47,11 @@ narrow, dependencies stay explicit, and behavior can be extended without fragile
 changes. Each production class MUST live in its own file unless a language or framework
 construct makes that impossible or clearly less readable. The rationale is to keep behavior
 consistent across clients, preserve maintainability, and make code easy to locate.
+Teams MUST prefer extending or composing existing contracts, services, and UI/state modules
+before introducing new parallel types or duplicate workflows. New abstractions (including
+inheritance hierarchies) MUST be justified by clear behavioral differences and must reduce
+duplication rather than add indirection. The rationale is to preserve clarity while scaling
+features through reuse-first design.
 
 ### IV. Unit-Tested Business Logic
 Any business layer logic MUST be covered by automated unit tests in the same change that
@@ -74,6 +80,8 @@ the project operationally portable within the intended cloud platform from the s
   discipline.
 - Source organization MUST keep one production class per file so code is easy to find, review,
   and refactor.
+- Implementations MUST be reuse-first: extend existing interfaces, validators, and workflows
+  when possible; add new types only when behavior cannot be represented safely by extension.
 - Features MUST tolerate ordinary gym connectivity issues by preventing silent data loss and
   by making save states or retry outcomes clear to the user.
 - Scope expansion into broad social, nutrition, or non-strength-training domains requires an
@@ -88,14 +96,17 @@ the project operationally portable within the intended cloud platform from the s
 - Every implementation plan MUST pass a Constitution Check that confirms Angular frontend
   ownership, C# backend ownership, SQL persistence approach, Azure deployment compatibility,
   SOLID-aligned design boundaries, one-class-per-file organization, and a unit-test strategy
-  for all affected business logic.
+  for all affected business logic. Plans MUST also state which existing components are being
+  reused and where extension points are introduced.
 - Every task list MUST include concrete work for backend application/domain unit tests whenever
   business rules change, plus SQL schema and migration tasks whenever persisted workout data
-  changes.
+  changes. Tasks MUST explicitly favor reuse or extension work before introducing net-new
+  duplicated components.
 - Pull requests and reviews MUST reject implementations that place business rules in Angular
   components, skip required unit tests, or add infrastructure that is not Azure-compatible
   without an approved exception. Reviews MUST also reject avoidable multi-class files or
-  designs that violate SOLID without an approved exception.
+  designs that violate SOLID without an approved exception. Reviews MUST reject avoidable
+  duplicate implementations where existing extension points were available.
 - Manual verification for user-facing changes MUST include mobile viewport validation of the
   primary logging flow in addition to automated test execution.
 
@@ -116,4 +127,4 @@ writing the implementation plan, and during pull request review. Any exception M
 explicitly justified in the plan's Complexity Tracking section with the simpler alternative
 that was rejected.
 
-**Version**: 1.1.1 | **Ratified**: 2026-04-20 | **Last Amended**: 2026-04-22
+**Version**: 1.2.0 | **Ratified**: 2026-04-20 | **Last Amended**: 2026-04-28

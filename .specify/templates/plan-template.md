@@ -39,6 +39,8 @@
       backend application/domain layer.
 - [ ] The design follows SOLID principles with clear responsibilities and explicit
       dependency boundaries.
+- [ ] The design is reuse-first: it extends existing contracts/services/components before
+      adding new parallel types, and any new abstraction is explicitly justified.
 - [ ] Production code organization keeps one class per file unless a documented exception is
       required by the framework or language construct.
 - [ ] SQL persistence changes, if any, include explicit schema updates and versioned
