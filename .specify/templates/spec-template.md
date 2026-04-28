@@ -99,6 +99,8 @@ Include requirements, when relevant, for:
 - workout history that supports next-weight decisions
 - business-rule ownership in the C# backend application/domain layer (not Angular)
 - SOLID-aligned service and domain boundaries for new or changed backend logic
+- reuse-first design: extend existing contracts, services, and UI/state modules before
+  introducing duplicate flows or net-new parallel types
 - discoverable production code organization with one class per file
 - SQL schema and versioned migration expectations for persisted data model changes
 - Azure-compatible infrastructure and deployment assumptions

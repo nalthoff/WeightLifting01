@@ -416,6 +416,8 @@ public sealed class WorkoutsApiContractTests(LiftsContractWebApplicationFactory 
     public sealed class GetWorkoutResponse
     {
         public required WorkoutSessionSummaryResponse Workout { get; init; }
+
+        public required IReadOnlyList<object> Lifts { get; init; }
     }
 
     public sealed class WorkoutSessionSummaryResponse

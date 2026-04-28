@@ -174,6 +174,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 - [ ] TXXX Validate the primary logging flow on a mobile viewport
+- [ ] TXXX Remove duplicate implementations by consolidating onto shared services/contracts
 
 ---
 
@@ -197,6 +198,8 @@ Examples of foundational tasks (adjust based on your project):
 ### Within Each User Story
 
 - Required business-layer unit tests MUST be written and fail before implementation
+- Reuse existing contracts/services/components first; add new abstractions only when behavior
+  cannot be safely expressed through extension/composition
 - Models before services
 - Services before endpoints
 - Core implementation before integration

@@ -62,6 +62,14 @@
   margin: 0;
 }
 
+.history-page__feedback--success {
+  color: #9be19b;
+}
+
+.history-page__feedback--info {
+  color: var(--app-text-muted);
+}
+
 .history-page__feedback--error {
   color: #ffb4ab;
 }

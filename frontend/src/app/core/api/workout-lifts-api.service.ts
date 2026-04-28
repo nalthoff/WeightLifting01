@@ -100,8 +100,13 @@ export class WorkoutLiftsApiService {
     return this.httpClient.get<WorkoutLiftListResponse>(`/api/workouts/${workoutId}/lifts${suffix}`);
   }
 
-  addWorkoutLift(workoutId: string, request: AddWorkoutLiftRequest): Observable<AddWorkoutLiftResponse> {
-    return this.httpClient.post<AddWorkoutLiftResponse>(`/api/workouts/${workoutId}/lifts`, request);
+  addWorkoutLift(
+    workoutId: string,
+    request: AddWorkoutLiftRequest,
+    historicalMode = false,
+  ): Observable<AddWorkoutLiftResponse> {
+    const suffix = historicalMode ? '?historicalMode=true' : '';
+    return this.httpClient.post<AddWorkoutLiftResponse>(`/api/workouts/${workoutId}/lifts${suffix}`, request);
   }
 
   removeWorkoutLift(workoutId: string, workoutLiftEntryId: string): Observable<RemoveWorkoutLiftResponse> {
@@ -121,9 +126,11 @@ export class WorkoutLiftsApiService {
     workoutId: string,
     workoutLiftEntryId: string,
     request: CreateWorkoutSetRequest,
+    historicalMode = false,
   ): Observable<CreateWorkoutSetResponse> {
+    const suffix = historicalMode ? '?historicalMode=true' : '';
     return this.httpClient.post<CreateWorkoutSetResponse>(
-      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets`,
+      `/api/workouts/${workoutId}/lifts/${workoutLiftEntryId}/sets${suffix}`,
       request,
     );
   }

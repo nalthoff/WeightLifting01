@@ -87,6 +87,7 @@ public sealed class CompleteWorkoutCommandHandlerTests
 
         Assert.Equal(CompleteWorkoutOutcome.Conflict, result.Outcome);
         Assert.Null(result.Workout);
+        Assert.Contains("Workout must be in progress to complete.", result.Errors["workout"]);
     }
 
     [Fact]
@@ -119,8 +120,91 @@ public sealed class CompleteWorkoutCommandHandlerTests
 
         Assert.Equal(CompleteWorkoutOutcome.Conflict, result.Outcome);
         Assert.Null(result.Workout);
+        Assert.Contains("Workout must be in progress to complete.", result.Errors["workout"]);
         Assert.Equal(completedAtUtc, persistedWorkout.CompletedAtUtc);
         Assert.Equal(completedAtUtc, persistedWorkout.UpdatedAtUtc);
+    }
+
+    [Fact]
+    public async Task HandleAsyncWhenAnotherWorkoutIsActiveCompletesHistoricalWorkflowAndPreservesActiveWorkout()
+    {
+        await using var dbContext = CreateDbContext();
+        var activeWorkoutId = Guid.NewGuid();
+        var historicalWorkoutId = Guid.NewGuid();
+        var startedAtUtc = new DateTime(2026, 4, 22, 12, 0, 0, DateTimeKind.Utc);
+
+        dbContext.Workouts.AddRange(
+            new WorkoutEntity
+            {
+                Id = activeWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.InProgress,
+                Label = "Current Session",
+                StartedAtUtc = startedAtUtc,
+                CreatedAtUtc = startedAtUtc,
+                UpdatedAtUtc = startedAtUtc,
+            },
+            new WorkoutEntity
+            {
+                Id = historicalWorkoutId,
+                UserId = "default-user",
+                Status = WorkoutStatus.InProgress,
+                Label = "Backfill Draft",
+                StartedAtUtc = startedAtUtc.AddDays(-2),
+                CreatedAtUtc = startedAtUtc.AddDays(-2),
+                UpdatedAtUtc = startedAtUtc.AddDays(-2),
+            });
+        await dbContext.SaveChangesAsync();
+
+        var handler = new CompleteWorkoutCommandHandler(dbContext);
+        var result = await handler.HandleAsync(new CompleteWorkoutCommand
+        {
+            WorkoutId = historicalWorkoutId,
+        }, CancellationToken.None);
+
+        var activeWorkout = await dbContext.Workouts.SingleAsync(workout => workout.Id == activeWorkoutId);
+        var completedHistoricalWorkout = await dbContext.Workouts.SingleAsync(workout => workout.Id == historicalWorkoutId);
+
+        Assert.Equal(CompleteWorkoutOutcome.Completed, result.Outcome);
+        Assert.Null(activeWorkout.CompletedAtUtc);
+        Assert.Equal(WorkoutStatus.InProgress, activeWorkout.Status);
+        Assert.Equal(WorkoutStatus.Completed, completedHistoricalWorkout.Status);
+        Assert.NotNull(completedHistoricalWorkout.CompletedAtUtc);
+    }
+
+    [Fact]
+    public async Task HandleAsyncWhenCompletionTimestampProvidedUsesExplicitTimestamp()
+    {
+        await using var dbContext = CreateDbContext();
+        var workoutId = Guid.NewGuid();
+        var startedAtUtc = new DateTime(2026, 4, 22, 12, 0, 0, DateTimeKind.Utc);
+        var explicitCompletedAtUtc = new DateTime(2026, 4, 22, 12, 42, 0, DateTimeKind.Utc);
+
+        dbContext.Workouts.Add(new WorkoutEntity
+        {
+            Id = workoutId,
+            UserId = "default-user",
+            Status = WorkoutStatus.InProgress,
+            Label = "Session",
+            StartedAtUtc = startedAtUtc,
+            CreatedAtUtc = startedAtUtc,
+            UpdatedAtUtc = startedAtUtc,
+        });
+        await dbContext.SaveChangesAsync();
+
+        var handler = new CompleteWorkoutCommandHandler(dbContext);
+        var result = await handler.HandleAsync(new CompleteWorkoutCommand
+        {
+            WorkoutId = workoutId,
+            CompletedAtUtc = explicitCompletedAtUtc,
+        }, CancellationToken.None);
+        var persistedWorkout = await dbContext.Workouts.SingleAsync(workout => workout.Id == workoutId);
+
+        Assert.Equal(CompleteWorkoutOutcome.Completed, result.Outcome);
+        Assert.NotNull(result.Workout);
+        Assert.Equal(explicitCompletedAtUtc, result.Workout.CompletedAtUtc);
+        Assert.Equal(explicitCompletedAtUtc, persistedWorkout.CompletedAtUtc);
+        Assert.Equal(explicitCompletedAtUtc, persistedWorkout.UpdatedAtUtc);
     }
 
     private static WeightLiftingDbContext CreateDbContext()

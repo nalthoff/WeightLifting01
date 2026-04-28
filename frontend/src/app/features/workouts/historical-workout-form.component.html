@@ -1,0 +1,74 @@
+<section class="historical-form-page">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Log Past Workout</mat-card-title>
+      <mat-card-subtitle>Add a completed workout from an earlier day.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="historical-form" [formGroup]="form" (ngSubmit)="onSave()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Date</mat-label>
+          <input #trainingDateInput matInput type="date" formControlName="trainingDayLocalDate" required />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            aria-label="Open date picker"
+            (click)="openNativePicker(trainingDateInput)"
+          >
+            <mat-icon>calendar_today</mat-icon>
+          </button>
+          <mat-error *ngIf="form.controls.trainingDayLocalDate.hasError('required')">Date is required.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Start time</mat-label>
+          <input #startTimeInput matInput type="time" formControlName="startTimeLocal" required />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            aria-label="Open time picker"
+            (click)="openNativePicker(startTimeInput)"
+          >
+            <mat-icon>schedule</mat-icon>
+          </button>
+          <mat-hint>24-hour HH:mm</mat-hint>
+          <mat-error *ngIf="form.controls.startTimeLocal.hasError('required')">Start time is required.</mat-error>
+          <mat-error *ngIf="form.controls.startTimeLocal.hasError('pattern')">Use HH:mm format.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Duration (minutes)</mat-label>
+          <input matInput type="number" min="1" max="1440" formControlName="sessionLengthMinutes" required />
+          <mat-error *ngIf="form.controls.sessionLengthMinutes.hasError('required')">Duration is required.</mat-error>
+          <mat-error *ngIf="form.controls.sessionLengthMinutes.hasError('min')">Duration must be at least 1 minute.</mat-error>
+          <mat-error *ngIf="form.controls.sessionLengthMinutes.hasError('max')">Duration must be 1440 minutes or less.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Label (optional)</mat-label>
+          <input matInput formControlName="label" placeholder="e.g. Missed Monday session" />
+        </mat-form-field>
+
+        <div *ngIf="saveSuccessMessage()" class="historical-form__message historical-form__message--success">
+          {{ saveSuccessMessage() }}
+        </div>
+        <div *ngIf="saveErrorMessage()" class="historical-form__message historical-form__message--error">
+          {{ saveErrorMessage() }}
+        </div>
+        <div
+          *ngIf="hasActiveWorkout() && returnToWorkoutId()"
+          class="historical-form__message historical-form__message--info"
+        >
+          Your active workout will stay in progress while this historical entry is saved.
+        </div>
+
+        <button type="submit" mat-flat-button color="primary" [disabled]="!canSave()">
+          {{ isSaving() ? 'Saving...' : 'Save Historical Workout' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

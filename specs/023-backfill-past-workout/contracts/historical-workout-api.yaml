@@ -1,0 +1,123 @@
+openapi: 3.0.3
+info:
+  title: Historical Workout Entry API Contract
+  version: 0.1.0
+  description: |
+    Contract for creating and completing backfilled workouts on a user-selected
+    past training day while preserving active-workout continuity.
+paths:
+  /api/workouts/historical:
+    post:
+      summary: Create a historical workout draft for a past training day
+      operationId: createHistoricalWorkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHistoricalWorkoutRequest'
+      responses:
+        '201':
+          description: Historical workout draft created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalWorkoutResponse'
+        '400':
+          description: Invalid training day or request payload
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Historical workout cannot be created due to lifecycle conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/workouts/{workoutId}/complete:
+    post:
+      summary: Complete an existing workout, including historical workouts
+      operationId: completeWorkout
+      parameters:
+        - in: path
+          name: workoutId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Workout completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalWorkoutResponse'
+        '404':
+          description: Workout not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Workout is not in a completable state
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  schemas:
+    CreateHistoricalWorkoutRequest:
+      type: object
+      required: [trainingDayLocalDate, startTimeLocal, sessionLengthMinutes]
+      properties:
+        trainingDayLocalDate:
+          type: string
+          format: date
+          description: Calendar day the user trained.
+        startTimeLocal:
+          type: string
+          pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+          description: Required local start time in hour and minute (HH:mm).
+        sessionLengthMinutes:
+          type: integer
+          minimum: 1
+          description: Required duration for the historical session.
+        label:
+          type: string
+          nullable: true
+          maxLength: 200
+    HistoricalWorkoutResponse:
+      type: object
+      required: [workoutId, status, trainingDayLocalDate, startTimeLocal, startedAtUtc, completedAtUtc, sessionLengthMinutes]
+      properties:
+        workoutId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [InProgress, Completed]
+        trainingDayLocalDate:
+          type: string
+          format: date
+        startTimeLocal:
+          type: string
+          pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        startedAtUtc:
+          type: string
+          format: date-time
+        completedAtUtc:
+          type: string
+          format: date-time
+          nullable: true
+        sessionLengthMinutes:
+          type: integer
+    Problem:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string

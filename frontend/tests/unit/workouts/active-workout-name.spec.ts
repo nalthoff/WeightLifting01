@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
@@ -26,6 +26,7 @@ describe('ActiveWorkoutPageComponent workout naming', () => {
   const workoutsStoreService = {
     activeWorkout: signal<typeof inProgressWorkout | null>(inProgressWorkout),
     activeWorkoutLiftEntries: signal([]),
+    historicalFlowNavigationContext: signal({ returnToWorkoutId: null as string | null }),
     setActiveWorkout: jasmine.createSpy('setActiveWorkout'),
     setActiveWorkoutLiftEntries: jasmine.createSpy('setActiveWorkoutLiftEntries'),
     reconcileActiveWorkout: jasmine
@@ -50,6 +51,12 @@ describe('ActiveWorkoutPageComponent workout naming', () => {
       afterClosed: () => of('Upper Day'),
     }),
   };
+  const router = {
+    events: of({}),
+    createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+    serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue('/'),
+    navigate: jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true)),
+  };
 
   beforeEach(async () => {
     workoutsApiService.updateWorkoutLabel.calls.reset();
@@ -61,6 +68,7 @@ describe('ActiveWorkoutPageComponent workout naming', () => {
       imports: [ActiveWorkoutPageComponent],
       providers: [
         { provide: ActivatedRoute, useValue: route },
+        { provide: Router, useValue: router },
         { provide: MatDialog, useValue: dialog },
         { provide: LiftsApiService, useValue: { listLifts: () => of({ items: [] }) } },
         { provide: WorkoutLiftsApiService, useValue: { listWorkoutLifts: () => of({ items: [] }) } },

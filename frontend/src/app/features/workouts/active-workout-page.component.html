@@ -3,8 +3,10 @@
     <mat-card-header>
       <div class="active-workout__header-row">
         <div class="active-workout__header-text">
-          <mat-card-title>{{ workout()?.label || 'Workout' }}</mat-card-title>
-          <mat-card-subtitle *ngIf="!workout()">No in-progress workout is loaded in this session.</mat-card-subtitle>
+          <mat-card-title>{{ workout()?.label || (isHistoricalMode() ? 'Historical Workout' : 'Workout') }}</mat-card-title>
+          <mat-card-subtitle *ngIf="!workout()">
+            {{ isHistoricalMode() ? 'Historical workout could not be loaded in this session.' : 'No in-progress workout is loaded in this session.' }}
+          </mat-card-subtitle>
         </div>
         <div *ngIf="workout() as headerWorkout" class="active-workout__header-actions">
           <span
@@ -444,10 +446,21 @@
       </div>
 
       <section class="active-workout__complete-section" aria-label="End workout section">
-        <h2 class="active-workout__complete-title">Done for today?</h2>
+        <h2 class="active-workout__complete-title">{{ isHistoricalMode() ? 'Ready to save this session?' : 'Done for today?' }}</h2>
         <p class="active-workout__complete-copy">
-          Complete this workout to save it to your history.
+          {{ isHistoricalMode() ? 'Save this historical workout to your history once lifts and sets are complete.' : 'Complete this workout to save it to your history.' }}
         </p>
+        <button
+          *ngIf="canReturnToOriginalActiveWorkout()"
+          type="button"
+          mat-stroked-button
+          color="primary"
+          data-testid="historical-return-to-active"
+          [disabled]="isCompletingWorkout() || isRefreshingActiveWorkout()"
+          (click)="returnToOriginalActiveWorkout()"
+        >
+          Back to active workout
+        </button>
         <button
           type="button"
           mat-flat-button
@@ -457,7 +470,7 @@
           (click)="completeWorkout()"
         >
           <mat-icon>{{ isCompletingWorkout() || isRefreshingActiveWorkout() ? 'hourglass_empty' : 'check_circle' }}</mat-icon>
-          {{ isCompletingWorkout() || isRefreshingActiveWorkout() ? 'Completing...' : 'Complete Workout' }}
+          {{ getPrimaryActionLabel() }}
         </button>
       </section>
 
@@ -485,7 +498,7 @@
     </ng-template>
 
     <mat-card-actions>
-      <a mat-button routerLink="/">Back to home</a>
+      <a mat-button [routerLink]="isHistoricalMode() ? '/history' : '/'">{{ isHistoricalMode() ? 'Back to history' : 'Back to home' }}</a>
     </mat-card-actions>
   </mat-card>
 </section>

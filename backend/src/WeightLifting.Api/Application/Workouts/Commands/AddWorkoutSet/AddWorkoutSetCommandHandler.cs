@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WeightLifting.Api.Domain.Workouts;
+using WeightLifting.Api.Application.Workouts.Commands.WorkoutEntryMutability;
 using WeightLifting.Api.Infrastructure.Persistence;
 using WeightLifting.Api.Infrastructure.Persistence.Entities;
 
@@ -9,6 +9,8 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
 {
     // Placeholder identity until auth context is wired.
     private const string DefaultUserId = "default-user";
+    private static readonly IWorkoutEntryMutabilityRule LiveMutabilityRule = new LiveWorkoutEntryMutabilityRule();
+    private static readonly IWorkoutEntryMutabilityRule HistoricalMutabilityRule = new HistoricalWorkoutEntryMutabilityRule();
 
     public async Task<AddWorkoutSetResult> HandleAsync(
         AddWorkoutSetCommand command,
@@ -24,12 +26,13 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
             };
         }
 
-        var workoutEntity = await dbContext.Workouts
-            .SingleOrDefaultAsync(
-                workout => workout.Id == command.WorkoutId && workout.UserId == DefaultUserId,
-                cancellationToken);
-
-        if (workoutEntity is null)
+        var mutabilityCheck = await WorkoutEntryMutabilityService.CheckAsync(
+            dbContext,
+            command.WorkoutId,
+            DefaultUserId,
+            command.AllowHistoricalEdits ? HistoricalMutabilityRule : LiveMutabilityRule,
+            cancellationToken);
+        if (!mutabilityCheck.WorkoutExists)
         {
             return new AddWorkoutSetResult
             {
@@ -37,7 +40,7 @@ public sealed class AddWorkoutSetCommandHandler(WeightLiftingDbContext dbContext
             };
         }
 
-        if (workoutEntity.Status != WorkoutStatus.InProgress)
+        if (!mutabilityCheck.CanMutate)
         {
             return new AddWorkoutSetResult
             {

@@ -6,13 +6,14 @@ using WeightLifting.Api.Application.Workouts.Commands.AddWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Commands.CompleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.DeleteWorkoutSet;
+using WeightLifting.Api.Application.Workouts.Commands.CreateHistoricalWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.ReorderWorkoutLifts;
 using WeightLifting.Api.Application.Workouts.Commands.RemoveWorkoutLift;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutSet;
 using WeightLifting.Api.Application.Workouts.Queries.GetActiveWorkoutSummary;
 using WeightLifting.Api.Application.Workouts.Commands.StartWorkout;
 using WeightLifting.Api.Application.Workouts.Commands.UpdateWorkoutLabel;
-using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutById;
+using WeightLifting.Api.Application.Workouts.Queries.GetWorkoutDetail;
 using WeightLifting.Api.Application.Workouts.Queries.GetInlineLiftHistory;
 using WeightLifting.Api.Application.Workouts.Queries.ListCompletedWorkouts;
 using WeightLifting.Api.Application.Workouts.Queries.ListWorkoutLifts;
@@ -28,6 +29,7 @@ public sealed class WorkoutsController(
     UpdateWorkoutSetCommandHandler updateWorkoutSetCommandHandler,
     DeleteWorkoutSetCommandHandler deleteWorkoutSetCommandHandler,
     DeleteWorkoutCommandHandler deleteWorkoutCommandHandler,
+    CreateHistoricalWorkoutCommandHandler createHistoricalWorkoutCommandHandler,
     CompleteWorkoutCommandHandler completeWorkoutCommandHandler,
     ReorderWorkoutLiftsCommandHandler reorderWorkoutLiftsCommandHandler,
     RemoveWorkoutLiftCommandHandler removeWorkoutLiftCommandHandler,
@@ -37,7 +39,7 @@ public sealed class WorkoutsController(
     InlineLiftHistoryQueryHelper inlineLiftHistoryQueryHelper,
     ListCompletedWorkoutsQueryHelper listCompletedWorkoutsQueryHelper,
     StartWorkoutCommandHandler startWorkoutCommandHandler,
-    GetWorkoutByIdQueryHelper getWorkoutByIdQueryHelper) : ControllerBase
+    GetWorkoutDetailQueryHandler getWorkoutDetailQueryHandler) : ControllerBase
 {
     // Placeholder identity until auth context is wired.
     private const string DefaultUserId = "default-user";
@@ -68,12 +70,12 @@ public sealed class WorkoutsController(
         [FromQuery] bool forHistory = false,
         CancellationToken cancellationToken = default)
     {
-        var workout = await getWorkoutByIdQueryHelper.GetAsync(
+        var detail = await getWorkoutDetailQueryHandler.HandleAsync(
             workoutId,
             DefaultUserId,
-            cancellationToken,
-            requireCompleted: forHistory);
-        if (workout is null)
+            forHistory,
+            cancellationToken);
+        if (detail is null)
         {
             return NotFound(new
             {
@@ -84,7 +86,8 @@ public sealed class WorkoutsController(
 
         return Ok(new GetWorkoutResponse
         {
-            Workout = ToWorkoutSummary(workout),
+            Workout = ToWorkoutSummary(detail.Workout),
+            Lifts = detail.Lifts.Select(ToWorkoutLiftEntryResponse).ToList(),
         });
     }
 
@@ -117,15 +120,39 @@ public sealed class WorkoutsController(
 
             return Created(
                 $"/api/workouts/{result.Workout.Id}",
-                new StartWorkoutCreatedResponse
-                {
-                    Workout = ToWorkoutSummary(result.Workout),
-                });
+                ToStartWorkoutCreatedResponse(result.Workout));
         }
         catch (ArgumentException)
         {
             return UnprocessableEntity(CreateLabelValidationResponse());
         }
+    }
+
+    [HttpPost("historical")]
+    [ProducesResponseType(typeof(StartWorkoutCreatedResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<StartWorkoutCreatedResponse>> CreateHistoricalWorkout(
+        [FromBody] CreateHistoricalWorkoutRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await createHistoricalWorkoutCommandHandler.HandleAsync(
+            ToCreateHistoricalWorkoutCommand(request),
+            cancellationToken);
+
+        if (result.Outcome == CreateHistoricalWorkoutOutcome.ValidationFailed)
+        {
+            return UnprocessableEntity(new
+            {
+                title = "Validation failed",
+                status = StatusCodes.Status422UnprocessableEntity,
+                errors = result.Errors,
+            });
+        }
+
+        return Created(
+            $"/api/workouts/{result.Workout!.Id}",
+            ToStartWorkoutCreatedResponse(result.Workout));
     }
 
     [HttpPut("{workoutId:guid}/label")]
@@ -211,10 +238,12 @@ public sealed class WorkoutsController(
             {
                 title = "Workout cannot be completed",
                 status = StatusCodes.Status409Conflict,
-                errors = new Dictionary<string, string[]>
-                {
-                    ["workout"] = ["Workout must be in progress to complete."],
-                },
+                errors = result.Errors.Count > 0
+                    ? result.Errors
+                    : new Dictionary<string, string[]>
+                    {
+                        ["workout"] = ["Workout must be in progress to complete."],
+                    },
             });
         }
 
@@ -359,6 +388,7 @@ public sealed class WorkoutsController(
     public async Task<ActionResult<AddWorkoutLiftResponse>> AddWorkoutLift(
         Guid workoutId,
         [FromBody] AddWorkoutLiftRequest? request,
+        [FromQuery] bool historicalMode = false,
         CancellationToken cancellationToken = default)
     {
         if (request is null || request.LiftId == Guid.Empty)
@@ -373,6 +403,7 @@ public sealed class WorkoutsController(
                 {
                     WorkoutId = workoutId,
                     LiftId = request.LiftId,
+                    AllowHistoricalEdits = historicalMode,
                 },
                 cancellationToken);
 
@@ -427,6 +458,7 @@ public sealed class WorkoutsController(
         Guid workoutId,
         Guid workoutLiftEntryId,
         [FromBody] CreateWorkoutSetRequest? request,
+        [FromQuery] bool historicalMode = false,
         CancellationToken cancellationToken = default)
     {
         var result = await addWorkoutSetCommandHandler.HandleAsync(
@@ -436,6 +468,7 @@ public sealed class WorkoutsController(
                 WorkoutLiftEntryId = workoutLiftEntryId,
                 Reps = request?.Reps ?? 0,
                 Weight = request?.Weight,
+                AllowHistoricalEdits = historicalMode,
             },
             cancellationToken);
 
@@ -709,6 +742,19 @@ public sealed class WorkoutsController(
         Label = workout.Label,
         StartedAtUtc = workout.StartedAtUtc,
         CompletedAtUtc = workout.CompletedAtUtc,
+    };
+
+    private static StartWorkoutCreatedResponse ToStartWorkoutCreatedResponse(Workout workout) => new()
+    {
+        Workout = ToWorkoutSummary(workout),
+    };
+
+    private static CreateHistoricalWorkoutCommand ToCreateHistoricalWorkoutCommand(CreateHistoricalWorkoutRequest request) => new()
+    {
+        TrainingDayLocalDate = request.TrainingDayLocalDate,
+        StartTimeLocal = request.StartTimeLocal,
+        SessionLengthMinutes = request.SessionLengthMinutes,
+        Label = request.Label,
     };
 
     private static WorkoutLiftEntryResponse ToWorkoutLiftEntryResponse(WorkoutLiftEntry workoutLiftEntry) => new()

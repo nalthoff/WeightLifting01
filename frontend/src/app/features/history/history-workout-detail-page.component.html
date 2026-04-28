@@ -48,11 +48,11 @@
           >
             <h3 class="history-workout-detail-page__lift-title">{{ lift.displayName }}</h3>
 
-            <p *ngIf="(lift.sets ?? []).length === 0" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
+            <p *ngIf="getOrderedSets(lift).length === 0" class="history-workout-detail-page__feedback history-workout-detail-page__feedback--info">
               No sets recorded for this lift.
             </p>
 
-            <table *ngIf="(lift.sets ?? []).length > 0" class="history-workout-detail-page__sets" data-testid="history-workout-detail-sets">
+            <table *ngIf="getOrderedSets(lift).length > 0" class="history-workout-detail-page__sets" data-testid="history-workout-detail-sets">
               <thead>
                 <tr>
                   <th scope="col">Set</th>
@@ -61,7 +61,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let set of lift.sets ?? []; trackBy: trackSet">
+                <tr *ngFor="let set of getOrderedSets(lift); trackBy: trackSet">
                   <td>{{ set.setNumber }}</td>
                   <td>{{ set.reps }}</td>
                   <td>{{ getSetWeightDisplay(set.weight) }}</td>

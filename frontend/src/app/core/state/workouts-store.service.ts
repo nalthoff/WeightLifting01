@@ -2,7 +2,13 @@ import { Injectable, computed, signal } from '@angular/core';
 
 import type { WorkoutSessionSummary } from '../api/workouts-api.service';
 import type { WorkoutLiftEntry } from '../api/workout-lifts-api.service';
-import type { WorkoutLiftEntryState, WorkoutSetEntry } from './workouts-store.models';
+import type {
+  HistoricalFlowMessageKind,
+  HistoricalFlowMessageState,
+  HistoricalFlowNavigationContext,
+  WorkoutLiftEntryState,
+  WorkoutSetEntry,
+} from './workouts-store.models';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +16,12 @@ import type { WorkoutLiftEntryState, WorkoutSetEntry } from './workouts-store.mo
 export class WorkoutsStoreService {
   readonly activeWorkout = signal<WorkoutSessionSummary | null>(null);
   readonly activeWorkoutLiftEntries = signal<WorkoutLiftEntryState[]>([]);
+  readonly historicalFlowMessage = signal<HistoricalFlowMessageState | null>(null);
+  readonly historicalFlowNavigationContext = signal<HistoricalFlowNavigationContext>({
+    returnToWorkoutId: null,
+  });
   readonly hasActiveWorkout = computed(() => this.activeWorkout() !== null);
+  readonly hasHistoricalFlowMessage = computed(() => this.historicalFlowMessage() !== null);
 
   setActiveWorkout(workout: WorkoutSessionSummary): void {
     this.activeWorkout.set(workout);
@@ -41,6 +52,39 @@ export class WorkoutsStoreService {
     }
 
     this.clearActiveWorkout();
+  }
+
+  setHistoricalFlowMessage(kind: HistoricalFlowMessageKind, text: string): void {
+    const normalizedText = text.trim();
+    if (!normalizedText) {
+      this.historicalFlowMessage.set(null);
+      return;
+    }
+
+    this.historicalFlowMessage.set({
+      kind,
+      text: normalizedText,
+    });
+  }
+
+  clearHistoricalFlowMessage(): void {
+    this.historicalFlowMessage.set(null);
+  }
+
+  setHistoricalFlowNavigationContext(returnToWorkoutId: string | null): void {
+    this.historicalFlowNavigationContext.set({
+      returnToWorkoutId: returnToWorkoutId?.trim() || null,
+    });
+  }
+
+  captureHistoricalFlowNavigationContextFromActiveWorkout(): void {
+    this.setHistoricalFlowNavigationContext(this.activeWorkout()?.id ?? null);
+  }
+
+  clearHistoricalFlowNavigationContext(): void {
+    this.historicalFlowNavigationContext.set({
+      returnToWorkoutId: null,
+    });
   }
 
   setActiveWorkoutLiftEntries(workoutId: string, entries: WorkoutLiftEntry[]): void {
